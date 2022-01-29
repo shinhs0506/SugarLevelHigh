@@ -1,13 +1,15 @@
 // Wraps all level logis and entities
-class Level
+class LevelManager
 {
 public:
-	Level();
+	LevelManager();
 
-	~Level();
+	~LevelManager();
 
-	// Initialize a level with the level number
-	void init(int level_num);
+	void init();
+
+	// Load all needed entities for the level
+	void load_level(int level);
 
 	// Restart the level
 	void restart_level();
@@ -28,5 +30,5 @@ public:
 
 private:
 	bool ended;
-	int level_num;
+	int curr_level;
 };

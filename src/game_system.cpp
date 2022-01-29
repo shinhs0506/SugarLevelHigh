@@ -11,7 +11,6 @@ const char* GAME_TITLE = "Sugar Level: High";
 
 // Create the Game
 GameSystem::GameSystem() {
-	game_state = IN_LEVEL; // currently only working on the level
 }
 
 GameSystem::~GameSystem() {
@@ -101,15 +100,19 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
 	// Playing background music indefinitely
-	Mix_PlayMusic(background_music, -1);
+	Mix_PlayMusic(background_music, -1); 
 	fprintf(stderr, "Loaded music\n");
 
 	// set the title of the game
 	glfwSetWindowTitle(window, GAME_TITLE);
 	
 	// Directly start a level for now
-	level = Level();
-	level.init(0);
+	game_state = GameState::IN_LEVEL; // currently only working on the level
+
+	level_manager = LevelManager();
+	level_manager.init();
+
+	level_manager.load_level(0);
 }
 
 bool GameSystem::is_over() {
@@ -123,8 +126,8 @@ bool GameSystem::step(float elapsed_ms_since_last_update) {
 	    registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	switch (game_state) {
-	case IN_LEVEL:
-		level.step(elapsed_ms_since_last_update);
+	case GameState::IN_LEVEL:
+		level_manager.step(elapsed_ms_since_last_update);
 		break;
 	default: 
 		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
@@ -137,8 +140,8 @@ bool GameSystem::step(float elapsed_ms_since_last_update) {
 // On key callback
 void GameSystem::on_key(int key, int, int action, int mod) {
 	switch (game_state) {
-	case IN_LEVEL:
-		level.on_key(key, 0, action, mod);
+	case GameState::IN_LEVEL:
+		level_manager.on_key(key, 0, action, mod);
 		break;
 	default:
 		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
@@ -148,8 +151,8 @@ void GameSystem::on_key(int key, int, int action, int mod) {
 
 void GameSystem::on_mouse_move(vec2 mouse_position) {
 	switch (game_state) {
-	case IN_LEVEL:
-		level.on_mouse_move(mouse_position);
+	case GameState::IN_LEVEL:
+		level_manager.on_mouse_move(mouse_position);
 		break;
 	default:
 		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
@@ -159,8 +162,8 @@ void GameSystem::on_mouse_move(vec2 mouse_position) {
 
 void GameSystem::handle_collisions() {
 	switch (game_state) {
-	case IN_LEVEL:
-		level.handle_collisions();
+	case GameState::IN_LEVEL:
+		level_manager.handle_collisions();
 		break;
 	default:
 		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);

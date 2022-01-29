@@ -189,6 +189,27 @@ void RenderSystem::initializeGlGeometryBuffers()
 	meshes[geom_index].vertex_indices = egg_indices;
 	bindVBOandIBO(GEOMETRY_BUFFER_ID::EGG, meshes[geom_index].vertices, meshes[geom_index].vertex_indices);
 
+	////////////////////////
+	// Initialize square, basically sprite but with colored vertex
+	std::vector<ColoredVertex> square_vertices;
+	std::vector<uint16_t> square_indices;
+
+	// Corner points
+	square_vertices = {
+		{{-0.5,-0.5, 0.f}, {1.f, 1.f, 1.f}},
+		{{-0.5, 0.5, 0.f}, {1.f, 1.f, 1.f}},
+		{{ 0.5, 0.5, 0.f}, {1.f, 1.f, 1.f}},
+		{{ 0.5,-0.5, 0.f}, {1.f, 1.f, 1.f}},
+	};
+
+	// Two triangles
+	square_indices = { 0, 1, 3, 1, 2, 3 };
+
+	geom_index = (int)GEOMETRY_BUFFER_ID::SQUARE;
+	meshes[geom_index].vertices = square_vertices;
+	meshes[geom_index].vertex_indices = square_indices;
+	bindVBOandIBO(GEOMETRY_BUFFER_ID::SQUARE, square_vertices, square_indices);
+
 	//////////////////////////////////
 	// Initialize debug line
 	std::vector<ColoredVertex> line_vertices;

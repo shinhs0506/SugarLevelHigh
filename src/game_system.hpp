@@ -9,21 +9,19 @@
 #include <SDL_mixer.h>
 
 #include "render_system.hpp"
-#include "level.hpp"
+#include "level_manager.hpp"
 
 // Container for all our entities and game logic
 class GameSystem
 {
 public:
 	// different screen states
-	enum GameState {
+	enum class GameState {
 		MAIN_MENU, // main menu screen
 		MAIN_SETTING, // main menu settings for sound, etc.
 		LEVEL_SELECTION, // select which level to start
 		CHARACTER_SELECTION, // select characters to form a team for the level
-		IN_LEVEL, // level content
-		IN_LEVEL_SETTING, // level setting to restart, quit, and other settings
-		LEVEL_RESULT, // shows the level completion/failure and results
+		IN_LEVEL, // level content, handled by level manager
 	};
 
 	GameSystem();
@@ -61,6 +59,6 @@ private:
 	// music references
 	Mix_Music* background_music;
 
-	// Current Level
-	Level level;
+	// Manges Level-scoped entities and logic
+	LevelManager level_manager;
 };

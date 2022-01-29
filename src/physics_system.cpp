@@ -77,8 +77,8 @@ void PhysicsSystem::step(float elapsed_ms)
 			vec2 line_scale1 = { motion_i.scale.x / 10, 2*radius };
 			vec2 line_scale2 = { 2*radius, motion_i.scale.x / 10};
 			vec2 position = motion_i.position;
-			Entity line1 = createLine(motion_i.position, line_scale1);
-			Entity line2 = createLine(motion_i.position, line_scale2);
+			Entity line1 = createDebugLine(motion_i.position, line_scale1);
+			Entity line2 = createDebugLine(motion_i.position, line_scale2);
 
 		}
 	}
