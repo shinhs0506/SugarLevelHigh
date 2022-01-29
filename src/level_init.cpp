@@ -37,8 +37,19 @@ Entity createEnemy(vec2 pos, vec2 size)
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
 
-	// TODO: enemy should have more components
 	registry.enemies.emplace(entity);
+
+	// stats
+	Health health{ 100, 100 };
+	Energy energy{ 100, 100 };
+	Initiative initiative{ 80 };
+
+	registry.healths.insert(entity, health);
+	registry.energies.insert(entity, energy);
+	registry.initiatives.insert(entity, initiative);
+	
+	// TODO: insert attack abilities
+
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
@@ -62,8 +73,19 @@ Entity createPlayer(vec2 pos, vec2 size)
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
 
-	// TODO: player should have more components
 	registry.playables.emplace(entity);
+
+	// stats
+	Health health{ 100, 100 };
+	Energy energy{ 100, 100 };
+	Initiative initiative{ 50 };
+
+	registry.healths.insert(entity, health);
+	registry.energies.insert(entity, energy);
+	registry.initiatives.insert(entity, initiative);
+
+	// TODO: insert attack abilities
+
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed

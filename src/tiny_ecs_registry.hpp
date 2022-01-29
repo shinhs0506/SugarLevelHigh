@@ -14,7 +14,7 @@ public:
 	// TODO: A1 add a LightUp component
 	ComponentContainer<Playable> playables;
 	ComponentContainer<Enemy> enemies;
-	ComponentContainer<Health> health;
+	ComponentContainer<Health> healths;
 	ComponentContainer<Energy> energies;
 	ComponentContainer<Initiative> initiatives;
 	ComponentContainer<AttackAbility> attackAbilities;
@@ -35,7 +35,7 @@ public:
 		// TODO: A1 add a LightUp component
 		registry_list.push_back(&playables);
 		registry_list.push_back(&enemies);
-		registry_list.push_back(&health);
+		registry_list.push_back(&healths);
 		registry_list.push_back(&energies);
 		registry_list.push_back(&initiatives);
 		registry_list.push_back(&attackAbilities);
