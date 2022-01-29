@@ -9,7 +9,7 @@
 #include "ai_system.hpp"
 #include "physics_system.hpp"
 #include "render_system.hpp"
-#include "world_system.hpp"
+#include "game_system.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -17,13 +17,13 @@ using Clock = std::chrono::high_resolution_clock;
 int main()
 {
 	// Global systems
-	WorldSystem world;
+	GameSystem game;
 	RenderSystem renderer;
 	PhysicsSystem physics;
 	AISystem ai;
 
 	// Initializing window
-	GLFWwindow* window = world.create_window();
+	GLFWwindow* window = game.create_window();
 	if (!window) {
 		// Time to read the error message
 		printf("Press any key to exit");
@@ -33,11 +33,11 @@ int main()
 
 	// initialize the main systems
 	renderer.init(window);
-	world.init(&renderer);
+	game.init(&renderer);
 
 	// variable timestep loop
 	auto t = Clock::now();
-	while (!world.is_over()) {
+	while (!game.is_over()) {
 		// Processes system messages, if this wasn't present the window would become unresponsive
 		glfwPollEvents();
 
@@ -47,14 +47,12 @@ int main()
 			(float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
 		t = now;
 
-		world.step(elapsed_ms);
+		game.step(elapsed_ms);
 		ai.step(elapsed_ms);
 		physics.step(elapsed_ms);
-		world.handle_collisions();
+		game.handle_collisions();
 
 		renderer.draw();
-
-		// TODO A2: you can implement the debug freeze here but other places are possible too.
 	}
 
 	return EXIT_SUCCESS;

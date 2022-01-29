@@ -12,15 +12,19 @@ class ECSRegistry
 public:
 	// Manually created list of all components this game has
 	// TODO: A1 add a LightUp component
-	ComponentContainer<DeathTimer> deathTimers;
+	ComponentContainer<Playable> playables;
+	ComponentContainer<Enemy> enemies;
+	ComponentContainer<Health> health;
+	ComponentContainer<Energy> energies;
+	ComponentContainer<Initiative> initiatives;
+	ComponentContainer<AttackAbility> attackAbilities;
+	ComponentContainer<Projectile> projectiles;
+	ComponentContainer<Terrain> terrains;
 	ComponentContainer<Motion> motions;
 	ComponentContainer<Collision> collisions;
-	ComponentContainer<Player> players;
 	ComponentContainer<Mesh*> meshPtrs;
 	ComponentContainer<RenderRequest> renderRequests;
 	ComponentContainer<ScreenState> screenStates;
-	ComponentContainer<Eatable> eatables;
-	ComponentContainer<Deadly> deadlys;
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<vec3> colors;
 
@@ -29,15 +33,19 @@ public:
 	ECSRegistry()
 	{
 		// TODO: A1 add a LightUp component
-		registry_list.push_back(&deathTimers);
+		registry_list.push_back(&playables);
+		registry_list.push_back(&enemies);
+		registry_list.push_back(&health);
+		registry_list.push_back(&energies);
+		registry_list.push_back(&initiatives);
+		registry_list.push_back(&attackAbilities);
+		registry_list.push_back(&projectiles);
+		registry_list.push_back(&terrains);
 		registry_list.push_back(&motions);
 		registry_list.push_back(&collisions);
-		registry_list.push_back(&players);
 		registry_list.push_back(&meshPtrs);
 		registry_list.push_back(&renderRequests);
 		registry_list.push_back(&screenStates);
-		registry_list.push_back(&eatables);
-		registry_list.push_back(&deadlys);
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&colors);
 	}

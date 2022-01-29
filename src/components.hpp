@@ -4,22 +4,56 @@
 #include <unordered_map>
 #include "../ext/stb_image/stb_image.h"
 
-// Player component
-struct Player
+// Attached all player characters
+struct Playable
 {
 
 };
 
-// Eagles have a hard shell
-struct Deadly
+// Attached to all Enemies
+struct Enemy
 {
 
 };
 
-// Bug and Chicken have a soft shell
-struct Eatable
+// Attached to all playables, enemies, breakable terrains
+struct Health
+{
+	float max_health = 100.f;
+	float cur_health = 100.f;
+};
+
+// Attached to all playables, enemies
+// Indicate how far the character can move
+struct Energy
+{
+	float max_energy = 100.f;
+	float cur_energy = 100.f;
+};
+
+// Initiative used to determine the turn order of all enemies and players
+// Slower the initiative means faster the speed
+// When an enemy and a playable character have the same initiative, the player move first
+struct Initiative
+{
+	int value; // should range [0, 100]
+};
+
+struct AttackAbility
+{
+	float range;
+	float damage;
+};
+
+// Attached to all projectiles 
+struct Projectile
 {
 
+};
+
+struct Terrain
+{
+	bool breakable = false;
 };
 
 // All data relevant to the shape and motion of entities
@@ -28,6 +62,7 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+	bool gravity_affected = false;
 };
 
 // Stucture to store collision information
@@ -55,12 +90,6 @@ struct ScreenState
 struct DebugComponent
 {
 	// Note, an empty struct has size 1
-};
-
-// A timer that will be associated to dying chicken
-struct DeathTimer
-{
-	float counter_ms = 3000;
 };
 
 // Single Vertex Buffer element for non-textured meshes (coloured.vs.glsl & chicken.vs.glsl)
@@ -111,25 +140,20 @@ struct Mesh
  */
 
 enum class TEXTURE_ASSET_ID {
-	BUG = 0,
-	EAGLE = BUG + 1,
-	TEXTURE_COUNT = EAGLE + 1
+	TEXTURE_COUNT = 0
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
 enum class EFFECT_ASSET_ID {
 	COLOURED = 0,
-	EGG = COLOURED + 1,
-	CHICKEN = EGG + 1,
-	TEXTURED = CHICKEN + 1,
-	WIND = TEXTURED + 1,
-	EFFECT_COUNT = WIND + 1
+	TEXTURED = COLOURED + 1,
+	POST_PROCESS = TEXTURED + 1, // post processing
+	EFFECT_COUNT = POST_PROCESS + 1
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
 enum class GEOMETRY_BUFFER_ID {
-	CHICKEN = 0,
-	SPRITE = CHICKEN + 1,
+	SPRITE = 0,
 	EGG = SPRITE + 1,
 	DEBUG_LINE = EGG + 1,
 	SCREEN_TRIANGLE = DEBUG_LINE + 1,
