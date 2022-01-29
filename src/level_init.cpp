@@ -110,7 +110,13 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.scale = size;
 
 	// TODO: terrains might have more components
-	registry.terrains.emplace(entity);
+	Terrain terrain{ false }; 
+	registry.terrains.insert(entity, terrain);
+	
+	// Break when the terrain is breakable and health < 0
+	Health health{ 20, 20 };
+	registry.healths.insert(entity, health);
+
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
