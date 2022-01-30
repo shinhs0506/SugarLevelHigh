@@ -54,16 +54,18 @@ void LevelManager::abandon_level()
 
 bool LevelManager::step(float elapsed_ms)
 {
-    // check if the turn has ended, advance if so
-    if (shouldAdvanceTurnOrder) {
-        currOrderIndex += 1;  
-        if (currOrderIndex <= numPlayables) {
-            currOrderIndex = 0;
-        }
-        
-        shouldAdvanceTurnOrder = false;
-    }
+    if (curr_level == 0) {
 
+        // check if the turn has ended, advance if so
+        if (shouldAdvanceTurnOrder) {
+            currOrderIndex += 1;  
+            if (currOrderIndex <= numPlayables) {
+                currOrderIndex = 0;
+            }
+            
+            shouldAdvanceTurnOrder = false;
+        }
+    }
 
 	return true;
 }
