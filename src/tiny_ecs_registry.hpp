@@ -17,6 +17,7 @@ public:
 	ComponentContainer<Health> healths;
 	ComponentContainer<Energy> energies;
 	ComponentContainer<Initiative> initiatives;
+    ComponentContainer<ActiveTurn> activeTurns;
 	ComponentContainer<AttackAbility> attackAbilities;
 	ComponentContainer<Projectile> projectiles;
 	ComponentContainer<Terrain> terrains;
@@ -38,6 +39,7 @@ public:
 		registry_list.push_back(&healths);
 		registry_list.push_back(&energies);
 		registry_list.push_back(&initiatives);
+        registry_list.push_back(&activeTurns);
 		registry_list.push_back(&attackAbilities);
 		registry_list.push_back(&projectiles);
 		registry_list.push_back(&terrains);

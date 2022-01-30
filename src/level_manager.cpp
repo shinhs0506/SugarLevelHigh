@@ -35,10 +35,14 @@ void LevelManager::load_level(int level)
         registry.initiatives.sort(compare);
 
         // to retrieve current entity
-        // registry.initiatives.components[currOrderIndex];
-        currOrderIndex = 0;
+        // registry.initiatives.entities[currOrderIndex];
+        // or 
+        // registry.activeTurns.entities[0] from outside level_manager
+        // or might add a global Entity variable later
+        curr_order_index = 0;
+        registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
         // for now, since we have one enemy, and one player
-        numPlayables = 2;
+        num_playables = 2;
 	}
 }
 
@@ -54,18 +58,22 @@ void LevelManager::abandon_level()
 
 bool LevelManager::step(float elapsed_ms)
 {
-    if (curr_level == 0) {
-
         // check if the turn has ended, advance if so
-        if (shouldAdvanceTurnOrder) {
-            currOrderIndex += 1;  
-            if (currOrderIndex <= numPlayables) {
-                currOrderIndex = 0;
+        if (should_advance_turn_order) {
+            // note: clear might be more efficient than 'remove'
+            // since we only have one active character
+            // needs testing
+            registry.initiatives.clear();
+
+            curr_order_index += 1;  
+            if (curr_order_index <= num_playables) {
+                curr_order_index = 0;
             }
+
+            registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
             
-            shouldAdvanceTurnOrder = false;
+            should_advance_turn_order = false;
         }
-    }
 
 	return true;
 }
