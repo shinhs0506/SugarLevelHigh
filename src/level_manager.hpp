@@ -1,3 +1,6 @@
+#include <tiny_ecs.hpp>
+#include <tiny_ecs_registry.hpp>
+
 // Wraps all level logis and entities
 class LevelManager
 {
@@ -31,4 +34,10 @@ public:
 private:
 	bool ended;
 	int curr_level;
+    
+    // for turn order logic
+    bool shouldAdvanceTurnOrder;
+    int currOrderIndex;
+    int numPlayables;
+    std::vector<Entity> orders;
 };
