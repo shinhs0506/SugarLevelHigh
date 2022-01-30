@@ -27,7 +27,6 @@ void LevelManager::load_level(int level)
 		Entity player = createPlayer(vec2(300, 500), vec2(50, 100));
 		Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
 
-        orders = {enemy, player};
         auto compare = [](Entity& a, Entity& b) {
                 Initiative& aInitiative = registry.initiatives.get(a);
                 Initiative& bInitiative = registry.initiatives.get(b);

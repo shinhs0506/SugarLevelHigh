@@ -39,5 +39,4 @@ private:
     bool shouldAdvanceTurnOrder;
     int currOrderIndex;
     int numPlayables;
-    std::vector<Entity> orders;
 };
