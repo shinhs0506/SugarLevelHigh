@@ -37,9 +37,8 @@ private:
 	int curr_level;
     
     // for turn order logic
-    bool should_advance_turn_order;
     int curr_order_index;
-    int num_playables;
+    int num_characters;
 
 	// OpenGL window handle
 	GLFWwindow* window;
