@@ -30,7 +30,7 @@ public:
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 pos);
-	void on_mouse_button(int button, int action, int mod);
+	void on_mouse_button(int button, int action, int mod, double xpos, double ypos);
 
 private:
 	bool ended;
