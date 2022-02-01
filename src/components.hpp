@@ -45,6 +45,16 @@ struct AttackAbility
 	float damage;
 };
 
+// Represent an attack to be rendered
+// Handled by collision with others
+struct AttackObject
+{
+	float ttl_ms;
+	float damage;
+	Entity attacker;
+	std::set<Entity> attacked;
+};
+
 // Attached to all projectiles 
 struct Projectile
 {

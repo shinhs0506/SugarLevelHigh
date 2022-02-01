@@ -56,9 +56,20 @@ Entity createEnemy(vec2 pos, vec2 size)
 			EFFECT_ASSET_ID::COLOURED,
 			GEOMETRY_BUFFER_ID::EGG });
 
-	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
+	registry.colors.emplace(entity, vec3(0.8f, .1f, 0.1f)); // TODO: remove this line when we have a proper sprite 
 
 	return entity;
+}
+
+void removeEnemy(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.enemies.remove(entity);
+	registry.healths.remove(entity);
+	registry.energies.remove(entity);
+	registry.initiatives.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
 
 Entity createPlayer(vec2 pos, vec2 size)
@@ -97,6 +108,17 @@ Entity createPlayer(vec2 pos, vec2 size)
 	return entity;
 }
 
+void removePlayer(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.playables.remove(entity);
+	registry.healths.remove(entity);
+	registry.energies.remove(entity);
+	registry.initiatives.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
+}
+
 Entity createTerrain(vec2 pos, vec2 size)
 {
 	auto entity = Entity();
@@ -126,4 +148,46 @@ Entity createTerrain(vec2 pos, vec2 size)
 	registry.colors.emplace(entity, vec3(1.f, 1.f, 0.f));
 
 	return entity;
+}
+
+void removeTerrain(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.terrains.remove(entity);
+	registry.healths.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
+}
+
+Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damage,
+	float ttl, float angle, vec2 pos, vec2 velocity, vec2 size)
+{
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.angle = angle;
+	motion.velocity = velocity;
+	motion.scale = size;
+
+	AttackObject obj{ ttl, damage, attacker};
+	registry.attackObjects.insert(entity, obj);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
+			EFFECT_ASSET_ID::COLOURED,
+			shape });
+
+	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
+
+	return entity;
+}
+
+void removeAttackObject(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.attackObjects.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }

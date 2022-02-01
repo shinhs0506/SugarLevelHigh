@@ -71,8 +71,10 @@ GLFWwindow* GameSystem::create_window() {
 	glfwSetWindowUserPointer(window, this);
 	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GameSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((GameSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({ _0, _1 }); };
+	auto mouse_btn_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) { ((GameSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_button(_0, _1, _2); };
 	glfwSetKeyCallback(window, key_redirect);
 	glfwSetCursorPosCallback(window, cursor_pos_redirect);
+	glfwSetMouseButtonCallback(window, mouse_btn_redirect);
 
 	//////////////////////////////////////
 	// Loading music and sounds with SDL
@@ -110,7 +112,7 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	game_state = GameState::IN_LEVEL; // currently only working on the level
 
 	level_manager = LevelManager();
-	level_manager.init();
+	level_manager.init(window);
 
 	level_manager.load_level(0);
 }
@@ -160,6 +162,17 @@ void GameSystem::on_mouse_move(vec2 mouse_position) {
 	}
 }
 
+void GameSystem::on_mouse_button(int button, int action, int mod) {
+	switch (game_state) {
+	case GameState::IN_LEVEL:
+		level_manager.on_mouse_button(button, action, mod);
+		break;
+	default:
+		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
+		exit(1);
+	}
+}
+
 void GameSystem::handle_collisions() {
 	switch (game_state) {
 	case GameState::IN_LEVEL:
@@ -169,4 +182,7 @@ void GameSystem::handle_collisions() {
 		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
 		exit(1);
 	}
+
+	// Remove all collisions from this simulation step
+	registry.collisions.clear();
 }

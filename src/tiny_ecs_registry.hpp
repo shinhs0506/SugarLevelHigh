@@ -18,6 +18,7 @@ public:
 	ComponentContainer<Energy> energies;
 	ComponentContainer<Initiative> initiatives;
 	ComponentContainer<AttackAbility> attackAbilities;
+	ComponentContainer<AttackObject> attackObjects;
 	ComponentContainer<Projectile> projectiles;
 	ComponentContainer<Terrain> terrains;
 	ComponentContainer<Motion> motions;
@@ -39,6 +40,7 @@ public:
 		registry_list.push_back(&energies);
 		registry_list.push_back(&initiatives);
 		registry_list.push_back(&attackAbilities);
+		registry_list.push_back(&attackObjects);
 		registry_list.push_back(&projectiles);
 		registry_list.push_back(&terrains);
 		registry_list.push_back(&motions);

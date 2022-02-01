@@ -20,6 +20,10 @@ public:
 		// Note, indices of already deleted entities arent re-used in this simple implementation.
 	}
 	operator unsigned int() { return id; } // this enables automatic casting to int
+	bool operator< (const Entity& right) const 
+	{
+		return id < right.id;
+	}
 };
 
 // Common interface to refer to all containers in the ECS registry
