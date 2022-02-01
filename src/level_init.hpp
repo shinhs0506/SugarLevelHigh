@@ -19,3 +19,9 @@ void removeTerrain(Entity entity);
 Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape,
 	float damage, float ttl, float angle, vec2 pos, vec2 velocity, vec2 size);
 void removeAttackObject(Entity entity);
+
+Entity createButton(vec2 pos, vec2 size, void (*on_click)());
+void removeButton(Entity entity);
+
+Entity createMouseEvent(vec2 pos);
+void removeMouseEvent(Entity entity);
