@@ -43,8 +43,7 @@ void LevelManager::load_level(int level)
         curr_order_index = 0;
         registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
         // for now, since we have one enemy, and one player
-        num_playables = 2;
-        should_advance_turn_order = false;
+        num_characters = registry.initiatives.size();
 	}
 }
 
@@ -60,22 +59,6 @@ void LevelManager::abandon_level()
 
 bool LevelManager::step(float elapsed_ms)
 {
-    // check if the turn has ended, advance if so
-    if (should_advance_turn_order) {
-        // note: clear might be more efficient than 'remove'
-        // since we only have one active character
-        // needs testing
-        registry.activeTurns.clear();
-
-        curr_order_index += 1;  
-        if (curr_order_index >= num_playables) {
-            curr_order_index = 0;
-        }
-
-        registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
-        
-        should_advance_turn_order = false;
-    }
 
 	// remove timed out attack objects
 	for (uint i = 0; i < registry.attackObjects.size(); i ++) {
@@ -92,12 +75,13 @@ bool LevelManager::step(float elapsed_ms)
 		Entity entity = registry.healths.entities[i];
 		if (registry.healths.get(entity).cur_health <= 0) {
 			// check playables
-			if (registry.playables.has(entity))
+            if (registry.playables.has(entity)) {
 				removePlayer(entity);
-			else if (registry.enemies.has(entity))
+            } else if (registry.enemies.has(entity)) {
 				removeEnemy(entity);
-			else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable)
+            } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable)
 				removeTerrain(entity);
+            num_characters = registry.initiatives.size();
 		}
 	}
 
@@ -157,8 +141,21 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 	// tmp use left click to perform attck
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
-		// tmp always attack using the first player
-		//Entity player = registry.playables.entities[0]; 
+		// get character with current turn
+        // there was an error with the initial implementation, we should move forward
+        // in turn order whenever an attack move is made, instead of listening for events
+        // in the 'step' function.
+        // limitation with current implementation: 
+        // even though enemy has higher turn order, player would go first
+        // TODO: fix ordering
+        registry.activeTurns.clear();
+
+        curr_order_index += 1;  
+        if (curr_order_index >= num_characters) {
+            curr_order_index = 0;
+        }
+
+        registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
         Entity player = registry.activeTurns.entities[0];
 
 		// manually calculate a world position with some offsets
@@ -176,7 +173,5 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 		
 		vec2 attack_pos = trans.mat * vec3(0, 0, 1);
 		createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
-
-        should_advance_turn_order = true;
 	}
 }
