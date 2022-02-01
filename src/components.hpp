@@ -39,6 +39,11 @@ struct Initiative
 	int value; // should range [0, 100]
 };
 
+// empty struct, attached to entity with current turn order
+struct ActiveTurn {
+    //    
+};
+
 struct AttackAbility
 {
 	float range;

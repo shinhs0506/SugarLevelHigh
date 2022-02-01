@@ -1,3 +1,6 @@
+#include <tiny_ecs.hpp>
+#include <tiny_ecs_registry.hpp>
+
 // Wraps all level logis and entities
 class LevelManager
 {
@@ -32,6 +35,11 @@ public:
 private:
 	bool ended;
 	int curr_level;
+    
+    // for turn order logic
+    bool should_advance_turn_order;
+    int curr_order_index;
+    int num_playables;
 
 	// OpenGL window handle
 	GLFWwindow* window;
