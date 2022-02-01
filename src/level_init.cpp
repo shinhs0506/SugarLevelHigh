@@ -193,3 +193,25 @@ void removeAttackObject(Entity entity)
 	registry.renderRequests.remove(entity);
 	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
+
+Entity createCamera(vec2 pos, vec2 offset)
+{
+	auto entity = Entity();
+	
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.angle = 0.f;
+	motion.velocity = {0.f, 0.f};
+	motion.scale = {1.f, 1.f};
+
+	Camera camera{ offset };
+	registry.cameras.insert(entity, camera);
+
+	return entity;
+}
+
+void removeCamera(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.cameras.remove(entity);
+}
