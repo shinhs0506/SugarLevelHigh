@@ -47,8 +47,7 @@ void LevelManager::load_level(int level)
         curr_order_index = 0;
         registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
         // for now, since we have one enemy, and one player
-        num_playables = 2;
-        should_advance_turn_order = false;
+        num_characters = registry.initiatives.size();
 	}
 }
 
@@ -64,22 +63,6 @@ void LevelManager::abandon_level()
 
 bool LevelManager::step(float elapsed_ms)
 {
-    // check if the turn has ended, advance if so
-    if (should_advance_turn_order) {
-        // note: clear might be more efficient than 'remove'
-        // since we only have one active character
-        // needs testing
-        registry.activeTurns.clear();
-
-        curr_order_index += 1;  
-        if (curr_order_index >= num_playables) {
-            curr_order_index = 0;
-        }
-
-        registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
-        
-        should_advance_turn_order = false;
-    }
 
 	// remove timed out attack objects
 	for (uint i = 0; i < registry.attackObjects.size(); i ++) {
@@ -96,12 +79,13 @@ bool LevelManager::step(float elapsed_ms)
 		Entity entity = registry.healths.entities[i];
 		if (registry.healths.get(entity).cur_health <= 0) {
 			// check playables
-			if (registry.playables.has(entity))
+            if (registry.playables.has(entity)) {
 				removePlayer(entity);
-			else if (registry.enemies.has(entity))
+            } else if (registry.enemies.has(entity)) {
 				removeEnemy(entity);
-			else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable)
+            } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable)
 				removeTerrain(entity);
+            num_characters = registry.initiatives.size();
 		}
 	}
 
@@ -186,6 +170,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod, double xpos,
 		//Entity player = registry.playables.entities[0]; 
 		Entity player = registry.activeTurns.entities[0];
 
+
 		// manually calculate a world position with some offsets
 		vec2 player_pos = registry.motions.get(player).position;
 		double xpos, ypos;
@@ -201,6 +186,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod, double xpos,
 
 		vec2 attack_pos = trans.mat * vec3(0, 0, 1);
 		createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
+
 
 		should_advance_turn_order = true;
 	}
