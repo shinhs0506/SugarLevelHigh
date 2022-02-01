@@ -212,17 +212,12 @@ void RenderSystem::draw()
 mat3 RenderSystem::createProjectionMatrix()
 {
 	// Fake projection matrix, scales with respect to window coordinates
-	// affected by main camera
-	Entity entity = registry.cameras.entities[0];
-	vec2 offset = registry.cameras.components[0].offset;
-	vec2 pos = registry.motions.get(entity).position;
-
-	float left = pos[0] - offset[0];
-	float top = pos[1] - offset[1];
+	float left = 0.f;
+	float top = 0.f;
 
 	gl_has_errors();
-	float right = pos[0] + offset[0];
-	float bottom = pos[1] + offset[1];
+	float right = (float) window_width_px;
+	float bottom = (float) window_height_px;
 
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom);

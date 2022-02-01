@@ -6,7 +6,6 @@
 #include <sstream>
 
 #include "physics_system.hpp"
-#include "level_init.hpp"
 
 const char* GAME_TITLE = "Sugar Level: High";
 
@@ -108,15 +107,11 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 
 	// set the title of the game
 	glfwSetWindowTitle(window, GAME_TITLE);
-
-	// init a camera that is shared across all scenes
-	// camera offsets are the same as the window size
-	vec2 offset = { window_width_px / 2, window_height_px / 2 };
-	createCamera(offset, offset); // init position at center of the window, which is the same as offset
 	
 	// Directly start a level for now
 	game_state = GameState::IN_LEVEL; // currently only working on the level
 
+	level_manager = LevelManager();
 	level_manager.init(window);
 
 	level_manager.load_level(0);

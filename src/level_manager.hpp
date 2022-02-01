@@ -35,9 +35,6 @@ public:
 private:
 	bool ended;
 	int curr_level;
-
-	Entity main_camera;
-	const float CAM_MOVE_SPEED = 100;
     
     // for turn order logic
     int curr_order_index;

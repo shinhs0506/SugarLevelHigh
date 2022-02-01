@@ -18,7 +18,6 @@ LevelManager::~LevelManager()
 void LevelManager::init(GLFWwindow* window)
 {
 	this->window = window;
-	this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 }
 
 void LevelManager::load_level(int level)
@@ -129,35 +128,6 @@ bool LevelManager::level_ended()
 
 void LevelManager::on_key(int key, int, int action, int mod)
 {
-	// camera control logic
-	Motion& camera_motion = registry.motions.get(main_camera);
-	if (action == GLFW_PRESS)
-	{
-		switch (key)
-		{
-		case GLFW_KEY_LEFT:
-			camera_motion.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
-		case GLFW_KEY_RIGHT:
-			camera_motion.velocity += vec2(CAM_MOVE_SPEED, 0); break;
-		case GLFW_KEY_UP:
-			camera_motion.velocity += vec2(0, -CAM_MOVE_SPEED); break;
-		case GLFW_KEY_DOWN:
-			camera_motion.velocity += vec2(0, CAM_MOVE_SPEED); break; 
-		}
-	} else if (action == GLFW_RELEASE)
-	{
-		switch (key)
-		{
-		case GLFW_KEY_LEFT:
-			camera_motion.velocity += vec2(CAM_MOVE_SPEED, 0); break;
-		case GLFW_KEY_RIGHT:
-			camera_motion.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
-		case GLFW_KEY_UP:
-			camera_motion.velocity += vec2(0, CAM_MOVE_SPEED); break;
-		case GLFW_KEY_DOWN:
-			camera_motion.velocity += vec2(0, -CAM_MOVE_SPEED); break;
-		}
-	}
 
 }
 
@@ -168,16 +138,6 @@ void LevelManager::on_mouse_move(vec2 pos)
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
 {
-	// calculate cursor position and it's world position
-	double cursor_window_x, cursor_window_y;
-	glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
-	vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
-
-	vec2 camera_pos = registry.motions.get(main_camera).position;
-	vec2 camera_offset = registry.cameras.get(main_camera).offset;
-
-	vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
-
 	// tmp use left click to perform attck
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
@@ -200,8 +160,10 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
 		// manually calculate a world position with some offsets
 		vec2 player_pos = registry.motions.get(player).position;
-		
-		vec2 direction = cursor_world_pos - player_pos;
+		double xpos, ypos;
+
+		glfwGetCursorPos(window, &xpos, &ypos);
+		vec2 direction = vec2(xpos, ypos) - player_pos;
 
 		vec2 offset{ 75.f, 0.f }; // a bit before the character
 		Transform trans;

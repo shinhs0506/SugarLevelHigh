@@ -66,13 +66,6 @@ struct Projectile
 
 };
 
-// Camera is basically a 2d rectangle
-struct Camera
-{
-	// distance of center to x/y edges
-	vec2 offset;
-};
-
 struct Terrain
 {
 	bool breakable = false;
