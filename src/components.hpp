@@ -88,12 +88,6 @@ struct Collision
 	Collision(Entity& other) { this->other = other; };
 };
 
-
-// Structure for UI callbacks
-struct Button {
-	void (*on_click)();
-};
-
 // Data structure for toggling debug mode
 struct Debug {
 	bool in_debug_mode = 0;
