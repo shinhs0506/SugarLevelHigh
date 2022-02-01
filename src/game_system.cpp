@@ -163,11 +163,9 @@ void GameSystem::on_mouse_move(vec2 mouse_position) {
 }
 
 void GameSystem::on_mouse_button(int button, int action, int mod) {
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
 	switch (game_state) {
 	case GameState::IN_LEVEL:
-		level_manager.on_mouse_button(button, action, mod, xpos, ypos);
+		level_manager.on_mouse_button(button, action, mod);
 		break;
 	default:
 		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);

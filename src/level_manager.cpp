@@ -4,9 +4,6 @@
 #include "level_manager.hpp"
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
-#include "ui_system.hpp"
-#include "physics_system.hpp"
-
 
 LevelManager::LevelManager()
 {
@@ -30,7 +27,6 @@ void LevelManager::load_level(int level)
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
-        Entity button = createButton(vec2(100, 100), vec2(50, 50), mock_callback);
 
         auto compare = [](Entity& a, Entity& b) {
                 Initiative& aInitiative = registry.initiatives.get(a);
@@ -140,36 +136,27 @@ void LevelManager::on_mouse_move(vec2 pos)
 
 }
 
-void LevelManager::on_mouse_button(int button, int action, int mod, double xpos, double ypos)
+void LevelManager::on_mouse_button(int button, int action, int mod)
 {
-	
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+	// tmp use left click to perform attck
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	{
+		// get character with current turn
+        // there was an error with the initial implementation, we should move forward
+        // in turn order whenever an attack move is made, instead of listening for events
+        // in the 'step' function.
+        // limitation with current implementation: 
+        // even though enemy has higher turn order, player would go first
+        // TODO: fix ordering
+        registry.activeTurns.clear();
 
-		Entity click = createMouseEvent({ xpos, ypos });
-		Motion& clickMotion = registry.motions.get(click);
+        curr_order_index += 1;  
+        if (curr_order_index >= num_characters) {
+            curr_order_index = 0;
+        }
 
-		auto& motion_registry = registry.motions;
-		auto& button_registry = registry.buttons;
-
-		// check to see if click was on a button first
-		for (uint i = 0; i < button_registry.size(); i++) {
-			
-			Entity entity = button_registry.entities[i];
-			Motion motion = registry.motions.get(entity);
-
-			if (collides(clickMotion, motion)) {
-				registry.buttons.get(entity).on_click();
-				removeMouseEvent(click);
-				return;
-			}
-		}
-
-		// tmp default to attacking if click doesn't coincide with button
-	
-		// tmp always attack using the first player
-		//Entity player = registry.playables.entities[0]; 
-		Entity player = registry.activeTurns.entities[0];
-
+        registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
+        Entity player = registry.activeTurns.entities[0];
 
 		// manually calculate a world position with some offsets
 		vec2 player_pos = registry.motions.get(player).position;
@@ -181,14 +168,10 @@ void LevelManager::on_mouse_button(int button, int action, int mod, double xpos,
 		vec2 offset{ 75.f, 0.f }; // a bit before the character
 		Transform trans;
 		trans.translate(player_pos);
-		trans.rotate(-atan2(direction[0], direction[1]) + M_PI / 2);
+		trans.rotate(-atan2(direction[0], direction[1]) + M_PI/2);
 		trans.translate(offset);
-
+		
 		vec2 attack_pos = trans.mat * vec3(0, 0, 1);
 		createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
-
-
-		should_advance_turn_order = true;
 	}
-	
 }
