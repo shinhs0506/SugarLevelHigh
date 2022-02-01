@@ -1,7 +1,7 @@
 #pragma once
 #include "common.hpp"
 #include <vector>
-#include <unordered_map>
+#include <unordered_set>
 #include "../ext/stb_image/stb_image.h"
 
 // Attached all player characters
@@ -43,6 +43,16 @@ struct AttackAbility
 {
 	float range;
 	float damage;
+};
+
+// Represent an attack to be rendered
+// Handled by collision with others
+struct AttackObject
+{
+	float ttl_ms;
+	float damage;
+	Entity attacker;
+	std::unordered_set<Entity, EntityHash> attacked;
 };
 
 // Attached to all projectiles 
