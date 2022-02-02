@@ -27,6 +27,8 @@ public:
 	// Whether this level ended
 	bool level_ended();
 
+	void update_ui(vec2 velocity);
+
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 pos);

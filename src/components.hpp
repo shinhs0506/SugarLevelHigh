@@ -106,6 +106,16 @@ struct Collision
 	Collision(Entity& other) { this->other = other; };
 };
 
+// Components with callback on click
+struct Clickable {
+	void (*on_click)();
+};
+
+// Attached to components that are unaffected by camera
+struct Overlay {
+	
+};
+
 // Data structure for toggling debug mode
 struct Debug {
 	bool in_debug_mode = 0;

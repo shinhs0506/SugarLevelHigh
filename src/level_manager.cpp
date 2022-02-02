@@ -5,7 +5,9 @@
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
+#include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
+#include "attack_system.hpp"
 
 LevelManager::LevelManager()
 {
@@ -36,6 +38,7 @@ void LevelManager::load_level(int level)
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
+		Entity button = createButton(vec2(100, 300), vec2(50, 50), simple_attack);
 
         auto compare = [](Entity& a, Entity& b) {
                 Initiative& aInitiative = registry.initiatives.get(a);
@@ -159,6 +162,23 @@ bool LevelManager::level_ended()
 	return ended;
 }
 
+
+void LevelManager::update_ui(vec2 velocity) {
+	auto& motion_registry = registry.motions;
+
+	// update camera position
+	Motion& camera_motion = motion_registry.get(main_camera);
+	camera_motion.velocity += velocity;
+
+	// fix ui overlays relative to camera
+	auto& overlays_registry = registry.overlays;
+	for (uint i = 0; i < overlays_registry.size(); i++) {
+		Entity& entity = overlays_registry.entities[i];
+		Motion& motion = motion_registry.get(entity);
+		motion.velocity += velocity;
+	}
+}
+
 void LevelManager::on_key(int key, int, int action, int mod)
 {
 	// camera control logic
@@ -168,26 +188,27 @@ void LevelManager::on_key(int key, int, int action, int mod)
 		switch (key)
 		{
 		case GLFW_KEY_LEFT:
-			camera_motion.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
+			update_ui(vec2(-CAM_MOVE_SPEED, 0)); break;
 		case GLFW_KEY_RIGHT:
-			camera_motion.velocity += vec2(CAM_MOVE_SPEED, 0); break;
+			update_ui(vec2(CAM_MOVE_SPEED, 0)); break;
 		case GLFW_KEY_UP:
-			camera_motion.velocity += vec2(0, -CAM_MOVE_SPEED); break;
+			update_ui(vec2(0, -CAM_MOVE_SPEED)); break;
 		case GLFW_KEY_DOWN:
-			camera_motion.velocity += vec2(0, CAM_MOVE_SPEED); break; 
+			update_ui(vec2(0, CAM_MOVE_SPEED)); break;
 		}
+
 	} else if (action == GLFW_RELEASE)
 	{
 		switch (key)
 		{
 		case GLFW_KEY_LEFT:
-			camera_motion.velocity += vec2(CAM_MOVE_SPEED, 0); break;
+			update_ui(vec2(CAM_MOVE_SPEED, 0)); break;
 		case GLFW_KEY_RIGHT:
-			camera_motion.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
+			update_ui(vec2(-CAM_MOVE_SPEED, 0)); break;
 		case GLFW_KEY_UP:
-			camera_motion.velocity += vec2(0, CAM_MOVE_SPEED); break;
+			update_ui(vec2(0, CAM_MOVE_SPEED)); break;
 		case GLFW_KEY_DOWN:
-			camera_motion.velocity += vec2(0, -CAM_MOVE_SPEED); break;
+			update_ui(vec2(0, -CAM_MOVE_SPEED)); break;
 		}
 	}
 
@@ -210,9 +231,27 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
 	vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
 
-	// tmp use left click to perform attck
+	// tmp use left click for buttons or perform attck only
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
+
+		Entity click = createMouseEvent(cursor_world_pos);
+		Motion& clickMotion = registry.motions.get(click);
+
+		// check to see if click was on a button first
+		for (uint i = 0; i < clickable_registry.size(); i++) {
+
+			Entity entity = registry.clickables.entities[i];
+			Motion motion = registry.motions.get(entity);
+			Overlay overlay = registry.overlays.get(entity);
+
+			if (collides(clickMotion, motion)) {
+				registry.clickables.get(entity).on_click();
+				removeMouseEvent(click);
+				return;
+			}
+		}
+
 		// get character with current turn
         // there was an error with the initial implementation, we should move forward
         // in turn order whenever an attack move is made, instead of listening for events
@@ -220,6 +259,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         // limitation with current implementation: 
         // even though enemy has higher turn order, player would go first
         // TODO: fix ordering
+
         registry.activeTurns.clear();
 
         curr_order_index += 1;  
