@@ -206,14 +206,10 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 		Entity click = createMouseEvent(cursor_world_pos);
 		Motion& clickMotion = registry.motions.get(click);
 
-		auto& motion_registry = registry.motions;
-		auto& clickable_registry = registry.clickables;
-		auto& overlay_registry = registry.overlays;
-
 		// check to see if click was on a button first
 		for (uint i = 0; i < clickable_registry.size(); i++) {
 
-			Entity entity = clickable_registry.entities[i];
+			Entity entity = registry.clickables.entities[i];
 			Motion motion = registry.motions.get(entity);
 			Overlay overlay = registry.overlays.get(entity);
 
