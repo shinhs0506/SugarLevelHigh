@@ -82,6 +82,16 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 		assert(false && "Type of render request not supported");
 	}
 
+	// hit by an attack uniform
+	GLint hit_effect_uloc = glGetUniformLocation(program, "hit_effect");
+	glUniform1i(hit_effect_uloc, registry.hitEffects.has(entity));
+	gl_has_errors();
+
+	// pass a time uniform
+	GLint time_uloc = glGetUniformLocation(program, "time");
+	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+	gl_has_errors();
+
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(program, "fcolor");
 	const vec3 color = registry.colors.has(entity) ? registry.colors.get(entity) : vec3(1);

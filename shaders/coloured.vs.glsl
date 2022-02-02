@@ -9,8 +9,16 @@ in vec3 in_position;
 uniform mat3 transform;
 uniform mat3 projection;
 
+// hit effect
+uniform int hit_effect;
+uniform float time;
+
 void main()
 {
-	vec3 pos = projection * transform * vec3(in_position.xy, 1.0);
+	vec3 position = in_position;
+	if (hit_effect == 1) {
+		position.x += 0.2 * sin(time * 50);
+	}
+	vec3 pos = projection * transform * vec3(position.xy, 1.0);
 	gl_Position = vec4(pos.xy, in_position.z, 1.0);
 }

@@ -21,6 +21,7 @@ struct Health
 {
 	float max_health = 100.f;
 	float cur_health = 100.f;
+	bool dead = false; // set this to true to remove the entity to all registries
 };
 
 // Attached to all playables, enemies
@@ -75,6 +76,12 @@ struct Camera
 	// limit are composed of a coord (x, y)
 	vec2 lower_limit;
 	vec2 higer_limit;
+};
+
+// Hit effect object will be created on entity that is hit by an attack
+struct HitEffect
+{
+	float ttl_ms; // hit effect will last this long
 };
 
 struct Terrain
