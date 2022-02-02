@@ -22,3 +22,7 @@ void removeAttackObject(Entity entity);
 
 Entity createCamera(vec2 pos, vec2 offset);
 void removeCamera(Entity entity);
+
+// this does not create a new entity but only attach a hit effect on the existing object
+Entity createHitEffect(Entity entity, float ttl_ms);
+void removeHitEffect(Entity entity);

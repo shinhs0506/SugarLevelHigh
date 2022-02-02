@@ -64,17 +64,35 @@ bool LevelManager::step(float elapsed_ms)
 	// remove timed out attack objects
 	for (uint i = 0; i < registry.attackObjects.size(); i ++) {
 		Entity entity = registry.attackObjects.entities[i];
-		AttackObject& obj = registry.attackObjects.get(entity);
+		AttackObject& obj = registry.attackObjects.components[i];
 		obj.ttl_ms -= elapsed_ms;
 		if (obj.ttl_ms < 0) {
 			removeAttackObject(entity);
 		}
 	}
 
+	// update hit effect ttl
+	for (uint i = 0; i < registry.hiteffects.size(); i++) {
+		Entity entity = registry.hiteffects.entities[i];
+		HitEffect& effect = registry.hiteffects.components[i];
+		effect.ttl_ms -= elapsed_ms;
+		if (effect.ttl_ms < 0) {
+			removeHitEffect(entity);
+
+			// only set dead after hit effect played 
+			if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
+				registry.healths.get(entity).dead = true;
+			}
+		}
+	}
+
 	// remove dead entities (with health component and current health below 0)
 	for (uint i = 0; i < registry.healths.size(); i++) {
 		Entity entity = registry.healths.entities[i];
-		if (registry.healths.get(entity).cur_health <= 0) {
+		Health health = registry.healths.components[i];
+		assert(health.cur_health >= 0.f); // health shouldn't below 0
+
+		if (health.dead) {
 			// check playables
             if (registry.playables.has(entity)) {
 				removePlayer(entity);
@@ -99,6 +117,10 @@ void LevelManager::handle_collisions()
 			// collisions registry might have two collisions on the same object
 			// using get() will always retrieve the first collision component
 			Entity other_entity = registry.collisions.components[i].other;
+			
+			if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
+				continue;
+			}
 
 			AttackObject& attack = registry.attackObjects.get(entity);
 			bool is_player_attack = registry.playables.has(attack.attacker);
@@ -115,8 +137,10 @@ void LevelManager::handle_collisions()
 
 			if (damagable && different_team && !attacked) {
 				Health& health = registry.healths.get(other_entity);
-				health.cur_health -= attack.damage;
+				// health shouldn't be below zero
+				health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
 				attack.attacked.insert(other_entity);
+				createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
 			}
 		}
 	}

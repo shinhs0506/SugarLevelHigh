@@ -56,7 +56,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 			EFFECT_ASSET_ID::COLOURED,
 			GEOMETRY_BUFFER_ID::EGG });
 
-	registry.colors.emplace(entity, vec3(0.8f, .1f, 0.1f)); // TODO: remove this line when we have a proper sprite 
+	registry.colors.emplace(entity, vec3(0.2f, .2f, 1.f)); // TODO: remove this line when we have a proper sprite 
 
 	return entity;
 }
@@ -214,4 +214,16 @@ void removeCamera(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.cameras.remove(entity);
+}
+
+Entity createHitEffect(Entity entity, float ttl_ms)
+{
+	HitEffect effect{ ttl_ms };
+	registry.hiteffects.insert(entity, effect);
+	return entity;
+}
+
+void removeHitEffect(Entity entity)
+{
+	registry.hiteffects.remove(entity);
 }
