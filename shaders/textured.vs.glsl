@@ -12,7 +12,7 @@ uniform mat3 transform;
 uniform mat3 projection;
 
 // hit effect
-uniform int hit_effect;
+uniform bool hit_effect;
 uniform float time;
 
 void main()
@@ -20,7 +20,7 @@ void main()
 	texcoord = in_texcoord;
 	vec3 position = in_position;
 
-	if (hit_effect == 1) {
+	if (hit_effect) {
 		position.x += 0.2 * sin(time * 50);
 	}
 	vec3 pos = projection * transform * vec3(position.xy, 1.0);

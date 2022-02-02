@@ -8,7 +8,7 @@ uniform sampler2D sampler0;
 uniform vec3 fcolor;
 
 // hit effect
-uniform int hit_effect;
+uniform bool hit_effect;
 
 // Output color
 layout(location = 0) out  vec4 color;
@@ -16,7 +16,7 @@ layout(location = 0) out  vec4 color;
 void main()
 {
 	color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
-	if (hit_effect == 1) {
+	if (hit_effect) {
 		// add some red component
 		color = vec4(normalize(color.xyz + vec3(0.3, 0, 0)), color.w);
 	}
