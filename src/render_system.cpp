@@ -76,21 +76,21 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 		glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE,
 			sizeof(ColoredVertex), (void*)0);
 		gl_has_errors();
-
-		// hit by an attack uniform
-		GLint hit_effect_uloc = glGetUniformLocation(program, "hit_effect");
-		glUniform1i(hit_effect_uloc, registry.hiteffects.has(entity));
-		gl_has_errors();
-
-		// pass a time uniform
-		GLint time_uloc = glGetUniformLocation(program, "time");
-		glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
-		gl_has_errors();
 	}
 	else
 	{
 		assert(false && "Type of render request not supported");
 	}
+
+	// hit by an attack uniform
+	GLint hit_effect_uloc = glGetUniformLocation(program, "hit_effect");
+	glUniform1i(hit_effect_uloc, registry.hiteffects.has(entity));
+	gl_has_errors();
+
+	// pass a time uniform
+	GLint time_uloc = glGetUniformLocation(program, "time");
+	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+	gl_has_errors();
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(program, "fcolor");
