@@ -72,6 +72,10 @@ struct Camera
 {
 	// distance of center to x/y edges
 	vec2 offset;
+	// limit of cameras position so it doesn't move further than limits
+	// limit are composed of a coord (x, y)
+	vec2 lower_limit;
+	vec2 higer_limit;
 };
 
 // Hit effect object will be created on entity that is hit by an attack

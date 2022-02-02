@@ -35,7 +35,14 @@ void PhysicsSystem::step(float elapsed_ms)
 	for(uint i = 0; i< motion_registry.size(); i++)
 	{
 		Motion& motion = motion_registry.components[i];
+		Entity entity = motion_registry.entities[i];
+
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+		if (registry.cameras.has(entity)) 
+		{
+			Camera& camera = registry.cameras.get(entity);
+			motion.position = clamp(motion.position, camera.lower_limit, camera.higer_limit);
+		}		
 	}
 
 	// Check for collisions between all moving entities

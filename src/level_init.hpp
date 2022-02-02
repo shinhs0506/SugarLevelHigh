@@ -20,7 +20,7 @@ Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape,
 	float damage, float ttl, float angle, vec2 pos, vec2 velocity, vec2 size);
 void removeAttackObject(Entity entity);
 
-Entity createCamera(vec2 pos, vec2 offset);
+Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit);
 void removeCamera(Entity entity);
 
 // this does not create a new entity but only attach a hit effect on the existing object
