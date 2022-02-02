@@ -112,7 +112,10 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	// init a camera that is shared across all scenes
 	// camera offsets are the same as the window size
 	vec2 offset = { window_width_px / 2, window_height_px / 2 };
-	createCamera(offset, offset); // init position at center of the window, which is the same as offset
+	// init position at center of the window, which is the same as offset
+	// also set x, y limit to the same as offset so the camera is not really movable
+	// need to modify limits in each level to match the map
+	createCamera(offset, offset, offset, offset);
 	
 	// Directly start a level for now
 	game_state = GameState::IN_LEVEL; // currently only working on the level

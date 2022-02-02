@@ -24,6 +24,12 @@ void LevelManager::init(GLFWwindow* window)
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
+	// change camera limits based on level
+	Camera& camera = registry.cameras.get(main_camera);
+	Motion& motion = registry.motions.get(main_camera);
+	camera.lower_limit = motion.position - vec2(100);
+	camera.higer_limit = motion.position + vec2(100);
+
     if (level == 0) {
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(50, 100));

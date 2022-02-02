@@ -188,7 +188,7 @@ void removeAttackObject(Entity entity)
 	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
 
-Entity createCamera(vec2 pos, vec2 offset)
+Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 {
 	auto entity = Entity();
 	
@@ -198,7 +198,7 @@ Entity createCamera(vec2 pos, vec2 offset)
 	motion.velocity = {0.f, 0.f};
 	motion.scale = {1.f, 1.f};
 
-	Camera camera{ offset };
+	Camera camera{ offset, lower_limit, higher_limit };
 	registry.cameras.insert(entity, camera);
 
 	return entity;
