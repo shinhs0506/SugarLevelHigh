@@ -22,3 +22,9 @@ void removeAttackObject(Entity entity);
 
 Entity createCamera(vec2 pos, vec2 offset);
 void removeCamera(Entity entity);
+
+Entity createButton(vec2 pos, vec2 size, void (*on_click)());
+void removeButton(Entity entity);
+
+Entity createMouseEvent(vec2 pos);
+void removeMouseEvent(Entity entity);

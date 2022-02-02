@@ -215,3 +215,55 @@ void removeCamera(Entity entity)
 	registry.motions.remove(entity);
 	registry.cameras.remove(entity);
 }
+
+Entity createButton(vec2 pos, vec2 size, void (*on_click)())
+{
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+
+	Clickable clickable{ on_click };
+	registry.clickables.insert(entity, clickable);
+
+	Overlay overlay{};
+	registry.overlays.insert(entity, overlay);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(0.f, 0.f, 1.f));
+
+	return entity;
+}
+
+void removeButton(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.clickables.remove(entity);
+	registry.overlays.remove(entity);
+}
+
+Entity createMouseEvent(vec2 pos)
+{
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = { 1.f, 1.f };
+
+	return entity;
+}
+
+void removeMouseEvent(Entity entity)
+{
+	registry.motions.remove(entity);
+}
