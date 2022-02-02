@@ -37,8 +37,8 @@ jobs:
               sudo apt-get update
               sudo apt-get install libglfw3-dev libsdl2-dev libsdl2-mixer-dev -y
               # package name on ubuntu is slightly different
-              sed 's/# pkg_search_module(SDL2 REQUIRED sdl)/pkg_search__module(SDL2 REQUIRED sdl2)' ./CMakeLists.txt
-              sed 's/# pkg_search_module(SDL2MIXER REQUIRED SDL_mixer)/pkg_search__module(SDL2MIXER REQUIRED SDL2_mixer)' ./CMakeLists.txt
+              sed 's/# pkg_search_module(SDL2 REQUIRED sdl)/pkg_search__module(SDL2 REQUIRED sdl2)/' ./CMakeLists.txt
+              sed 's/# pkg_search_module(SDL2MIXER REQUIRED SDL_mixer)/pkg_search__module(SDL2MIXER REQUIRED SDL2_mixer)/' ./CMakeLists.txt
 
       # run cmake
       - name: build
