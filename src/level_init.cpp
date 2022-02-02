@@ -244,24 +244,6 @@ void removeButton(Entity entity)
 	registry.overlays.remove(entity);
 }
 
-Entity createMouseEvent(vec2 pos)
-{
-	auto entity = Entity();
-
-	Motion& motion = registry.motions.emplace(entity);
-	motion.position = pos;
-	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
-	motion.scale = { 1.f, 1.f };
-
-	return entity;
-}
-
-void removeMouseEvent(Entity entity)
-{
-	registry.motions.remove(entity);
-}
-
 Entity createHitEffect(Entity entity, float ttl_ms)
 {
 	HitEffect effect{ ttl_ms };

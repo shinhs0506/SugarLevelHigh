@@ -27,9 +27,6 @@ void removeCamera(Entity entity);
 Entity createButton(vec2 pos, vec2 size, void (*on_click)());
 void removeButton(Entity entity);
 
-Entity createMouseEvent(vec2 pos);
-void removeMouseEvent(Entity entity);
-
 // this does not create a new entity but only attach a hit effect on the existing object
 Entity createHitEffect(Entity entity, float ttl_ms);
 void removeHitEffect(Entity entity);
