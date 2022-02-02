@@ -243,7 +243,6 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
 			Entity entity = registry.clickables.entities[i];
 			Motion motion = registry.motions.get(entity);
-			Overlay overlay = registry.overlays.get(entity);
 
 			if (collides(click_motion, motion)) {
 				registry.clickables.get(entity).on_click();
