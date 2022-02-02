@@ -234,20 +234,18 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 	// tmp use left click for buttons or perform attck only
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
-
-		Entity click = createMouseEvent(cursor_world_pos);
-		Motion& clickMotion = registry.motions.get(click);
+		Motion click_motion;
+		click_motion.position = cursor_world_pos;
+		click_motion.scale = { 1.f, 1.f };
 
 		// check to see if click was on a button first
-		for (uint i = 0; i < clickable_registry.size(); i++) {
+		for (uint i = 0; i < registry.clickables.size(); i++) {
 
 			Entity entity = registry.clickables.entities[i];
 			Motion motion = registry.motions.get(entity);
-			Overlay overlay = registry.overlays.get(entity);
 
-			if (collides(clickMotion, motion)) {
+			if (collides(click_motion, motion)) {
 				registry.clickables.get(entity).on_click();
-				removeMouseEvent(click);
 				return;
 			}
 		}
