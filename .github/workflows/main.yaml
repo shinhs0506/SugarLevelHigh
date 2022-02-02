@@ -1,6 +1,6 @@
-# CI
+# CD
 
-name: CI
+name: CD
 
 # run on push and pullrequests on the main branch
 on:
@@ -40,7 +40,7 @@ jobs:
               sed -i 's/pkg_search_module(SDL2 REQUIRED sdl)/pkg_search_module(SDL2 REQUIRED sdl2)/' ./CMakeLists.txt
               sed -i 's/pkg_search_module(SDL2MIXER REQUIRED SDL_mixer)/pkg_search_module(SDL2MIXER REQUIRED SDL2_mixer)/' ./CMakeLists.txt
 
-      # run cmake
+      # run cmake and make
       - name: build
         working-directory: ./
         run: |
