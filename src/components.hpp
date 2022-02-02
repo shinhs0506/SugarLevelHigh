@@ -21,6 +21,7 @@ struct Health
 {
 	float max_health = 100.f;
 	float cur_health = 100.f;
+	bool dead = false; // set this to true to remove the entity to all registries
 };
 
 // Attached to all playables, enemies
@@ -71,6 +72,12 @@ struct Camera
 {
 	// distance of center to x/y edges
 	vec2 offset;
+};
+
+// Hit effect object will be created on entity that is hit by an attack
+struct HitEffect
+{
+	float ttl_ms; // hit effect will last this long
 };
 
 struct Terrain
@@ -172,7 +179,9 @@ struct Mesh
  */
 
 enum class TEXTURE_ASSET_ID {
-	TEXTURE_COUNT = 0
+	PLAYER = 0,
+	ENEMY = PLAYER + 1,
+	TEXTURE_COUNT = ENEMY + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

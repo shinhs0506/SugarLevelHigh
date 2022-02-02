@@ -32,6 +32,7 @@ public:
 	ComponentContainer<Camera> cameras;
 	ComponentContainer<Clickable> clickables;
 	ComponentContainer<Overlay> overlays;
+	ComponentContainer<HitEffect> hitEffects;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -58,6 +59,7 @@ public:
 		registry_list.push_back(&cameras);
 		registry_list.push_back(&clickables);
 		registry_list.push_back(&overlays);
+		registry_list.push_back(&hitEffects);
 	}
 
 	void clear_all_components() {
