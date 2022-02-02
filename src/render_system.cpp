@@ -84,7 +84,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 
 	// hit by an attack uniform
 	GLint hit_effect_uloc = glGetUniformLocation(program, "hit_effect");
-	glUniform1i(hit_effect_uloc, registry.hiteffects.has(entity));
+	glUniform1i(hit_effect_uloc, registry.hitEffects.has(entity));
 	gl_has_errors();
 
 	// pass a time uniform

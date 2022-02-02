@@ -1,6 +1,8 @@
 // internal
 #include "common.hpp"
 
+#include <cfloat>
+
 #include "level_manager.hpp"
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
@@ -72,9 +74,9 @@ bool LevelManager::step(float elapsed_ms)
 	}
 
 	// update hit effect ttl
-	for (uint i = 0; i < registry.hiteffects.size(); i++) {
-		Entity entity = registry.hiteffects.entities[i];
-		HitEffect& effect = registry.hiteffects.components[i];
+	for (uint i = 0; i < registry.hitEffects.size(); i++) {
+		Entity entity = registry.hitEffects.entities[i];
+		HitEffect& effect = registry.hitEffects.components[i];
 		effect.ttl_ms -= elapsed_ms;
 		if (effect.ttl_ms < 0) {
 			removeHitEffect(entity);

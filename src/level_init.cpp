@@ -213,11 +213,11 @@ void removeCamera(Entity entity)
 Entity createHitEffect(Entity entity, float ttl_ms)
 {
 	HitEffect effect{ ttl_ms };
-	registry.hiteffects.insert(entity, effect);
+	registry.hitEffects.insert(entity, effect);
 	return entity;
 }
 
 void removeHitEffect(Entity entity)
 {
-	registry.hiteffects.remove(entity);
+	registry.hitEffects.remove(entity);
 }
