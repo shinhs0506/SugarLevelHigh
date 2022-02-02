@@ -56,8 +56,6 @@ Entity createEnemy(vec2 pos, vec2 size)
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
 
-	// registry.colors.emplace(entity, vec3(0.8f, .1f, 0.1f)); // TODO: remove this line when we have a proper sprite 
-
 	return entity;
 }
 
@@ -70,7 +68,6 @@ void removeEnemy(Entity entity)
 	registry.initiatives.remove(entity);
 	registry.activeTurns.remove(entity);
 	registry.renderRequests.remove(entity);
-	// registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
 
 Entity createPlayer(vec2 pos, vec2 size)
@@ -104,8 +101,6 @@ Entity createPlayer(vec2 pos, vec2 size)
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
 
-	// registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
-
 	return entity;
 }
 
@@ -118,7 +113,6 @@ void removePlayer(Entity entity)
 	registry.initiatives.remove(entity);
 	registry.activeTurns.remove(entity);
 	registry.renderRequests.remove(entity);
-	// registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
 
 Entity createTerrain(vec2 pos, vec2 size)
