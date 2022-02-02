@@ -162,7 +162,9 @@ struct Mesh
  */
 
 enum class TEXTURE_ASSET_ID {
-	TEXTURE_COUNT = 0
+	PLAYER = 0,
+	ENEMY = PLAYER + 1,
+	TEXTURE_COUNT = ENEMY + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
