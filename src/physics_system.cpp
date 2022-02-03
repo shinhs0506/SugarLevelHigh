@@ -2,8 +2,6 @@
 #include "physics_system.hpp"
 #include "level_init.hpp"
 
-#include <iostream>
-
 // Returns the local bounding coordinates scaled by the current size of the entity
 vec2 get_bounding_box(const Motion& motion)
 {
@@ -51,7 +49,6 @@ void PhysicsSystem::step(float elapsed_ms)
 			Camera& camera = registry.cameras.get(entity);
 			motion.position = clamp(motion.position, camera.lower_limit, camera.higer_limit);
 		}
-
 	}
 
 	// Check for collisions between all moving entities
