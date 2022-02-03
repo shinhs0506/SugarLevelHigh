@@ -66,6 +66,7 @@ void removeEnemy(Entity entity)
 	registry.healths.remove(entity);
 	registry.energies.remove(entity);
 	registry.initiatives.remove(entity);
+	registry.activeTurns.remove(entity);
 	registry.renderRequests.remove(entity);
 }
 
@@ -110,6 +111,7 @@ void removePlayer(Entity entity)
 	registry.healths.remove(entity);
 	registry.energies.remove(entity);
 	registry.initiatives.remove(entity);
+	registry.activeTurns.remove(entity);
 	registry.renderRequests.remove(entity);
 }
 
