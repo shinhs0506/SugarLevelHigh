@@ -1,5 +1,6 @@
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
+#include <state_machine.hpp>
 
 // Wraps all level logis and entities
 class LevelManager
@@ -21,7 +22,7 @@ private:
     enum class State {
         PREPARE, // advance turn order  
         PLAYER_MOVE, // player move state
-        PLAYER_ATTCK, // player attack state
+        PLAYER_ATTACK, // player attack state
         ENEMY_MOVE, // enemy move state
         ENEMY_ATTACK, // enemy attack state
         EVALUATION, // attack processing state
@@ -44,6 +45,9 @@ public:
 
 	// Abandon the level and directly go to results screen
 	void abandon_level();
+
+	// end the turn. should only called by active turn character
+	void end_turn(Entity ender);
 
 	// Should be called from GameSystem to step level content
 	bool step(float elapsed_ms);

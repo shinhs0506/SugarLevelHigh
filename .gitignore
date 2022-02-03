@@ -434,3 +434,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# CPSC 427-specific
+!/ext/*.dll
+!/ext/*.lib
+/ext/project_path.hpp

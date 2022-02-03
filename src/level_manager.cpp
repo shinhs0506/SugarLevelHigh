@@ -3,12 +3,13 @@
 
 #include <GLFW/glfw3.h>
 #include <cfloat>
+#include <functional>
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
 #include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
-#include "attack_system.hpp"
+#include "ability.hpp"
 
 #include <iostream>
 
@@ -41,7 +42,7 @@ void LevelManager::load_level(int level)
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
-		Entity button = createButton(vec2(100, 300), vec2(50, 50), simple_attack);
+		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
         auto compare = [](Entity& a, Entity& b) {
                 Initiative& aInitiative = registry.initiatives.get(a);
@@ -85,7 +86,6 @@ bool LevelManager::step(float elapsed_ms)
                 Entity& current_character = registry.activeTurns.entities[0];
                 auto it = find(registry.initiatives.entities.begin(), registry.initiatives.entities.end(), current_character);
                 int pos = it - registry.initiatives.entities.begin(); 
-                std::cout << pos << std::endl;
                 
                 Entity& next_character = registry.initiatives.entities[(pos + 1) % num_characters];
                 while (registry.healths.get(next_character).dead) {
@@ -121,16 +121,42 @@ bool LevelManager::step(float elapsed_ms)
                     move_to_state(State::ENEMY_MOVE);
                 }
             }
+
             break;
         case State::PLAYER_MOVE:
             break;
-        case State::PLAYER_ATTCK:
+        case State::PLAYER_ATTACK:
             break;
         case State::ENEMY_MOVE:
             break;
         case State::ENEMY_ATTACK: 
             break;
         case State::EVALUATION:
+            // remove timed out attack objects
+            for (uint i = 0; i < registry.attackObjects.size(); i ++) {
+                Entity entity = registry.attackObjects.entities[i];
+                AttackObject& obj = registry.attackObjects.components[i];
+                obj.ttl_ms -= elapsed_ms;
+                if (obj.ttl_ms < 0) {
+                    removeAttackObject(entity);
+                }
+            }
+
+            // update hit effect ttl
+            for (uint i = 0; i < registry.hitEffects.size(); i++) {
+                Entity entity = registry.hitEffects.entities[i];
+                HitEffect& effect = registry.hitEffects.components[i];
+                effect.ttl_ms -= elapsed_ms;
+                if (effect.ttl_ms < 0) {
+                    removeHitEffect(entity);
+
+                    // only set dead after hit effect played 
+                    if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
+                        registry.healths.get(entity).dead = true;
+                    }
+                }
+            }
+
             // check if all attacks finished
             if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
                 std::cout << "all attacks and effects cleared, moving to prepare state" << std::endl;
@@ -138,31 +164,6 @@ bool LevelManager::step(float elapsed_ms)
             }
 
             break;
-    }
-
-    // remove timed out attack objects
-    for (uint i = 0; i < registry.attackObjects.size(); i ++) {
-        Entity entity = registry.attackObjects.entities[i];
-        AttackObject& obj = registry.attackObjects.components[i];
-        obj.ttl_ms -= elapsed_ms;
-        if (obj.ttl_ms < 0) {
-            removeAttackObject(entity);
-        }
-    }
-
-    // update hit effect ttl
-    for (uint i = 0; i < registry.hitEffects.size(); i++) {
-        Entity entity = registry.hitEffects.entities[i];
-        HitEffect& effect = registry.hitEffects.components[i];
-        effect.ttl_ms -= elapsed_ms;
-        if (effect.ttl_ms < 0) {
-            removeHitEffect(entity);
-
-            // only set dead after hit effect played 
-            if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
-                registry.healths.get(entity).dead = true;
-            }
-        }
     }
 
 	return true;
@@ -177,7 +178,7 @@ void LevelManager::handle_collisions()
         case State::PLAYER_MOVE:
             // handle player movement collision
             break;
-        case State::PLAYER_ATTCK:
+        case State::PLAYER_ATTACK:
             // do nothing
             break;
         case State::ENEMY_MOVE:
@@ -233,7 +234,6 @@ bool LevelManager::level_ended()
 	return ended;
 }
 
-
 void LevelManager::update_ui(vec2 velocity) {
 	auto& motion_registry = registry.motions;
 
@@ -287,14 +287,20 @@ void LevelManager::on_key(int key, int, int action, int mod)
                     }
                 }
 
-                if (key == GLFW_KEY_N && action == GLFW_PRESS) {
+                if (key == GLFW_KEY_R && action == GLFW_PRESS) {
                     std::cout << "player moved, going to player attack state" << std::endl;
-                    move_to_state(State::PLAYER_ATTCK);
+                    move_to_state(State::PLAYER_ATTACK);
                 }
             }
+
             break;
-        case State::PLAYER_ATTCK:
-            // do nothing
+        case State::PLAYER_ATTACK:
+            // go back to player movement state if 'a' or 'd' is pressed
+            if (action == GLFW_PRESS && key == GLFW_KEY_B) {
+                std::cout << "moving again, going to player move state" << std::endl;
+                move_to_state(State::PLAYER_MOVE);
+            }
+
             break;
         case State::ENEMY_MOVE:
             // do nothing, some placeholder functions for now
@@ -302,6 +308,7 @@ void LevelManager::on_key(int key, int, int action, int mod)
                 std::cout << "enemy moved, going to enemy attack state" << std::endl;
                 move_to_state(State::ENEMY_ATTACK);
             }
+
             break;
         case State::ENEMY_ATTACK:
             // do nothing, some placeholder functions for now
@@ -356,24 +363,43 @@ void LevelManager::on_mouse_move(vec2 pos)
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
 {
+    double cursor_window_x, cursor_window_y;
+    glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+    vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+    vec2 camera_pos = registry.motions.get(main_camera).position;
+    vec2 camera_offset = registry.cameras.get(main_camera).offset;
+
+    vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+
     switch (state) {
         case State::PREPARE:
             // do nothing
             break;
-        case State::PLAYER_MOVE:
-            // click on attack action to go to PLAYER_ATTACK state
+        case State::PLAYER_MOVE: 
+            {
+                // click on attack action to go to PLAYER_ATTACK state
+                if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+                    Motion click_motion;
+                    click_motion.position = cursor_world_pos;
+                    click_motion.scale = { 1.f, 1.f };
+
+                    // check to see if click was on a button first
+                    for (uint i = 0; i < registry.clickables.size(); i++) {
+
+                        Entity entity = registry.clickables.entities[i];
+                        Motion motion = registry.motions.get(entity);
+
+                        if (collides(click_motion, motion)) {
+                            registry.clickables.get(entity).on_click();
+                            break;
+                        }
+                    }
+                }
+            }
+
             break;
-        case State::PLAYER_ATTCK: {
-            // calculate cursor position and it's world position
-            double cursor_window_x, cursor_window_y;
-            glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
-            vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
-
-            vec2 camera_pos = registry.motions.get(main_camera).position;
-            vec2 camera_offset = registry.cameras.get(main_camera).offset;
-
-            vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
-
+        case State::PLAYER_ATTACK: {
             // tmp use left click for buttons or perform attck only
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
                 Motion click_motion;
