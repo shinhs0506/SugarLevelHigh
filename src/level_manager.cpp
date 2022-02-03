@@ -33,10 +33,9 @@ void LevelManager::load_level(int level)
 	Motion& motion = registry.motions.get(main_camera);
 	camera.lower_limit = motion.position - vec2(100);
 	camera.higer_limit = motion.position + vec2(100);
-	
-	Entity background = createBackground(vec2(1480, 920), level);
 
     if (level == 0) {
+		Entity background = createBackground(vec2(1480, 920), level);
         Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
