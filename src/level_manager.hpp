@@ -20,6 +20,9 @@ public:
 	// Abandon the level and directly go to results screen
 	void abandon_level();
 
+	// end the turn. should only called by active turn character
+	void end_turn(Entity ender);
+
 	// Should be called from GameSystem to step level content
 	bool step(float elapsed_ms);
 	void handle_collisions();
