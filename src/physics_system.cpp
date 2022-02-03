@@ -2,6 +2,8 @@
 #include "physics_system.hpp"
 #include "level_init.hpp"
 
+#include <iostream>
+
 // Returns the local bounding coordinates scaled by the current size of the entity
 vec2 get_bounding_box(const Motion& motion)
 {
@@ -37,8 +39,10 @@ void PhysicsSystem::step(float elapsed_ms)
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
 
+		// Gravity
 		if (motion.gravity_affected == true) {
-			motion.velocity.y = 50; // 50 because 9.8 was really slow
+			//When collosion with terrain is detected. Reset this velocity to 0
+			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
 		}
 
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
@@ -46,7 +50,8 @@ void PhysicsSystem::step(float elapsed_ms)
 		{
 			Camera& camera = registry.cameras.get(entity);
 			motion.position = clamp(motion.position, camera.lower_limit, camera.higer_limit);
-		}		
+		}
+
 	}
 
 	// Check for collisions between all moving entities

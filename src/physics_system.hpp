@@ -16,4 +16,7 @@ public:
 	PhysicsSystem()
 	{
 	}
+
+private:
+	float gravity = 0.0f; //set to 100.0f when terrain collision is implemented
 };
