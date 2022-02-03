@@ -253,3 +253,39 @@ void removeHitEffect(Entity entity)
 {
 	registry.hitEffects.remove(entity);
 }
+
+Entity createBackground(vec2 size, int level)
+{
+	auto entity = Entity();
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { window_width_px / 2, window_height_px / 2 };
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+
+	Background background{ };
+	registry.backgrounds.insert(entity, background);
+
+	// Level number would determine which texture would be used
+	switch (level)
+	{
+	case 0:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	default:
+		break;
+	}
+
+	return entity;
+}
+
+void removeBackground(Entity entity)
+{
+	registry.backgrounds.remove(entity);
+}
