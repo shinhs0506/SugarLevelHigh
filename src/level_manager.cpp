@@ -7,7 +7,7 @@
 #include "level_init.hpp"
 #include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
-#include "attack_system.hpp"
+#include "ability.hpp"
 
 LevelManager::LevelManager()
 {
@@ -38,7 +38,7 @@ void LevelManager::load_level(int level)
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
-		Entity button = createButton(vec2(100, 300), vec2(50, 50), simple_attack);
+		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
         auto compare = [](Entity& a, Entity& b) {
                 Initiative& aInitiative = registry.initiatives.get(a);
@@ -162,6 +162,26 @@ bool LevelManager::level_ended()
 	return ended;
 }
 
+// get character with current turn
+// there was an error with the initial implementation, we should move forward
+// in turn order whenever an attack move is made, instead of listening for events
+// in the 'step' function.
+// limitation with current implementation: 
+// even though enemy has higher turn order, player would go first
+// TODO: fix ordering
+void LevelManager::end_turn(Entity ender)
+{
+	assert(ender == registry.activeTurns.entities[0] && "The current turn can only be ended by active turn character!");
+	registry.activeTurns.clear();
+
+	curr_order_index += 1;
+	if (curr_order_index >= num_characters) {
+		curr_order_index = 0;
+	}
+
+	registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
+}
+
 
 void LevelManager::update_ui(vec2 velocity) {
 	auto& motion_registry = registry.motions;
@@ -245,41 +265,27 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 			Motion motion = registry.motions.get(entity);
 
 			if (collides(click_motion, motion)) {
-				registry.clickables.get(entity).on_click();
+				// TODO: this on_click function should be a function to change level state
+				 registry.clickables.get(entity).on_click();
+				
+				Entity player = registry.activeTurns.entities[0];
+
+				// manually calculate a world position with some offsets
+				// vec2 player_pos = registry.motions.get(player).position;
+				// vec2 direction = cursor_world_pos - player_pos;
+				// use right direction for now
+				vec2 direction = vec2{ 1, 0 };
+
+				// TODO: those stats should be in ability associated with characters
+				vec2 offset{ 75.f, 0.f }; // a bit before the character
+				vec2 size{ 100.f, 100.f };
+				float dmg = 50.f;
+				melee_attack(player, dmg, offset, direction, size);
+
+				end_turn(player);
+
 				return;
 			}
 		}
-
-		// get character with current turn
-        // there was an error with the initial implementation, we should move forward
-        // in turn order whenever an attack move is made, instead of listening for events
-        // in the 'step' function.
-        // limitation with current implementation: 
-        // even though enemy has higher turn order, player would go first
-        // TODO: fix ordering
-
-        registry.activeTurns.clear();
-
-        curr_order_index += 1;  
-        if (curr_order_index >= num_characters) {
-            curr_order_index = 0;
-        }
-
-        registry.activeTurns.emplace(registry.initiatives.entities[curr_order_index]);
-        Entity player = registry.activeTurns.entities[0];
-
-		// manually calculate a world position with some offsets
-		vec2 player_pos = registry.motions.get(player).position;
-		
-		vec2 direction = cursor_world_pos - player_pos;
-
-		vec2 offset{ 75.f, 0.f }; // a bit before the character
-		Transform trans;
-		trans.translate(player_pos);
-		trans.rotate(-atan2(direction[0], direction[1]) + M_PI/2);
-		trans.translate(offset);
-		
-		vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-		createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
 	}
 }
