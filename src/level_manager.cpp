@@ -1,6 +1,7 @@
 // internal
 #include "common.hpp"
 
+#include <GLFW/glfw3.h>
 #include <cfloat>
 
 #include "level_manager.hpp"
@@ -255,11 +256,42 @@ void LevelManager::on_key(int key, int, int action, int mod)
         case State::PREPARE:
             // do nothing
             break;
-        case State::PLAYER_MOVE:
-            // move player
-            // then move to player attack state
-            std::cout << "player moved, going to player attack state" << std::endl;
-            move_to_state(State::PLAYER_ATTCK);
+        case State::PLAYER_MOVE: 
+            {
+                // move player
+                // then move to player attack state
+                
+                // player horizontal movement logic
+                Entity player = registry.activeTurns.entities[0];
+                Motion& player_horizontal_movement = registry.motions.get(player);
+
+                if (action == GLFW_PRESS)
+                {
+                    switch (key)
+                    {
+                    case GLFW_KEY_A:
+                        player_horizontal_movement.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
+                    case GLFW_KEY_D:
+                        player_horizontal_movement.velocity += vec2(CAM_MOVE_SPEED, 0); break;
+                    }
+                }
+                else if (action == GLFW_RELEASE)
+                {
+                    switch (key)
+                    {
+                    case GLFW_KEY_A:
+                        player_horizontal_movement.velocity += vec2(CAM_MOVE_SPEED, 0); break;
+                    case GLFW_KEY_D:
+                        player_horizontal_movement.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
+
+                    }
+                }
+
+                if (key == GLFW_KEY_N && action == GLFW_PRESS) {
+                    std::cout << "player moved, going to player attack state" << std::endl;
+                    move_to_state(State::PLAYER_ATTCK);
+                }
+            }
             break;
         case State::PLAYER_ATTCK:
             // do nothing
@@ -315,35 +347,6 @@ void LevelManager::on_key(int key, int, int action, int mod)
 		}
 	}
 
-	// player horizontal movement logic
-	Entity player = registry.activeTurns.entities[0];
-	Motion& player_horizontal_movement = registry.motions.get(player);
-	if (registry.playables.has(player)) {
-		if (action == GLFW_PRESS)
-		{
-			vec2 player_pos = registry.motions.get(player).velocity;
-			switch (key)
-			{
-			case GLFW_KEY_A:
-				player_horizontal_movement.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
-				//printf("<%.2f, %.2f>\n", player_pos.x, player_pos.y);
-			case GLFW_KEY_D:
-				player_horizontal_movement.velocity += vec2(CAM_MOVE_SPEED, 0); break;
-				//printf("<%.2f, %.2f>\n", player_pos.x, player_pos.y);
-			}
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			switch (key)
-			{
-			case GLFW_KEY_A:
-				player_horizontal_movement.velocity += vec2(CAM_MOVE_SPEED, 0); break;
-			case GLFW_KEY_D:
-				player_horizontal_movement.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
-
-			}
-		}
-	}
 }
 
 void LevelManager::on_mouse_move(vec2 pos)
