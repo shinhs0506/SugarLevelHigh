@@ -1,6 +1,5 @@
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
-#include <state_machine.hpp>
 
 // Wraps all level logis and entities
 class LevelManager
@@ -13,7 +12,7 @@ private:
 	const float CAM_MOVE_SPEED = 100;
     
     // for turn order logic
-    int curr_order_index;
+    bool should_initialize_active_turn;
     int num_characters;
 
 	// OpenGL window handle

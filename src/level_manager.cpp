@@ -3,7 +3,6 @@
 
 #include <GLFW/glfw3.h>
 #include <cfloat>
-#include <functional>
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
@@ -56,13 +55,11 @@ void LevelManager::load_level(int level)
         // or 
         // registry.activeTurns.entities[0] from outside level_manager
         // or might add a global Entity variable later
-        curr_order_index = 0;
-        Entity& current_character = registry.initiatives.entities[curr_order_index];
-        registry.activeTurns.emplace(current_character);
+        // should_initialize_active_turn = true means game has just started
+        should_initialize_active_turn = true;
 
         // start with a move state
         state = State::PREPARE;
-        num_characters = registry.initiatives.size();
 	}
 }
 
@@ -81,20 +78,25 @@ bool LevelManager::step(float elapsed_ms)
     switch (state) {
         case State::PREPARE: 
             {
-                // advance turn order
-                int num_characters = registry.initiatives.size();
-                Entity& current_character = registry.activeTurns.entities[0];
-                auto it = find(registry.initiatives.entities.begin(), registry.initiatives.entities.end(), current_character);
-                int pos = it - registry.initiatives.entities.begin(); 
-                
-                Entity& next_character = registry.initiatives.entities[(pos + 1) % num_characters];
-                while (registry.healths.get(next_character).dead) {
-                    pos = (pos + 1) % num_characters;
-                    next_character = registry.initiatives.entities[pos];
-                }
+                if (should_initialize_active_turn) {
+                    registry.activeTurns.emplace(registry.initiatives.entities[0]);
+                    should_initialize_active_turn = false;
+                } else {
+                    // advance turn order
+                    int num_characters = registry.initiatives.size();
+                    Entity& current_character = registry.activeTurns.entities[0];
+                    auto it = find(registry.initiatives.entities.begin(), registry.initiatives.entities.end(), current_character);
+                    int pos = it - registry.initiatives.entities.begin(); 
+                    
+                    Entity& next_character = registry.initiatives.entities[(pos + 1) % num_characters];
+                    while (registry.healths.get(next_character).dead) {
+                        pos = (pos + 1) % num_characters;
+                        next_character = registry.initiatives.entities[pos];
+                    }
 
-                registry.activeTurns.remove(current_character);
-                registry.activeTurns.emplace(next_character);
+                    registry.activeTurns.remove(current_character);
+                    registry.activeTurns.emplace(next_character);
+                }
 
                 // remove dead entities (with health component and current health below 0)
                 for (uint i = 0; i < registry.healths.size(); i++) {
@@ -121,16 +123,20 @@ bool LevelManager::step(float elapsed_ms)
                     move_to_state(State::ENEMY_MOVE);
                 }
             }
-
             break;
+
         case State::PLAYER_MOVE:
             break;
+
         case State::PLAYER_ATTACK:
             break;
+
         case State::ENEMY_MOVE:
             break;
+
         case State::ENEMY_ATTACK: 
             break;
+
         case State::EVALUATION:
             // remove timed out attack objects
             for (uint i = 0; i < registry.attackObjects.size(); i ++) {
@@ -162,7 +168,6 @@ bool LevelManager::step(float elapsed_ms)
                 std::cout << "all attacks and effects cleared, moving to prepare state" << std::endl;
                 move_to_state(State::PREPARE);
             }
-
             break;
     }
 
@@ -175,18 +180,23 @@ void LevelManager::handle_collisions()
         case State::PREPARE:
             // do nothing
             break;
+
         case State::PLAYER_MOVE:
             // handle player movement collision
             break;
+
         case State::PLAYER_ATTACK:
             // do nothing
             break;
+
         case State::ENEMY_MOVE:
             // handle enemy movement collision
             break;
+
         case State::ENEMY_ATTACK:
             // do nothing
             break;
+
         case State::EVALUATION:
             // handle attack objects collisions
             for (uint i = 0; i < registry.collisions.size(); i++) {
@@ -223,7 +233,6 @@ void LevelManager::handle_collisions()
                     }
                 }
             }
-
             break;
     }
 
@@ -256,6 +265,7 @@ void LevelManager::on_key(int key, int, int action, int mod)
         case State::PREPARE:
             // do nothing
             break;
+
         case State::PLAYER_MOVE: 
             {
                 // move player
@@ -292,24 +302,24 @@ void LevelManager::on_key(int key, int, int action, int mod)
                     move_to_state(State::PLAYER_ATTACK);
                 }
             }
-
             break;
+            
         case State::PLAYER_ATTACK:
             // go back to player movement state if 'a' or 'd' is pressed
             if (action == GLFW_PRESS && key == GLFW_KEY_B) {
                 std::cout << "moving again, going to player move state" << std::endl;
                 move_to_state(State::PLAYER_MOVE);
             }
-
             break;
+            
         case State::ENEMY_MOVE:
             // do nothing, some placeholder functions for now
             if (key == GLFW_KEY_Z) {
                 std::cout << "enemy moved, going to enemy attack state" << std::endl;
                 move_to_state(State::ENEMY_ATTACK);
             }
-
             break;
+
         case State::ENEMY_ATTACK:
             // do nothing, some placeholder functions for now
             if (key == GLFW_KEY_X) {
@@ -317,6 +327,7 @@ void LevelManager::on_key(int key, int, int action, int mod)
                 move_to_state(State::EVALUATION);
             }
             break;
+
         case State::EVALUATION:
             // do nothing
             break;
@@ -376,6 +387,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         case State::PREPARE:
             // do nothing
             break;
+
         case State::PLAYER_MOVE: 
             {
                 // click on attack action to go to PLAYER_ATTACK state
@@ -397,8 +409,8 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
                     }
                 }
             }
-
             break;
+
         case State::PLAYER_ATTACK: {
             // tmp use left click for buttons or perform attck only
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
@@ -437,15 +449,17 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
                 std::cout << "player attacked, moving to evaluation state" << std::endl;
                 move_to_state(State::EVALUATION);
             }
-
             break;
+            
         }
         case State::ENEMY_MOVE:
             // do nothing
             break;
+
         case State::ENEMY_ATTACK:
             // do nothing
             break;
+
         case State::EVALUATION:
             // do nothing
             break;
