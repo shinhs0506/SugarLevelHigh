@@ -37,6 +37,10 @@ void PhysicsSystem::step(float elapsed_ms)
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
 
+		if (motion.gravity_affected == true) {
+			motion.velocity.y = 50; // 50 because 9.8 was really slow
+		}
+
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
 		if (registry.cameras.has(entity)) 
 		{
