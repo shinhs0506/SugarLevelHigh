@@ -4,6 +4,31 @@
 // Wraps all level logis and entities
 class LevelManager
 {
+private:
+	bool ended;
+	int curr_level;
+
+	Entity main_camera;
+	const float CAM_MOVE_SPEED = 100;
+    
+    // for turn order logic
+    int curr_order_index;
+    int num_characters;
+
+	// OpenGL window handle
+	GLFWwindow* window;
+
+    enum class State {
+        PREPARE, // advance turn order  
+        PLAYER_MOVE, // player move state
+        PLAYER_ATTCK, // player attack state
+        ENEMY_MOVE, // enemy move state
+        ENEMY_ATTACK, // enemy attack state
+        EVALUATION, // attack processing state
+    };
+
+    State state;
+
 public:
 	LevelManager();
 
@@ -34,17 +59,6 @@ public:
 	void on_mouse_move(vec2 pos);
 	void on_mouse_button(int button, int action, int mod);
 
-private:
-	bool ended;
-	int curr_level;
-
-	Entity main_camera;
-	const float CAM_MOVE_SPEED = 100;
-    
-    // for turn order logic
-    int curr_order_index;
-    int num_characters;
-
-	// OpenGL window handle
-	GLFWwindow* window;
+    // state machine functions
+    void move_to_state(State state);
 };
