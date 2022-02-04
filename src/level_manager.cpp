@@ -49,6 +49,7 @@ void LevelManager::load_level(int level)
         Entity player = createPlayer(vec2(700, 500), vec2(50, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
         Entity terrain2 = createTerrain(vec2(970, 500), vec2(50, 200));
+        Entity terrain3 = createTerrain(vec2(200, 500), vec2(50, 200));
 		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
         order_vector.push_back(enemy);
