@@ -46,12 +46,24 @@ void LevelManager::load_level(int level)
 
     if (level == 0) {
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
-        Entity player = createPlayer(vec2(700, 500), vec2(50, 100));
-        Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
-        Entity terrain2 = createTerrain(vec2(970, 500), vec2(50, 200));
-        Entity terrain3 = createTerrain(vec2(200, 500), vec2(50, 200));
-		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
+        Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
+		    Entity button = createButton(vec2(100, 400), vec2(50, 50), mock_callback);
 
+        float terrain_x_offset = 0.f;
+        while (terrain_x_offset < 1200.f) {
+            Entity curr = createTerrain(vec2(100.001 + terrain_x_offset, 600.001), vec2(100, 100));
+            terrain_vector.push_back(curr);
+            terrain_x_offset += 100.001;
+        }
+        float terrain_y_offset = 100.001;
+        while (terrain_y_offset < 200.f) {
+            Entity curr1 = createTerrain(vec2(100.001, 600.001 - terrain_y_offset), vec2(100, 100));
+            Entity curr2 = createTerrain(vec2(1200.001, 600.001 - terrain_y_offset), vec2(100, 100));
+            terrain_vector.push_back(curr1);
+            terrain_vector.push_back(curr2);
+            terrain_y_offset += 100.001;
+        }
+      
         order_vector.push_back(enemy);
         order_vector.push_back(player);
 

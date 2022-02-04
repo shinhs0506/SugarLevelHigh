@@ -11,6 +11,8 @@ private:
 
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 100;
+
+	std::vector<Entity> terrain_vector;
     
     // for turn order logic
     std::vector<Entity> order_vector;
