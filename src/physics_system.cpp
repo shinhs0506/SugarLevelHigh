@@ -32,7 +32,7 @@ void PhysicsSystem::step(float elapsed_ms)
 {
 	// Move entities with motion component with respect to their velocity
 	auto& motion_registry = registry.motions;
-	for(uint i = 0; i< motion_registry.size(); i++)
+	for (uint i = 0; i < motion_registry.size(); i++)
 	{
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
@@ -44,11 +44,25 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
-		if (registry.cameras.has(entity)) 
+		if (registry.cameras.has(entity))
 		{
 			Camera& camera = registry.cameras.get(entity);
 			motion.position = clamp(motion.position, camera.lower_limit, camera.higer_limit);
 		}
+	}
+
+	// Update overlays relative to main camera
+	auto& overlays_registry = registry.overlays;
+	Entity camera = registry.cameras.entities[0];
+	Motion& camera_motion = motion_registry.get(camera);
+	Camera& camera_component = registry.cameras.get(camera);
+
+	for (uint i = 0; i < overlays_registry.size(); i++) {
+		Overlay& overlay = overlays_registry.components[i];
+		Entity entity = overlays_registry.entities[i];
+		Motion& motion = motion_registry.get(entity);
+		motion.position = camera_motion.position - camera_component.offset + overlay.position;
+
 	}
 
 	// Check for collisions between all moving entities

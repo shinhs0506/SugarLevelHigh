@@ -223,7 +223,7 @@ Entity createButton(vec2 pos, vec2 size, void (*on_click)())
 	Clickable clickable{ on_click };
 	registry.clickables.insert(entity, clickable);
 
-	Overlay overlay{};
+	Overlay overlay{pos};
 	registry.overlays.insert(entity, overlay);
 
 	registry.renderRequests.insert(
