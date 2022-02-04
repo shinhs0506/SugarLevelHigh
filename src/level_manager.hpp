@@ -18,7 +18,7 @@ private:
 	// OpenGL window handle
 	GLFWwindow* window;
 
-    enum class State {
+    enum class LevelState {
         PREPARE, // advance turn order  
         PLAYER_MOVE, // player move state
         PLAYER_ATTACK, // player attack state
@@ -27,7 +27,7 @@ private:
         EVALUATION, // attack processing state
     };
 
-    State state;
+    LevelState level_state;
 
 public:
 	LevelManager();
@@ -63,5 +63,5 @@ public:
 	void on_mouse_button(int button, int action, int mod);
 
     // state machine functions
-    void move_to_state(State state);
+    void move_to_state(LevelState level_state);
 };

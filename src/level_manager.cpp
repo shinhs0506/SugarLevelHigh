@@ -59,7 +59,7 @@ void LevelManager::load_level(int level)
         should_initialize_active_turn = true;
 
         // start with a move state
-        state = State::PREPARE;
+        state = LevelState::PREPARE;
 	}
 }
 
@@ -75,8 +75,8 @@ void LevelManager::abandon_level()
 
 bool LevelManager::step(float elapsed_ms)
 {
-    switch (state) {
-        case State::PREPARE: 
+    switch (level_state) {
+        case LevelState::PREPARE: 
             {
                 if (should_initialize_active_turn) {
                     registry.activeTurns.emplace(registry.initiatives.entities[0]);
@@ -117,27 +117,27 @@ bool LevelManager::step(float elapsed_ms)
 
                 if (registry.playables.has(registry.activeTurns.entities[0])) {
                     std::cout << "player is current character, moving to player move state" << std::endl;
-                    move_to_state(State::PLAYER_MOVE);
+                    move_to_state(LevelState::PLAYER_MOVE);
                 } else {
                     std::cout << "enemy is current character, moving to enemy move state" << std::endl;
-                    move_to_state(State::ENEMY_MOVE);
+                    move_to_state(LevelState::ENEMY_MOVE);
                 }
             }
             break;
 
-        case State::PLAYER_MOVE:
+        case LevelState::PLAYER_MOVE:
             break;
 
-        case State::PLAYER_ATTACK:
+        case LevelState::PLAYER_ATTACK:
             break;
 
-        case State::ENEMY_MOVE:
+        case LevelState::ENEMY_MOVE:
             break;
 
-        case State::ENEMY_ATTACK: 
+        case LevelState::ENEMY_ATTACK: 
             break;
 
-        case State::EVALUATION:
+        case LevelState::EVALUATION:
             // remove timed out attack objects
             for (uint i = 0; i < registry.attackObjects.size(); i ++) {
                 Entity entity = registry.attackObjects.entities[i];
@@ -166,7 +166,7 @@ bool LevelManager::step(float elapsed_ms)
             // check if all attacks finished
             if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
                 std::cout << "all attacks and effects cleared, moving to prepare state" << std::endl;
-                move_to_state(State::PREPARE);
+                move_to_state(LevelState::PREPARE);
             }
             break;
     }
@@ -176,28 +176,28 @@ bool LevelManager::step(float elapsed_ms)
 
 void LevelManager::handle_collisions()
 {
-    switch (state) {
-        case State::PREPARE:
+    switch (level_state) {
+        case LevelState::PREPARE:
             // do nothing
             break;
 
-        case State::PLAYER_MOVE:
+        case LevelState::PLAYER_MOVE:
             // handle player movement collision
             break;
 
-        case State::PLAYER_ATTACK:
+        case LevelState::PLAYER_ATTACK:
             // do nothing
             break;
 
-        case State::ENEMY_MOVE:
+        case LevelState::ENEMY_MOVE:
             // handle enemy movement collision
             break;
 
-        case State::ENEMY_ATTACK:
+        case LevelState::ENEMY_ATTACK:
             // do nothing
             break;
 
-        case State::EVALUATION:
+        case LevelState::EVALUATION:
             // handle attack objects collisions
             for (uint i = 0; i < registry.collisions.size(); i++) {
                 Entity entity = registry.collisions.entities[i];
@@ -261,12 +261,12 @@ void LevelManager::update_ui(vec2 velocity) {
 
 void LevelManager::on_key(int key, int, int action, int mod)
 {
-    switch (state) {
-        case State::PREPARE:
+    switch (level_state) {
+        case LevelState::PREPARE:
             // do nothing
             break;
 
-        case State::PLAYER_MOVE: 
+        case LevelState::PLAYER_MOVE: 
             {
                 // move player
                 // then move to player attack state
@@ -290,45 +290,45 @@ void LevelManager::on_key(int key, int, int action, int mod)
                     switch (key)
                     {
                     case GLFW_KEY_A:
-                        player_horizontal_movement.velocity += vec2(CAM_MOVE_SPEED, 0); break;
+                        player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
                     case GLFW_KEY_D:
-                        player_horizontal_movement.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
+                        player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
 
                     }
                 }
 
                 if (key == GLFW_KEY_R && action == GLFW_PRESS) {
                     std::cout << "player moved, going to player attack state" << std::endl;
-                    move_to_state(State::PLAYER_ATTACK);
+                    move_to_state(LevelState::PLAYER_ATTACK);
                 }
             }
             break;
             
-        case State::PLAYER_ATTACK:
+        case LevelState::PLAYER_ATTACK:
             // go back to player movement state if 'a' or 'd' is pressed
             if (action == GLFW_PRESS && key == GLFW_KEY_B) {
                 std::cout << "moving again, going to player move state" << std::endl;
-                move_to_state(State::PLAYER_MOVE);
+                move_to_state(LevelState::PLAYER_MOVE);
             }
             break;
             
-        case State::ENEMY_MOVE:
+        case LevelState::ENEMY_MOVE:
             // do nothing, some placeholder functions for now
             if (key == GLFW_KEY_Z) {
                 std::cout << "enemy moved, going to enemy attack state" << std::endl;
-                move_to_state(State::ENEMY_ATTACK);
+                move_to_state(LevelState::ENEMY_ATTACK);
             }
             break;
 
-        case State::ENEMY_ATTACK:
+        case LevelState::ENEMY_ATTACK:
             // do nothing, some placeholder functions for now
             if (key == GLFW_KEY_X) {
                 std::cout << "enemy attacked, going to evaluation" << std::endl;
-                move_to_state(State::EVALUATION);
+                move_to_state(LevelState::EVALUATION);
             }
             break;
 
-        case State::EVALUATION:
+        case LevelState::EVALUATION:
             // do nothing
             break;
     }
@@ -383,12 +383,12 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
     vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
 
-    switch (state) {
-        case State::PREPARE:
+    switch (level_state) {
+        case LevelState::PREPARE:
             // do nothing
             break;
 
-        case State::PLAYER_MOVE: 
+        case LevelState::PLAYER_MOVE: 
             {
                 // click on attack action to go to PLAYER_ATTACK state
                 if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
@@ -411,7 +411,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
             }
             break;
 
-        case State::PLAYER_ATTACK: {
+        case LevelState::PLAYER_ATTACK: {
             // tmp use left click for buttons or perform attck only
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
                 Motion click_motion;
@@ -447,20 +447,20 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
                 createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
                 std::cout << "craeted attack object" << std::endl;
                 std::cout << "player attacked, moving to evaluation state" << std::endl;
-                move_to_state(State::EVALUATION);
+                move_to_state(LevelState::EVALUATION);
             }
             break;
             
         }
-        case State::ENEMY_MOVE:
+        case LevelState::ENEMY_MOVE:
             // do nothing
             break;
 
-        case State::ENEMY_ATTACK:
+        case LevelState::ENEMY_ATTACK:
             // do nothing
             break;
 
-        case State::EVALUATION:
+        case LevelState::EVALUATION:
             // do nothing
             break;
     }
@@ -469,6 +469,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 }
 
 // state machine functions
-void LevelManager::move_to_state(State state) {
-    this->state = state;
+void LevelManager::move_to_state(LevelState level_state) {
+    assert(level_state >= LevelState::PREPARE && level_state <= LevelState::EVALUATION);
+    this->level_state = level_state;
 }
