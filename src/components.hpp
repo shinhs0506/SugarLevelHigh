@@ -159,6 +159,16 @@ struct Mesh
 	std::vector<uint16_t> vertex_indices;
 };
 
+struct AI
+{
+	// A small delay before AI moves to allow for player to see AI abit easier
+	// and so that AI doesnt instantly do its turn causing player to miss it
+	float beginning_delay_counter_ms = 1000.0f; // 1000ms = 1s
+
+	// Only horizontal movement so far
+	vec2 movement_direction = vec2(-1, 0);
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture

@@ -48,6 +48,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 	registry.healths.insert(entity, health);
 	registry.energies.insert(entity, energy);
 	registry.initiatives.insert(entity, initiative);
+	registry.AIs.emplace(entity);
 	
 	// TODO: insert attack abilities
 
@@ -68,6 +69,7 @@ void removeEnemy(Entity entity)
 	registry.energies.remove(entity);
 	registry.initiatives.remove(entity);
 	registry.renderRequests.remove(entity);
+	registry.AIs.remove(entity);
 }
 
 Entity createPlayer(vec2 pos, vec2 size)

@@ -1,3 +1,6 @@
+#ifndef LEVEL_MANAGER_H
+#define LEVEL_MANAGER_H
+
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
 #include <vector>
@@ -21,18 +24,21 @@ private:
 	// OpenGL window handle
 	GLFWwindow* window;
 
-    enum class LevelState {
-        PREPARE, // advance turn order  
-        PLAYER_MOVE, // player move state
-        PLAYER_ATTACK, // player attack state
-        ENEMY_MOVE, // enemy move state
-        ENEMY_ATTACK, // enemy attack state
-        EVALUATION, // attack processing state
-    };
-
-    LevelState level_state;
+    
 
 public:
+
+	enum class LevelState {
+		PREPARE, // advance turn order  
+		PLAYER_MOVE, // player move state
+		PLAYER_ATTACK, // player attack state
+		ENEMY_MOVE, // enemy move state
+		ENEMY_ATTACK, // enemy attack state
+		EVALUATION, // attack processing state
+	};
+
+	LevelState level_state;
+
 	LevelManager();
 
 	~LevelManager();
@@ -68,3 +74,4 @@ public:
     // state machine functions
     void move_to_state(LevelState level_state);
 };
+#endif

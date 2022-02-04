@@ -22,6 +22,8 @@ int main()
 	PhysicsSystem physics;
 	AISystem ai;
 
+	srand((unsigned int)time(NULL));
+
 	// Initializing window
 	GLFWwindow* window = game.create_window();
 	if (!window) {
@@ -34,6 +36,7 @@ int main()
 	// initialize the main systems
 	renderer.init(window);
 	game.init(&renderer);
+	ai.init(&game.level_manager);
 
 	// variable timestep loop
 	auto t = Clock::now();
