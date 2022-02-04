@@ -7,22 +7,6 @@
 // Wraps all level logis and entities
 class LevelManager
 {
-private:
-	bool ended;
-	int curr_level;
-
-	Entity main_camera;
-	const float CAM_MOVE_SPEED = 100;
-    
-    // for turn order logic
-    std::vector<Entity> order_vector;
-    int curr_order_ind;
-    bool should_initialize_active_turn;
-    int num_characters;
-
-	// OpenGL window handle
-	GLFWwindow* window;
-
 public:
 
 	enum class LevelState {
@@ -33,8 +17,6 @@ public:
 		ENEMY_ATTACK, // enemy attack state
 		EVALUATION, // attack processing state
 	};
-
-	LevelState level_state;
 
 	LevelManager();
 
@@ -57,7 +39,7 @@ public:
 	// Should be called from GameSystem to step level content
 	bool step(float elapsed_ms);
 	void handle_collisions();
-	
+
 	// Whether this level ended
 	bool level_ended();
 
@@ -68,6 +50,27 @@ public:
 	void on_mouse_move(vec2 pos);
 	void on_mouse_button(int button, int action, int mod);
 
-    // state machine functions
-    void move_to_state(LevelState level_state);
+	// state machine functions
+	void move_to_state(LevelState level_state);
+
+	LevelState current_state();
+
+private:
+	bool ended;
+	int curr_level;
+
+	Entity main_camera;
+	const float CAM_MOVE_SPEED = 100;
+    
+    // for turn order logic
+    std::vector<Entity> order_vector;
+    int curr_order_ind;
+    bool should_initialize_active_turn;
+    int num_characters;
+
+	// OpenGL window handle
+	GLFWwindow* window;
+	
+	LevelState level_state;
+
 };
