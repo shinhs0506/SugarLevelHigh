@@ -108,7 +108,6 @@ bool LevelManager::step(float elapsed_ms)
                 move_to_state(LevelState::EVALUATION);
             } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable) {
                 removeTerrain(entity);
-                move_to_state(LevelState::EVALUATION);
             }
         }
     }
