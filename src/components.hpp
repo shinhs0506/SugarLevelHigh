@@ -95,7 +95,9 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
+    float speed = 100;
 };
 
 // Stucture to store collision information
@@ -113,7 +115,7 @@ struct Clickable {
 
 // Attached to components that are unaffected by camera
 struct Overlay {
-	
+	vec2 position = { 0, 0 };
 };
 
 // Backgrounds

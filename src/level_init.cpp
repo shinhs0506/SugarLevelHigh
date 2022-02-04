@@ -10,6 +10,7 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	motion.angle = 0.f;
 	motion.velocity = { 0, 0 };
 	motion.position = position;
+	motion.prev_position = position;
 	motion.scale = scale;
 
 	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
@@ -33,9 +34,11 @@ Entity createEnemy(vec2 pos, vec2 size)
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.gravity_affected = true;
 
 	registry.enemies.emplace(entity);
 
@@ -77,9 +80,11 @@ Entity createPlayer(vec2 pos, vec2 size)
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.gravity_affected = true;
 
 	registry.playables.emplace(entity);
 
@@ -121,6 +126,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
@@ -160,6 +166,7 @@ Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damag
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = angle;
 	motion.velocity = velocity;
 	motion.scale = size;
@@ -192,6 +199,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = {0.f, 0.f};
 	motion.scale = {1.f, 1.f};
@@ -214,6 +222,7 @@ Entity createButton(vec2 pos, vec2 size, void (*on_click)())
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
@@ -221,7 +230,7 @@ Entity createButton(vec2 pos, vec2 size, void (*on_click)())
 	Clickable clickable{ on_click };
 	registry.clickables.insert(entity, clickable);
 
-	Overlay overlay{};
+	Overlay overlay{pos};
 	registry.overlays.insert(entity, overlay);
 
 	registry.renderRequests.insert(

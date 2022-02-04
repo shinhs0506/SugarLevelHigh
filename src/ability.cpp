@@ -3,7 +3,7 @@
 #include "ability.hpp"
 #include "level_init.hpp"
 
-void mock_callback() {
+void mock_callback() { 
 	printf("A button was clicked!\n");
 }
 
