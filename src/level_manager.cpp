@@ -190,19 +190,11 @@ void LevelManager::update_ui(vec2 velocity) {
 	Motion& camera_motion = motion_registry.get(main_camera);
 	camera_motion.velocity += velocity;
 
-	// fix ui overlays relative to camera
-	auto& overlays_registry = registry.overlays;
-	for (uint i = 0; i < overlays_registry.size(); i++) {
-		Entity& entity = overlays_registry.entities[i];
-		Motion& motion = motion_registry.get(entity);
-		motion.velocity += velocity;
-	}
 }
 
 void LevelManager::on_key(int key, int, int action, int mod)
 {
-	// camera control logic
-	Motion& camera_motion = registry.motions.get(main_camera);
+
 	if (action == GLFW_PRESS)
 	{
 		switch (key)

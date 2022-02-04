@@ -113,7 +113,7 @@ struct Clickable {
 
 // Attached to components that are unaffected by camera
 struct Overlay {
-	
+	vec2 position = { 0, 0 };
 };
 
 // Data structure for toggling debug mode
