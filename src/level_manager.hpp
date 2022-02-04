@@ -62,11 +62,13 @@ private:
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 100;
     
-  // for turn order logic
-  std::vector<Entity> order_vector;
-  int curr_order_ind;
-  bool should_initialize_active_turn;
-  int num_characters;
+	// for turn order logic
+	std::vector<Entity> order_vector;
+	int curr_order_ind;
+	bool should_initialize_active_turn;
+	int num_characters;
+
+	std::vector<Entity> terrain_vector;
 
 	// OpenGL window handle
 	GLFWwindow* window;
