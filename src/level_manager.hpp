@@ -34,6 +34,9 @@ private:
 
     LevelState level_state;
 
+	// remove the character from order_vector
+	void remove_character(Entity entity);
+
 public:
 	LevelManager();
 
@@ -69,4 +72,7 @@ public:
 
     // state machine functions
     void move_to_state(LevelState level_state);
+
+	// expose current level state
+	LevelState current_state();
 };
