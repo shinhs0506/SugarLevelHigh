@@ -38,13 +38,15 @@ bool compare(Entity a, Entity b) {
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
-	// change camera limits based on level
+	
 	Camera& camera = registry.cameras.get(main_camera);
 	Motion& motion = registry.motions.get(main_camera);
-	camera.lower_limit = motion.position - vec2(100);
-	camera.higer_limit = motion.position + vec2(100);
 
     if (level == 0) {
+        // change camera limits based on level
+        camera.lower_limit = motion.position - vec2(100);
+        camera.higer_limit = motion.position + vec2(100);
+
 		Entity background = createBackground(vec2(1480, 920), level);
         Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));

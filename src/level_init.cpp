@@ -141,11 +141,9 @@ Entity createTerrain(vec2 pos, vec2 size)
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(1.f, 1.f, 0.f));
+		{ TEXTURE_ASSET_ID::TERRAIN1,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -156,7 +154,6 @@ void removeTerrain(Entity entity)
 	registry.terrains.remove(entity);
 	registry.healths.remove(entity);
 	registry.renderRequests.remove(entity);
-	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
 
 Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damage,
