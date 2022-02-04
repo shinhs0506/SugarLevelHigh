@@ -36,6 +36,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.gravity_affected = true;
 
 	registry.enemies.emplace(entity);
 
@@ -80,6 +81,7 @@ Entity createPlayer(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.gravity_affected = true;
 
 	registry.playables.emplace(entity);
 
@@ -221,7 +223,7 @@ Entity createButton(vec2 pos, vec2 size, void (*on_click)())
 	Clickable clickable{ on_click };
 	registry.clickables.insert(entity, clickable);
 
-	Overlay overlay{};
+	Overlay overlay{pos};
 	registry.overlays.insert(entity, overlay);
 
 	registry.renderRequests.insert(
