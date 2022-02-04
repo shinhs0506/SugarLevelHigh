@@ -59,7 +59,7 @@ void LevelManager::load_level(int level)
         should_initialize_active_turn = true;
 
         // start with a move state
-        state = LevelState::PREPARE;
+        level_state = LevelState::PREPARE;
 	}
 }
 
@@ -176,66 +176,41 @@ bool LevelManager::step(float elapsed_ms)
 
 void LevelManager::handle_collisions()
 {
-    switch (level_state) {
-        case LevelState::PREPARE:
-            // do nothing
-            break;
-
-        case LevelState::PLAYER_MOVE:
-            // handle player movement collision
-            break;
-
-        case LevelState::PLAYER_ATTACK:
-            // do nothing
-            break;
-
-        case LevelState::ENEMY_MOVE:
-            // handle enemy movement collision
-            break;
-
-        case LevelState::ENEMY_ATTACK:
-            // do nothing
-            break;
-
-        case LevelState::EVALUATION:
-            // handle attack objects collisions
-            for (uint i = 0; i < registry.collisions.size(); i++) {
-                Entity entity = registry.collisions.entities[i];
-                if (registry.attackObjects.has(entity)) {
-                    // DO NOT use get() on collisions here!!!
-                    // collisions registry might have two collisions on the same object
-                    // using get() will always retrieve the first collision component
-                    Entity other_entity = registry.collisions.components[i].other;
-                    
-                    if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
-                        continue;
-                    }
-
-                    AttackObject& attack = registry.attackObjects.get(entity);
-                    bool is_player_attack = registry.playables.has(attack.attacker);
-
-                    // only be able to deal damage on entities with health
-                    bool damagable = registry.healths.has(other_entity);
-
-                    // only be able to deal damage if two entities are different type // (not both playables or enemies) 
-                    bool different_team = (is_player_attack && !registry.playables.has(other_entity)) ||
-                        (!is_player_attack && !registry.enemies.has(other_entity));
-
-                    // check attacked set to make sure only deal damage once
-                    bool attacked = attack.attacked.find(other_entity) != attack.attacked.end();
-
-                    if (damagable && different_team && !attacked) {
-                        Health& health = registry.healths.get(other_entity);
-                        // health shouldn't be below zero
-                        health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
-                        attack.attacked.insert(other_entity);
-                        createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
-                    }
-                }
+    // handle attack objects collisions
+    for (uint i = 0; i < registry.collisions.size(); i++) {
+        Entity entity = registry.collisions.entities[i];
+        if (registry.attackObjects.has(entity)) {
+            // DO NOT use get() on collisions here!!!
+            // collisions registry might have two collisions on the same object
+            // using get() will always retrieve the first collision component
+            Entity other_entity = registry.collisions.components[i].other;
+            
+            if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
+                continue;
             }
-            break;
-    }
 
+            AttackObject& attack = registry.attackObjects.get(entity);
+            bool is_player_attack = registry.playables.has(attack.attacker);
+
+            // only be able to deal damage on entities with health
+            bool damagable = registry.healths.has(other_entity);
+
+            // only be able to deal damage if two entities are different type // (not both playables or enemies) 
+            bool different_team = (is_player_attack && !registry.playables.has(other_entity)) ||
+                (!is_player_attack && !registry.enemies.has(other_entity));
+
+            // check attacked set to make sure only deal damage once
+            bool attacked = attack.attacked.find(other_entity) != attack.attacked.end();
+
+            if (damagable && different_team && !attacked) {
+                Health& health = registry.healths.get(other_entity);
+                // health shouldn't be below zero
+                health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
+                attack.attacked.insert(other_entity);
+                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
+            }
+        }
+    }
 }
 
 bool LevelManager::level_ended()
