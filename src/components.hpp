@@ -118,6 +118,11 @@ struct Overlay {
 	vec2 position = { 0, 0 };
 };
 
+// Backgrounds
+struct Background {
+
+};
+
 // Data structure for toggling debug mode
 struct Debug {
 	bool in_debug_mode = 0;
@@ -187,7 +192,9 @@ struct Mesh
 enum class TEXTURE_ASSET_ID {
 	PLAYER = 0,
 	ENEMY = PLAYER + 1,
-	TEXTURE_COUNT = ENEMY + 1
+	BACKGROUND1 = ENEMY + 1,
+	TERRAIN1 = BACKGROUND1 + 1,
+	TEXTURE_COUNT = TERRAIN1 + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

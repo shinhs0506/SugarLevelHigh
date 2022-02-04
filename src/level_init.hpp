@@ -31,3 +31,6 @@ void removeButton(Entity entity);
 Entity createHitEffect(Entity entity, float ttl_ms);
 void removeHitEffect(Entity entity);
 
+Entity createBackground(vec2 size, int level);
+void removeBackground(Entity entity);
+
