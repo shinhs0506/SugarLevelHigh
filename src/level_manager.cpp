@@ -450,6 +450,11 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
     // actions to perform regardless of the state
 }
 
+LevelManager::LevelState LevelManager::current_state()
+{
+    return this->level_state;
+}
+
 // state machine functions
 void LevelManager::move_to_state(LevelState level_state) {
     assert(level_state >= LevelState::PREPARE && level_state <= LevelState::EVALUATION);

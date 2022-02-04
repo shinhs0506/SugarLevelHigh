@@ -161,10 +161,6 @@ struct Mesh
 
 struct AI
 {
-	// A small delay before AI moves to allow for player to see AI abit easier
-	// and so that AI doesnt instantly do its turn causing player to miss it
-	float beginning_delay_counter_ms = 1000.0f; // 1000ms = 1s
-
 	// Only horizontal movement so far
 	vec2 movement_direction = vec2(-1, 0);
 };

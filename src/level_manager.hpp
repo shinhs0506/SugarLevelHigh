@@ -1,5 +1,4 @@
-#ifndef LEVEL_MANAGER_H
-#define LEVEL_MANAGER_H
+#pragma once
 
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
@@ -23,8 +22,6 @@ private:
 
 	// OpenGL window handle
 	GLFWwindow* window;
-
-    
 
 public:
 
@@ -74,4 +71,3 @@ public:
     // state machine functions
     void move_to_state(LevelState level_state);
 };
-#endif

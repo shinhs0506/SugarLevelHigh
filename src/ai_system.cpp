@@ -8,13 +8,13 @@ void AISystem::init(LevelManager* level_manager)
 }
 
 
-void resetEnemy(Energy& entity_energy, AI& entity_AI) {
-	entity_AI.beginning_delay_counter_ms = 1000.0f;
+void AISystem::reset_Enemy(Energy& entity_energy, AI& entity_AI) {
+	beginning_delay_counter_ms = 1000.0f;
 	entity_energy.cur_energy = 100.0f;
 
 }
 
-void enemyAttack(Entity entity) {
+void enemy_Attack(Entity entity) {
 
 	Entity enemy = registry.activeTurns.entities[0];
 
@@ -31,13 +31,13 @@ void enemyAttack(Entity entity) {
 
 }
 
-void AISystem::endEnemyTurn(Energy& entity_energy, AI& entity_AI) {
+void AISystem::end_Enemy_Turn(Energy& entity_energy, AI& entity_AI) {
 	
-	resetEnemy(entity_energy, entity_AI);
+	reset_Enemy(entity_energy, entity_AI);
 	level_manager->move_to_state(LevelManager::LevelState::EVALUATION);
 }
 
-void AISystem::decisionTree(Entity entity, AI& entity_AI) {
+void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 
 	Energy& entity_energy = registry.energies.get(entity);
 	Motion& entity_motion = registry.motions.get(entity);
@@ -56,24 +56,19 @@ void AISystem::decisionTree(Entity entity, AI& entity_AI) {
 
 
 			//Only left and right ai movement for now
-			entity_motion.velocity = vec2(ENEMY_MOVEMENT_SPEED * entity_AI.movement_direction.x, 0);
+			entity_motion.velocity = vec2(entity_motion.speed * entity_AI.movement_direction.x, 0);
 			entity_energy.cur_energy -= 1.0f;
 		}
-
-		if (entity_energy.cur_energy <= 0) {
+		else {
 			// Reset velocities
 			entity_motion.velocity = vec2(0, 0);
 			level_manager->move_to_state(LevelManager::LevelState::ENEMY_ATTACK);
 		}
 	}
 	else if (level_manager->level_state == LevelManager::LevelState::ENEMY_ATTACK) {
-		enemyAttack(entity);
-		endEnemyTurn(entity_energy, entity_AI);
+		enemy_Attack(entity);
+		end_Enemy_Turn(entity_energy, entity_AI);
 	}
-
-	
-
-	//end move
 }
 
 void AISystem::step(float elapsed_ms)
@@ -85,11 +80,11 @@ void AISystem::step(float elapsed_ms)
 		AI& entity_AI = registry.AIs.get(active_entity);
 		// A small delay before AI moves to allow for player to see AI abit easier
 		// and so that AI doesnt instantly do its turn causing player to miss it
-		if (entity_AI.beginning_delay_counter_ms > 0) {
-			entity_AI.beginning_delay_counter_ms -= elapsed_ms;
+		if (beginning_delay_counter_ms > 0) {
+			beginning_delay_counter_ms -= elapsed_ms;
 			return;
 		}
-		decisionTree(active_entity, entity_AI);
+		decision_Tree(active_entity, entity_AI);
 
 	}
 	(void)elapsed_ms; // placeholder to silence unused warning until implemented
