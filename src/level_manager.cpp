@@ -38,18 +38,35 @@ bool compare(Entity a, Entity b) {
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
-	// change camera limits based on level
+	
 	Camera& camera = registry.cameras.get(main_camera);
 	Motion& motion = registry.motions.get(main_camera);
-	camera.lower_limit = motion.position - vec2(100);
-	camera.higer_limit = motion.position + vec2(100);
 
     if (level == 0) {
-        Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
-        Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
-        Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
-		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
+        // change camera limits based on level
+        camera.lower_limit = motion.position - vec2(100);
+        camera.higer_limit = motion.position + vec2(100);
+        
+        Entity background = createBackground(vec2(1480, 920), level);
+        Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
+        Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
+        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
+        float terrain_x_offset = 0.f;
+        while (terrain_x_offset < 1200.f) {
+            Entity curr = createTerrain(vec2(100.001 + terrain_x_offset, 600.001), vec2(100, 100));
+            terrain_vector.push_back(curr);
+            terrain_x_offset += 100.001;
+        }
+        float terrain_y_offset = 100.001;
+        while (terrain_y_offset < 200.f) {
+            Entity curr1 = createTerrain(vec2(100.001, 600.001 - terrain_y_offset), vec2(100, 100));
+            Entity curr2 = createTerrain(vec2(1200.001, 600.001 - terrain_y_offset), vec2(100, 100));
+            terrain_vector.push_back(curr1);
+            terrain_vector.push_back(curr2);
+            terrain_y_offset += 100.001;
+        }
+      
         order_vector.push_back(enemy);
         order_vector.push_back(player);
 
@@ -78,6 +95,23 @@ void LevelManager::abandon_level()
 
 }
 
+void LevelManager::remove_character(Entity entity)
+{
+    auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
+    int pos = it - order_vector.begin();
+    if (pos <= curr_order_ind) {
+        curr_order_ind -= 1;
+    }
+
+    // directly move to evaluation state only if current active character died
+    // this is to ensure turn correctly ends the current active chracter died in movement state
+    if (order_vector[pos] == registry.activeTurns.entities[0])
+    {
+        move_to_state(LevelState::EVALUATION);
+    }
+    order_vector.erase(it);
+}
+
 bool LevelManager::step(float elapsed_ms)
 {
     // remove dead entities (with health component and current health below 0)
@@ -89,23 +123,11 @@ bool LevelManager::step(float elapsed_ms)
         if (health.dead) {
             // check playables
             if (registry.playables.has(entity)) {
-                auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
-                int pos = it - order_vector.begin();
-                if (pos <= curr_order_ind) {
-                    curr_order_ind -= 1;
-                }
+                remove_character(entity);
                 removePlayer(entity);
-                order_vector.erase(it);
-                move_to_state(LevelState::EVALUATION);
             } else if (registry.enemies.has(entity)) {
-                auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
-                int pos = it - order_vector.begin();
-                if (pos <= curr_order_ind) {
-                    curr_order_ind -= 1;
-                }
+                remove_character(entity);
                 removeEnemy(entity);
-                order_vector.erase(it);
-                move_to_state(LevelState::EVALUATION);
             } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable) {
                 removeTerrain(entity);
             }
@@ -198,7 +220,7 @@ void LevelManager::handle_collisions()
             // collisions registry might have two collisions on the same object
             // using get() will always retrieve the first collision component
             Entity other_entity = registry.collisions.components[i].other;
-            
+
             if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
                 continue;
             }
@@ -222,6 +244,15 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
+            }
+        }
+
+        // handle character and terrain collisions
+        if (registry.terrains.has(entity)) {
+            Entity other_entity = registry.collisions.components[i].other;
+            if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
+                Motion& position = registry.motions.get(other_entity);
+                position.position = position.prev_position;
             }
         }
     }
@@ -278,19 +309,6 @@ void LevelManager::on_key(int key, int, int action, int mod)
 
                     }
                 }
-
-                if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-                    std::cout << "player moved, going to player attack state" << std::endl;
-                    move_to_state(LevelState::PLAYER_ATTACK);
-                }
-            }
-            break;
-            
-        case LevelState::PLAYER_ATTACK:
-            // go back to player movement state if 'a' or 'd' is pressed
-            if (action == GLFW_PRESS && key == GLFW_KEY_B) {
-                std::cout << "moving again, going to player move state" << std::endl;
-                move_to_state(LevelState::PLAYER_MOVE);
             }
             break;
             
@@ -386,7 +404,8 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
                         if (collides(click_motion, motion)) {
                             registry.clickables.get(entity).on_click();
-                            break;
+                            std::cout << "player moved, going to player attack state" << std::endl;
+                            move_to_state(LevelState::PLAYER_ATTACK);
                         }
                     }
                 }
@@ -394,6 +413,12 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
             break;
 
         case LevelState::PLAYER_ATTACK: {
+            // player can use right click to cancel attack preview
+            if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+                std::cout << "player canceled action, going back to player move state" << std::endl;
+                move_to_state(LevelState::PLAYER_MOVE);
+                break;
+            }
             // tmp use left click for buttons or perform attck only
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
                 Motion click_motion;
@@ -456,7 +481,30 @@ LevelManager::LevelState LevelManager::current_state()
 }
 
 // state machine functions
-void LevelManager::move_to_state(LevelState level_state) {
-    assert(level_state >= LevelState::PREPARE && level_state <= LevelState::EVALUATION);
-    this->level_state = level_state;
+void LevelManager::move_to_state(LevelState next_state) {
+    // some assersions to make sure state machine are working as expected
+    switch (level_state) {
+    case LevelState::PREPARE:
+        assert(next_state == LevelState::ENEMY_MOVE || next_state == LevelState::PLAYER_MOVE); break;
+
+    // enemy states
+    case LevelState::ENEMY_MOVE:
+        assert(next_state == LevelState::ENEMY_ATTACK || next_state == LevelState::EVALUATION); break;
+    case LevelState::ENEMY_ATTACK:
+        assert(next_state == LevelState::EVALUATION); break;
+
+    // player states
+    case LevelState::PLAYER_MOVE:
+        assert(next_state == LevelState::PLAYER_ATTACK || next_state == LevelState::EVALUATION); break;
+    case LevelState::PLAYER_ATTACK:
+        assert(next_state == LevelState::PLAYER_MOVE || next_state == LevelState::EVALUATION); break;
+
+    case LevelState::EVALUATION:
+        assert(next_state == LevelState::PREPARE); break;
+
+    default:
+        assert(false && "Entered invalid state");
+    }
+
+    this->level_state = next_state;
 }

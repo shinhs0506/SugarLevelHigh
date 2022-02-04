@@ -25,10 +25,12 @@ class RenderSystem {
 	const std::vector < std::pair<GEOMETRY_BUFFER_ID, std::string>> mesh_paths = {};
 
 	// Make sure these paths remain in sync with the associated enumerators.
-	const std::array<std::string, texture_count> texture_paths = 
+	const std::array<std::string, texture_count> texture_paths =
 	{
 		textures_path("player.png"),
-		textures_path("enemy.png")
+		textures_path("enemy.png"),
+		textures_path("background1.png"),
+		textures_path("terrain.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

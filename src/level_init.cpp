@@ -10,6 +10,7 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	motion.angle = 0.f;
 	motion.velocity = { 0, 0 };
 	motion.position = position;
+	motion.prev_position = position;
 	motion.scale = scale;
 
 	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
@@ -33,6 +34,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
@@ -80,6 +82,7 @@ Entity createPlayer(vec2 pos, vec2 size)
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
@@ -125,6 +128,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
@@ -139,11 +143,9 @@ Entity createTerrain(vec2 pos, vec2 size)
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(1.f, 1.f, 0.f));
+		{ TEXTURE_ASSET_ID::TERRAIN1,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -154,7 +156,6 @@ void removeTerrain(Entity entity)
 	registry.terrains.remove(entity);
 	registry.healths.remove(entity);
 	registry.renderRequests.remove(entity);
-	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 }
 
 Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damage,
@@ -164,6 +165,7 @@ Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damag
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = angle;
 	motion.velocity = velocity;
 	motion.scale = size;
@@ -196,6 +198,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = {0.f, 0.f};
 	motion.scale = {1.f, 1.f};
@@ -218,6 +221,7 @@ Entity createButton(vec2 pos, vec2 size, void (*on_click)())
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
@@ -256,4 +260,40 @@ Entity createHitEffect(Entity entity, float ttl_ms)
 void removeHitEffect(Entity entity)
 {
 	registry.hitEffects.remove(entity);
+}
+
+Entity createBackground(vec2 size, int level)
+{
+	auto entity = Entity();
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { window_width_px / 2, window_height_px / 2 };
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+
+	Background background{ };
+	registry.backgrounds.insert(entity, background);
+
+	// Level number would determine which texture would be used
+	switch (level)
+	{
+	case 0:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	default:
+		break;
+	}
+
+	return entity;
+}
+
+void removeBackground(Entity entity)
+{
+	registry.backgrounds.remove(entity);
 }

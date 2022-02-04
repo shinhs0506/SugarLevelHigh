@@ -7,8 +7,8 @@
 // Wraps all level logis and entities
 class LevelManager
 {
-public:
 
+public:
 	enum class LevelState {
 		PREPARE, // advance turn order  
 		PLAYER_MOVE, // player move state
@@ -62,15 +62,17 @@ private:
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 100;
     
-    // for turn order logic
-    std::vector<Entity> order_vector;
-    int curr_order_ind;
-    bool should_initialize_active_turn;
-    int num_characters;
+  // for turn order logic
+  std::vector<Entity> order_vector;
+  int curr_order_ind;
+  bool should_initialize_active_turn;
+  int num_characters;
 
 	// OpenGL window handle
 	GLFWwindow* window;
 	
 	LevelState level_state;
-
+  
+  // remove the character from order_vector
+	void remove_character(Entity entity);
 };

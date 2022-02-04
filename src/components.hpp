@@ -95,6 +95,7 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
     float speed = 100;
 };
@@ -115,6 +116,11 @@ struct Clickable {
 // Attached to components that are unaffected by camera
 struct Overlay {
 	vec2 position = { 0, 0 };
+};
+
+// Backgrounds
+struct Background {
+
 };
 
 // Data structure for toggling debug mode
@@ -192,7 +198,9 @@ struct AI
 enum class TEXTURE_ASSET_ID {
 	PLAYER = 0,
 	ENEMY = PLAYER + 1,
-	TEXTURE_COUNT = ENEMY + 1
+	BACKGROUND1 = ENEMY + 1,
+	TERRAIN1 = BACKGROUND1 + 1,
+	TEXTURE_COUNT = TERRAIN1 + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
