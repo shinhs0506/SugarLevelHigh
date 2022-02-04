@@ -1,5 +1,6 @@
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
+#include <vector>
 
 // Wraps all level logis and entities
 class LevelManager
@@ -12,6 +13,8 @@ private:
 	const float CAM_MOVE_SPEED = 100;
     
     // for turn order logic
+    std::vector<Entity> order_vector;
+    int curr_order_ind;
     bool should_initialize_active_turn;
     int num_characters;
 

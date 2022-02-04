@@ -3,6 +3,7 @@
 
 #include <GLFW/glfw3.h>
 #include <cfloat>
+#include <vector>
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
@@ -28,6 +29,12 @@ void LevelManager::init(GLFWwindow* window)
 	this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 }
 
+bool compare(Entity a, Entity b) {
+    auto a_init = registry.initiatives.get(a);
+    auto b_init = registry.initiatives.get(b);
+    return a_init.value < b_init.value;
+};
+
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
@@ -43,19 +50,17 @@ void LevelManager::load_level(int level)
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
 		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
-        auto compare = [](Entity& a, Entity& b) {
-                Initiative& aInitiative = registry.initiatives.get(a);
-                Initiative& bInitiative = registry.initiatives.get(b);
-                return aInitiative.value < bInitiative.value;
-        };
-        registry.initiatives.sort(compare);
+        order_vector.push_back(enemy);
+        order_vector.push_back(player);
 
+        sort(order_vector.begin(), order_vector.end(), compare);
         // to retrieve current entity
         // registry.initiatives.entities[currOrderIndex];
         // or 
         // registry.activeTurns.entities[0] from outside level_manager
         // or might add a global Entity variable later
         // should_initialize_active_turn = true means game has just started
+        curr_order_ind = 0;
         should_initialize_active_turn = true;
 
         // start with a move state
@@ -75,44 +80,54 @@ void LevelManager::abandon_level()
 
 bool LevelManager::step(float elapsed_ms)
 {
+    // remove dead entities (with health component and current health below 0)
+    for (uint i = 0; i < registry.healths.size(); i++) {
+        Entity entity = registry.healths.entities[i];
+        Health health = registry.healths.components[i];
+        assert(health.cur_health >= 0.f); // health shouldn't below 0
+
+        if (health.dead) {
+            // check playables
+            if (registry.playables.has(entity)) {
+                auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
+                int pos = it - order_vector.begin();
+                if (pos <= curr_order_ind) {
+                    curr_order_ind -= 1;
+                }
+                removePlayer(entity);
+                order_vector.erase(it);
+                move_to_state(LevelState::EVALUATION);
+            } else if (registry.enemies.has(entity)) {
+                auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
+                int pos = it - order_vector.begin();
+                if (pos <= curr_order_ind) {
+                    curr_order_ind -= 1;
+                }
+                removeEnemy(entity);
+                order_vector.erase(it);
+                move_to_state(LevelState::EVALUATION);
+            } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable) {
+                removeTerrain(entity);
+                move_to_state(LevelState::EVALUATION);
+            }
+        }
+    }
+
     switch (level_state) {
         case LevelState::PREPARE: 
             {
                 if (should_initialize_active_turn) {
-                    registry.activeTurns.emplace(registry.initiatives.entities[0]);
+                    registry.activeTurns.emplace(order_vector[0]);
                     should_initialize_active_turn = false;
                 } else {
                     // advance turn order
                     int num_characters = registry.initiatives.size();
-                    Entity& current_character = registry.activeTurns.entities[0];
-                    auto it = find(registry.initiatives.entities.begin(), registry.initiatives.entities.end(), current_character);
-                    int pos = it - registry.initiatives.entities.begin(); 
                     
-                    Entity& next_character = registry.initiatives.entities[(pos + 1) % num_characters];
-                    while (registry.healths.get(next_character).dead) {
-                        pos = (pos + 1) % num_characters;
-                        next_character = registry.initiatives.entities[pos];
-                    }
+                    curr_order_ind = (curr_order_ind + 1) % num_characters;
+                    Entity& next_character = order_vector[curr_order_ind];
 
-                    registry.activeTurns.remove(current_character);
+                    registry.activeTurns.clear();
                     registry.activeTurns.emplace(next_character);
-                }
-
-                // remove dead entities (with health component and current health below 0)
-                for (uint i = 0; i < registry.healths.size(); i++) {
-                    Entity entity = registry.healths.entities[i];
-                    Health health = registry.healths.components[i];
-                    assert(health.cur_health >= 0.f); // health shouldn't below 0
-
-                    if (health.dead) {
-                        // check playables
-                        if (registry.playables.has(entity)) {
-                            removePlayer(entity);
-                        } else if (registry.enemies.has(entity)) {
-                            removeEnemy(entity);
-                        } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable)
-                            removeTerrain(entity);
-                    }
                 }
 
                 if (registry.playables.has(registry.activeTurns.entities[0])) {
