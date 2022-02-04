@@ -46,12 +46,11 @@ void LevelManager::load_level(int level)
         // change camera limits based on level
         camera.lower_limit = motion.position - vec2(100);
         camera.higer_limit = motion.position + vec2(100);
-
-		Entity background = createBackground(vec2(1480, 920), level);
+        
+        Entity background = createBackground(vec2(1480, 920), level);
         Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
-        Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
-		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
+        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
         float terrain_x_offset = 0.f;
         while (terrain_x_offset < 1200.f) {
