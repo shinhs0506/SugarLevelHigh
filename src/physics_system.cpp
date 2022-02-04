@@ -37,6 +37,12 @@ void PhysicsSystem::step(float elapsed_ms)
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
 
+		// Gravity
+		if (motion.gravity_affected == true) {
+			//When collosion with terrain is detected. Reset this velocity to 0
+			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
+		}
+
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
 		if (registry.cameras.has(entity))
 		{
@@ -56,6 +62,7 @@ void PhysicsSystem::step(float elapsed_ms)
 		Entity entity = overlays_registry.entities[i];
 		Motion& motion = motion_registry.get(entity);
 		motion.position = camera_motion.position - camera_component.offset + overlay.position;
+
 	}
 
 	// Check for collisions between all moving entities

@@ -36,6 +36,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.gravity_affected = true;
 
 	registry.enemies.emplace(entity);
 
@@ -80,6 +81,7 @@ Entity createPlayer(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.gravity_affected = true;
 
 	registry.playables.emplace(entity);
 
