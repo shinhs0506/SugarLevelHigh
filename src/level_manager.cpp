@@ -280,9 +280,9 @@ void LevelManager::on_key(int key, int, int action, int mod)
                     switch (key)
                     {
                     case GLFW_KEY_A:
-                        player_horizontal_movement.velocity += vec2(-CAM_MOVE_SPEED, 0); break;
+                        player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
                     case GLFW_KEY_D:
-                        player_horizontal_movement.velocity += vec2(CAM_MOVE_SPEED, 0); break;
+                        player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
                     }
                 }
                 else if (action == GLFW_RELEASE)
