@@ -39,10 +39,11 @@ void PhysicsSystem::step(float elapsed_ms)
 
 		// Gravity
 		if (motion.gravity_affected == true) {
-			//When collosion with terrain is detected. Reset this velocity to 0
+			//When collision with terrain is detected. Reset this velocity to 0
 			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
 		}
 
+		motion.prev_position = motion.position;
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
 		if (registry.cameras.has(entity))
 		{

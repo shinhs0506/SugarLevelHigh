@@ -46,8 +46,9 @@ void LevelManager::load_level(int level)
 
     if (level == 0) {
         Entity enemy = createEnemy(vec2(600, 500), vec2(50, 100));
-        Entity player = createPlayer(vec2(500, 500), vec2(50, 100));
+        Entity player = createPlayer(vec2(700, 500), vec2(50, 100));
         Entity terrain = createTerrain(vec2(600, 600), vec2(800, 50));
+        Entity terrain2 = createTerrain(vec2(970, 500), vec2(50, 200));
 		Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
         order_vector.push_back(enemy);
@@ -198,7 +199,7 @@ void LevelManager::handle_collisions()
             // collisions registry might have two collisions on the same object
             // using get() will always retrieve the first collision component
             Entity other_entity = registry.collisions.components[i].other;
-            
+
             if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
                 continue;
             }
@@ -222,6 +223,15 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
+            }
+        }
+
+        // handle character and terrain collisions
+        if (registry.terrains.has(entity)) {
+            Entity other_entity = registry.collisions.components[i].other;
+            if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
+                Motion& position = registry.motions.get(other_entity);
+                position.position = position.prev_position;
             }
         }
     }
