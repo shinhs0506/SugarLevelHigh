@@ -78,6 +78,23 @@ void LevelManager::abandon_level()
 
 }
 
+void LevelManager::remove_character(Entity entity)
+{
+    auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
+    int pos = it - order_vector.begin();
+    if (pos <= curr_order_ind) {
+        curr_order_ind -= 1;
+    }
+
+    // directly move to evaluation state only if current active character died
+    // this is to ensure turn correctly ends the current active chracter died in movement state
+    if (order_vector[pos] == registry.activeTurns.entities[0])
+    {
+        move_to_state(LevelState::EVALUATION);
+    }
+    order_vector.erase(it);
+}
+
 bool LevelManager::step(float elapsed_ms)
 {
     // remove dead entities (with health component and current health below 0)
@@ -89,23 +106,11 @@ bool LevelManager::step(float elapsed_ms)
         if (health.dead) {
             // check playables
             if (registry.playables.has(entity)) {
-                auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
-                int pos = it - order_vector.begin();
-                if (pos <= curr_order_ind) {
-                    curr_order_ind -= 1;
-                }
+                remove_character(entity);
                 removePlayer(entity);
-                order_vector.erase(it);
-                move_to_state(LevelState::EVALUATION);
             } else if (registry.enemies.has(entity)) {
-                auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
-                int pos = it - order_vector.begin();
-                if (pos <= curr_order_ind) {
-                    curr_order_ind -= 1;
-                }
+                remove_character(entity);
                 removeEnemy(entity);
-                order_vector.erase(it);
-                move_to_state(LevelState::EVALUATION);
             } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable) {
                 removeTerrain(entity);
             }
@@ -278,19 +283,6 @@ void LevelManager::on_key(int key, int, int action, int mod)
 
                     }
                 }
-
-                if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-                    std::cout << "player moved, going to player attack state" << std::endl;
-                    move_to_state(LevelState::PLAYER_ATTACK);
-                }
-            }
-            break;
-            
-        case LevelState::PLAYER_ATTACK:
-            // go back to player movement state if 'a' or 'd' is pressed
-            if (action == GLFW_PRESS && key == GLFW_KEY_B) {
-                std::cout << "moving again, going to player move state" << std::endl;
-                move_to_state(LevelState::PLAYER_MOVE);
             }
             break;
             
@@ -386,7 +378,8 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
                         if (collides(click_motion, motion)) {
                             registry.clickables.get(entity).on_click();
-                            break;
+                            std::cout << "player moved, going to player attack state" << std::endl;
+                            move_to_state(LevelState::PLAYER_ATTACK);
                         }
                     }
                 }
@@ -394,6 +387,12 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
             break;
 
         case LevelState::PLAYER_ATTACK: {
+            // player can use right click to cancel attack preview
+            if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+                std::cout << "player canceled action, going back to player move state" << std::endl;
+                move_to_state(LevelState::PLAYER_MOVE);
+                break;
+            }
             // tmp use left click for buttons or perform attck only
             if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
                 Motion click_motion;
@@ -450,8 +449,36 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
     // actions to perform regardless of the state
 }
 
+LevelManager::LevelState LevelManager::current_state()
+{
+    return this->level_state;
+}
+
 // state machine functions
-void LevelManager::move_to_state(LevelState level_state) {
-    assert(level_state >= LevelState::PREPARE && level_state <= LevelState::EVALUATION);
-    this->level_state = level_state;
+void LevelManager::move_to_state(LevelState next_state) {
+    // some assersions to make sure state machine are working as expected
+    switch (level_state) {
+    case LevelState::PREPARE:
+        assert(next_state == LevelState::ENEMY_MOVE || next_state == LevelState::PLAYER_MOVE); break;
+
+    // enemy states
+    case LevelState::ENEMY_MOVE:
+        assert(next_state == LevelState::ENEMY_ATTACK || next_state == LevelState::EVALUATION); break;
+    case LevelState::ENEMY_ATTACK:
+        assert(next_state == LevelState::EVALUATION); break;
+
+    // player states
+    case LevelState::PLAYER_MOVE:
+        assert(next_state == LevelState::PLAYER_ATTACK || next_state == LevelState::EVALUATION); break;
+    case LevelState::PLAYER_ATTACK:
+        assert(next_state == LevelState::PLAYER_MOVE || next_state == LevelState::EVALUATION); break;
+
+    case LevelState::EVALUATION:
+        assert(next_state == LevelState::PREPARE); break;
+
+    default:
+        assert(false && "Entered invalid state");
+    }
+
+    this->level_state = next_state;
 }
