@@ -326,19 +326,31 @@ void LevelManager::on_key(int key, int, int action, int mod)
             // player horizontal movement logic
             Entity player = registry.activeTurns.entities[0];
             Motion& player_horizontal_movement = registry.motions.get(player);
+            if (action == GLFW_PRESS)
+            {
+                switch (key)
+                {
+                case GLFW_KEY_A:
+                    player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
+                case GLFW_KEY_D:
+                    player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
+                }
+            }
+            
             if (action == GLFW_RELEASE)
             {
                 switch (key)
                 {
                 case GLFW_KEY_A:
-                    player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0);
-                    move_to_state(LevelState::PLAYER_IDLE);
-                    break;
+                    player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
                 case GLFW_KEY_D:
-                    player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0);
-                    move_to_state(LevelState::PLAYER_IDLE);
-                    break;
+                    player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
                 }
+            }
+
+            if (player_horizontal_movement.velocity[0] < epsilon && player_horizontal_movement.velocity[1] < epsilon)
+            {
+                move_to_state(LevelState::PLAYER_IDLE);
             }
         }
 
