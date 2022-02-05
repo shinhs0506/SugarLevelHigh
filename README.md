@@ -27,7 +27,7 @@ Created by Team 3
 - Players can use 'A' and 'D' to move the character left and right respectively. The logic is implemented in `LevelManager::on_key::282` callback function. Mouse clicks are used for selecting buttons and performing attacks, and it is implemented in `LevelManager::on_mouse_button::375` callback function. We also implemented camera movement using arrow keys to move the camera within a specific range. It is implemented in `LevelManager::on_key::338` callback function.
 
 **Randomimzed or hard-coded action of one or more characters/assets.**
-- here
+- Enemy has simply AI that has a radomized movement. After movement is done, the enemy has a hardcoded attack to the left and then it ends its turn. The decision tree is in AISystem::decision_Tree::40 which then calls appropriate movement or attacks.
 
 **Well-defined game space boundaries**
 - Playable space boundries are created by surrounded terrains such that characters will not fall off the platform. The terrains are created in `LevelManager::load_level::45`. There is also boundries for camera movement, which are limited by `vec2 lower_limit` and `vec2 higher_limit`. The movement of camera are specifically limited under `physic_system::step::50`.
