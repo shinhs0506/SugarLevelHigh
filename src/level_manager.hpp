@@ -11,6 +11,7 @@ class LevelManager
 public:
 	enum class LevelState {
 		PREPARE, // advance turn order  
+		PLAYER_IDLE, // player doesn't press anything
 		PLAYER_MOVE, // player move state
 		PLAYER_ATTACK, // player attack state
 		ENEMY_MOVE, // enemy move state
