@@ -163,7 +163,7 @@ bool LevelManager::step(float elapsed_ms)
 
                 if (registry.playables.has(registry.activeTurns.entities[0])) {
                     std::cout << "player is current character" << std::endl;
-                    move_to_state(LevelState::PLAYER_MOVE);
+                    move_to_state(LevelState::PLAYER_IDLE);
                 } else {
                     std::cout << "enemy is current character" << std::endl;
                     move_to_state(LevelState::ENEMY_MOVE);
@@ -292,39 +292,56 @@ void LevelManager::on_key(int key, int, int action, int mod)
             // do nothing
             break;
 
-        case LevelState::PLAYER_MOVE: 
+        case LevelState::PLAYER_IDLE: 
+        {
+            // move player
+            // then move to player attack state
+
+            // player horizontal movement logic
+            Entity player = registry.activeTurns.entities[0];
+            Motion& player_horizontal_movement = registry.motions.get(player);
+
+            if (action == GLFW_PRESS)
             {
-                // move player
-                // then move to player attack state
-                
-                // player horizontal movement logic
-                Entity player = registry.activeTurns.entities[0];
-                Motion& player_horizontal_movement = registry.motions.get(player);
-
-                if (action == GLFW_PRESS)
+                switch (key)
                 {
-                    switch (key)
-                    {
-                    case GLFW_KEY_A:
-                        player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
-                    case GLFW_KEY_D:
-                        player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
-                    }
-                }
-                else if (action == GLFW_RELEASE)
-                {
-                    switch (key)
-                    {
-                    case GLFW_KEY_A:
-                        player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
-                    case GLFW_KEY_D:
-                        player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
-
-                    }
+                case GLFW_KEY_A:
+                    player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0);
+                    move_to_state(LevelState::PLAYER_MOVE);
+                    break;
+                case GLFW_KEY_D:
+                    player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0);
+                    move_to_state(LevelState::PLAYER_MOVE);
+                    break;
                 }
             }
             break;
-            
+        }
+
+        case LevelState::PLAYER_MOVE:
+        {
+            // move player
+            // then move to player attack state
+
+            // player horizontal movement logic
+            Entity player = registry.activeTurns.entities[0];
+            Motion& player_horizontal_movement = registry.motions.get(player);
+            if (action == GLFW_RELEASE)
+            {
+                switch (key)
+                {
+                case GLFW_KEY_A:
+                    player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0);
+                    move_to_state(LevelState::PLAYER_IDLE);
+                    break;
+                case GLFW_KEY_D:
+                    player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0);
+                    move_to_state(LevelState::PLAYER_IDLE);
+                    break;
+                }
+            }
+        }
+
         case LevelState::ENEMY_MOVE:
             // do nothing
             break;
@@ -336,10 +353,12 @@ void LevelManager::on_key(int key, int, int action, int mod)
         case LevelState::EVALUATION:
             // do nothing
             break;
+
         case LevelState::TERMINATION:
             if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE) {
                 is_level_over = true;
             }
+            break;
     }
 
     // actions to perform regardless of the state
@@ -397,7 +416,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
             // do nothing
             break;
 
-        case LevelState::PLAYER_MOVE: 
+        case LevelState::PLAYER_IDLE: 
             {
                 // click on attack action to go to PLAYER_ATTACK state
                 if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
@@ -423,7 +442,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         case LevelState::PLAYER_ATTACK: {
             // player can use right click to cancel attack preview
             if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-                move_to_state(LevelState::PLAYER_MOVE);
+                move_to_state(LevelState::PLAYER_IDLE);
                 break;
             }
             // tmp use left click for buttons or perform attck only
@@ -493,11 +512,17 @@ void LevelManager::move_to_state(LevelState next_state) {
             std::cout << "moving to prepare state" << std::endl;
             assert(this->level_state == LevelState::EVALUATION); break;
 
-        case LevelState::PLAYER_MOVE:
-            std::cout << "moving to player move state, " << 
-                "press 'a' or 'd' to move, " << 
+        case LevelState::PLAYER_IDLE:
+            std::cout << "moving to PLAYER_IDLE state" << 
+                "press 'a' or 'd' to move, " <<
                 "or click on the blue box to prepare for an attack" << std::endl;
-            assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::PLAYER_ATTACK); break;
+            assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::PLAYER_MOVE ||
+                this->level_state == LevelState::PLAYER_ATTACK); break;
+
+        case LevelState::PLAYER_MOVE:
+            std::cout << "moving to player move state, release 'a' or 'd' to stop moving " << 
+                 std::endl;
+            assert(this->level_state == LevelState::PLAYER_IDLE); break;
 
         case LevelState::ENEMY_MOVE:
             std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
@@ -506,8 +531,8 @@ void LevelManager::move_to_state(LevelState next_state) {
         case LevelState::PLAYER_ATTACK:
             std::cout << "moving to player attack state, " << 
                 "left click to trigger attack, " << 
-                "or right click to move around again" << std::endl;
-            assert(this->level_state == LevelState::PLAYER_MOVE); break;
+                "or right click to cancel attack" << std::endl;
+            assert(this->level_state == LevelState::PLAYER_IDLE); break;
 
         case LevelState::ENEMY_ATTACK:
             std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
