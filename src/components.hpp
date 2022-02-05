@@ -165,6 +165,12 @@ struct Mesh
 	std::vector<uint16_t> vertex_indices;
 };
 
+struct AI
+{
+	// Only horizontal movement so far
+	vec2 movement_direction = vec2(-1, 0);
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture

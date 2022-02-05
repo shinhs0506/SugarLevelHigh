@@ -15,6 +15,9 @@
 class GameSystem
 {
 public:
+	// Manges Level-scoped entities and logic
+	LevelManager level_manager;
+
 	// different screen states
 	enum class GameState {
 		MAIN_MENU, // main menu screen
@@ -60,6 +63,4 @@ private:
 	// music references
 	Mix_Music* background_music;
 
-	// Manges Level-scoped entities and logic
-	LevelManager level_manager;
 };
