@@ -313,19 +313,11 @@ void LevelManager::on_key(int key, int, int action, int mod)
             break;
             
         case LevelState::ENEMY_MOVE:
-            // do nothing, some placeholder functions for now
-            if (key == GLFW_KEY_Z) {
-                std::cout << "enemy moved, going to enemy attack state" << std::endl;
-                move_to_state(LevelState::ENEMY_ATTACK);
-            }
+            // do nothing
             break;
 
         case LevelState::ENEMY_ATTACK:
-            // do nothing, some placeholder functions for now
-            if (key == GLFW_KEY_X) {
-                std::cout << "enemy attacked, going to evaluation" << std::endl;
-                move_to_state(LevelState::EVALUATION);
-            }
+            // do nothing
             break;
 
         case LevelState::EVALUATION:
