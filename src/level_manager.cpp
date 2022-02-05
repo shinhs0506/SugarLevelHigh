@@ -82,6 +82,8 @@ void LevelManager::load_level(int level)
 
         // start with a move state
         level_state = LevelState::PREPARE;
+
+        is_level_over = false;
 	}
 }
 
@@ -137,6 +139,14 @@ bool LevelManager::step(float elapsed_ms)
     switch (level_state) {
         case LevelState::PREPARE: 
             {
+                bool only_player_left = registry.playables.size() == registry.initiatives.size();
+                bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
+
+                if (only_player_left || only_enemy_left) {
+                    move_to_state(LevelState::TERMINATION);
+                    break;
+                }
+
                 if (should_initialize_active_turn) {
                     registry.activeTurns.emplace(order_vector[0]);
                     should_initialize_active_turn = false;
@@ -152,10 +162,10 @@ bool LevelManager::step(float elapsed_ms)
                 }
 
                 if (registry.playables.has(registry.activeTurns.entities[0])) {
-                    std::cout << "player is current character, moving to player move state" << std::endl;
+                    std::cout << "player is current character" << std::endl;
                     move_to_state(LevelState::PLAYER_MOVE);
                 } else {
-                    std::cout << "enemy is current character, moving to enemy move state" << std::endl;
+                    std::cout << "enemy is current character" << std::endl;
                     move_to_state(LevelState::ENEMY_MOVE);
                 }
             }
@@ -201,7 +211,6 @@ bool LevelManager::step(float elapsed_ms)
 
             // check if all attacks finished
             if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
-                std::cout << "all attacks and effects cleared, moving to prepare state" << std::endl;
                 move_to_state(LevelState::PREPARE);
             }
             break;
@@ -256,6 +265,10 @@ void LevelManager::handle_collisions()
             }
         }
     }
+}
+
+bool LevelManager::is_over() {
+    return is_level_over;
 }
 
 bool LevelManager::level_ended()
@@ -323,6 +336,10 @@ void LevelManager::on_key(int key, int, int action, int mod)
         case LevelState::EVALUATION:
             // do nothing
             break;
+        case LevelState::TERMINATION:
+            if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE) {
+                is_level_over = true;
+            }
     }
 
     // actions to perform regardless of the state
@@ -396,7 +413,6 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
                         if (collides(click_motion, motion)) {
                             registry.clickables.get(entity).on_click();
-                            std::cout << "player moved, going to player attack state" << std::endl;
                             move_to_state(LevelState::PLAYER_ATTACK);
                         }
                     }
@@ -407,7 +423,6 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         case LevelState::PLAYER_ATTACK: {
             // player can use right click to cancel attack preview
             if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-                std::cout << "player canceled action, going back to player move state" << std::endl;
                 move_to_state(LevelState::PLAYER_MOVE);
                 break;
             }
@@ -444,8 +459,6 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
                 
                 vec2 attack_pos = trans.mat * vec3(0, 0, 1);
                 createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
-                std::cout << "craeted attack object" << std::endl;
-                std::cout << "player attacked, moving to evaluation state" << std::endl;
                 move_to_state(LevelState::EVALUATION);
             }
             break;
@@ -475,28 +488,41 @@ LevelManager::LevelState LevelManager::current_state()
 // state machine functions
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
-    switch (level_state) {
-    case LevelState::PREPARE:
-        assert(next_state == LevelState::ENEMY_MOVE || next_state == LevelState::PLAYER_MOVE); break;
+    switch(next_state) {
+        case LevelState::PREPARE:
+            std::cout << "moving to prepare state" << std::endl;
+            assert(this->level_state == LevelState::EVALUATION); break;
 
-    // enemy states
-    case LevelState::ENEMY_MOVE:
-        assert(next_state == LevelState::ENEMY_ATTACK || next_state == LevelState::EVALUATION); break;
-    case LevelState::ENEMY_ATTACK:
-        assert(next_state == LevelState::EVALUATION); break;
+        case LevelState::PLAYER_MOVE:
+            std::cout << "moving to player move state, " << 
+                "press 'a' or 'd' to move, " << 
+                "or click on the blue box to prepare for an attack" << std::endl;
+            assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::PLAYER_ATTACK); break;
 
-    // player states
-    case LevelState::PLAYER_MOVE:
-        assert(next_state == LevelState::PLAYER_ATTACK || next_state == LevelState::EVALUATION); break;
-    case LevelState::PLAYER_ATTACK:
-        assert(next_state == LevelState::PLAYER_MOVE || next_state == LevelState::EVALUATION); break;
+        case LevelState::ENEMY_MOVE:
+            std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
+            assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::ENEMY_ATTACK); break;
 
-    case LevelState::EVALUATION:
-        assert(next_state == LevelState::PREPARE); break;
+        case LevelState::PLAYER_ATTACK:
+            std::cout << "moving to player attack state, " << 
+                "left click to trigger attack, " << 
+                "or right click to move around again" << std::endl;
+            assert(this->level_state == LevelState::PLAYER_MOVE); break;
 
-    default:
-        assert(false && "Entered invalid state");
+        case LevelState::ENEMY_ATTACK:
+            std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
+            assert(this->level_state == LevelState::ENEMY_MOVE); break;
+
+        case LevelState::EVALUATION:
+            std::cout << "moving to evaluation state, calculating damages..." << std::endl;
+            assert(this->level_state == LevelState::PLAYER_ATTACK || this->level_state == LevelState::ENEMY_ATTACK); break;
+
+        case LevelState::TERMINATION:
+            std::cout << "game is over!, press 'ESC' to exit" << std::endl;
+            assert(this->level_state == LevelState::PREPARE); break;
+
+        default:
+            assert(false && "Entered invalid state"); break;
     }
-
     this->level_state = next_state;
 }
