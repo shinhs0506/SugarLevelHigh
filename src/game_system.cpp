@@ -126,6 +126,13 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 }
 
 bool GameSystem::is_over() {
+    switch (game_state) {
+        case GameState::IN_LEVEL:
+            bool is_level_over = level_manager.is_over();
+            if (is_level_over) {
+                glfwSetWindowShouldClose(window, GL_TRUE);
+            }
+    }
 	return bool(glfwWindowShouldClose(window));
 }
 

@@ -16,6 +16,7 @@ public:
 		ENEMY_MOVE, // enemy move state
 		ENEMY_ATTACK, // enemy attack state
 		EVALUATION, // attack processing state
+        TERMINATION, // game ending logic
 	};
 
 	LevelManager();
@@ -39,6 +40,7 @@ public:
 	// Should be called from GameSystem to step level content
 	bool step(float elapsed_ms);
 	void handle_collisions();
+    bool is_over();
 
 	// Whether this level ended
 	bool level_ended();
@@ -77,4 +79,7 @@ private:
   
   // remove the character from order_vector
 	void remove_character(Entity entity);
+
+    // game ending logic
+    bool is_level_over;
 };
