@@ -23,7 +23,7 @@ public:
 
 	~LevelManager();
 
-	void init(GLFWwindow* window);
+	void init(GLFWwindow* window, int window_width_px, int window_height_px);
 
 	// Load all needed entities for the level
 	void load_level(int level);
@@ -71,6 +71,7 @@ private:
 	int num_characters;
 
 	std::vector<Entity> terrain_vector;
+    std::vector<Entity> level_entity_vector;
 
 	// OpenGL window handle
 	GLFWwindow* window;

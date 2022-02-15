@@ -23,7 +23,7 @@ LevelManager::~LevelManager()
 
 }
 
-void LevelManager::init(GLFWwindow* window)
+void LevelManager::init(GLFWwindow* window, int window_width_px, int window_height_px)
 {
 	this->window = window;
 	this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
@@ -52,10 +52,16 @@ void LevelManager::load_level(int level)
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
         Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
+        level_entity_vector.push_back(background);
+        level_entity_vector.push_back(enemy);
+        level_entity_vector.push_back(player);
+        level_entity_vector.push_back(button);
+
         float terrain_x_offset = 0.f;
         while (terrain_x_offset < 1200.f) {
             Entity curr = createTerrain(vec2(100.001 + terrain_x_offset, 600.001), vec2(100, 100));
             terrain_vector.push_back(curr);
+            level_entity_vector.push_back(curr);
             terrain_x_offset += 100.001;
         }
         float terrain_y_offset = 100.001;
@@ -64,6 +70,8 @@ void LevelManager::load_level(int level)
             Entity curr2 = createTerrain(vec2(1200.001, 600.001 - terrain_y_offset), vec2(100, 100));
             terrain_vector.push_back(curr1);
             terrain_vector.push_back(curr2);
+            level_entity_vector.push_back(curr1);
+            level_entity_vector.push_back(curr2);
             terrain_y_offset += 100.001;
         }
       
@@ -94,7 +102,12 @@ void LevelManager::restart_level()
 
 void LevelManager::abandon_level()
 {
-
+    for (auto& entity : level_entity_vector) {
+        registry.remove_all_components_of(entity); 
+    }
+    terrain_vector.clear();
+    level_entity_vector.clear();
+    order_vector.clear();
 }
 
 void LevelManager::remove_character(Entity entity)
@@ -114,8 +127,11 @@ void LevelManager::remove_character(Entity entity)
     order_vector.erase(it);
 }
 
+#include <iostream>
+
 bool LevelManager::step(float elapsed_ms)
 {
+    std::cout << "level step" << std::endl;
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
         Entity entity = registry.healths.entities[i];
@@ -136,6 +152,7 @@ bool LevelManager::step(float elapsed_ms)
         }
     }
 
+    std::cout << "before switch" << std::endl;
     switch (level_state) {
         case LevelState::PREPARE: 
             {
@@ -216,7 +233,7 @@ bool LevelManager::step(float elapsed_ms)
             break;
     }
 
-	return true;
+    return true;
 }
 
 void LevelManager::handle_collisions()

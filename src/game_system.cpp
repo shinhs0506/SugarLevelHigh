@@ -5,8 +5,14 @@
 #include <cassert>
 #include <sstream>
 
+#include "SDL_shape.h"
+#include "ability.hpp"
+#include "common.hpp"
 #include "physics_system.hpp"
 #include "level_init.hpp"
+#include "tiny_ecs_registry.hpp"
+
+#include <iostream>
 
 const char* GAME_TITLE = "Sugar Level: High";
 
@@ -109,30 +115,56 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	// set the title of the game
 	glfwSetWindowTitle(window, GAME_TITLE);
 
-	// init a camera that is shared across all scenes
-	// camera offsets are the same as the window size
-	vec2 offset = { window_width_px / 2, window_height_px / 2 };
-	// init position at center of the window, which is the same as offset
-	// also set x, y limit to the same as offset so the camera is not really movable
-	// need to modify limits in each level to match the map
-	createCamera(offset, offset, offset, offset);
+	//// init a camera that is shared across all scenes
+	//// camera offsets are the same as the window size
+    vec2 offset = vec2(window_width_px / 2, window_height_px / 2);
+    menu_pos = vec2(0, window_height_px) + offset;
+    game_pos = offset;
+	//// init position at center of the window, which is the same as offset
+	//// also set x, y limit to the same as offset so the camera is not really movable
+	//// need to modify limits in each level to match the map
+    createCamera(offset, offset, offset, offset);
 	
-	// Directly start a level for now
-	game_state = GameState::IN_LEVEL; // currently only working on the level
+    // start with main menu
+    init_entities();
+    this->current_game_state = GameState::MAIN_MENU;
+    this->next_game_state = GameState::MAIN_MENU;
+}
 
-	level_manager.init(window);
+void GameSystem::init_entities() {
+    level_selection_button = createButton(vec2(400, 200), vec2(200,50), mock_callback);
+    help_button = createButton(vec2(400, 300), vec2(200,50), mock_callback);
+    exit_button = createButton(vec2(400, 400), vec2(200,50), mock_callback);
+}
 
-	level_manager.load_level(0);
+void GameSystem::destroy_entities() {
+    registry.remove_all_components_of(level_selection_button);
+    registry.remove_all_components_of(help_button);
+    registry.remove_all_components_of(exit_button);
 }
 
 bool GameSystem::is_over() {
-    switch (game_state) {
-        case GameState::IN_LEVEL:
+    switch (current_game_state) {
+        case GameState::IN_LEVEL: 
+        {
             bool is_level_over = level_manager.is_over();
             if (is_level_over) {
+                // TODO: move to the main menu state
+                level_manager.abandon_level();
+                move_to_state(GameState::MAIN_MENU);
+            }
+        }
+        break;
+        case GameState::MAIN_MENU:
+        {
+            // TODO: set WindowShouldClose to true if exit button is closed
+            if (did_player_exit) {
                 glfwSetWindowShouldClose(window, GL_TRUE);
             }
+        }
+        break;
     }
+
 	return bool(glfwWindowShouldClose(window));
 }
 
@@ -142,12 +174,17 @@ bool GameSystem::step(float elapsed_ms_since_last_update) {
 	while (registry.debugComponents.entities.size() > 0)
 	    registry.remove_all_components_of(registry.debugComponents.entities.back());
 
-	switch (game_state) {
+    this->current_game_state = this->next_game_state;
+
+	switch (current_game_state) {
 	case GameState::IN_LEVEL:
 		level_manager.step(elapsed_ms_since_last_update);
 		break;
+    case GameState::MAIN_MENU:
+         
+        break;
 	default: 
-		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
+		fprintf(stderr, "Fatal: entered invalid game state: %i", current_game_state);
 		exit(1);
 	}
 
@@ -156,48 +193,107 @@ bool GameSystem::step(float elapsed_ms_since_last_update) {
 
 // On key callback
 void GameSystem::on_key(int key, int, int action, int mod) {
-	switch (game_state) {
+	switch (current_game_state) {
 	case GameState::IN_LEVEL:
 		level_manager.on_key(key, 0, action, mod);
 		break;
+    case GameState::MAIN_MENU:
+        break;
 	default:
-		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
+		fprintf(stderr, "Fatal: entered invalid game state: %i", current_game_state);
 		exit(1);
 	}
 }
 
 void GameSystem::on_mouse_move(vec2 mouse_position) {
-	switch (game_state) {
+	switch (current_game_state) {
 	case GameState::IN_LEVEL:
 		level_manager.on_mouse_move(mouse_position);
 		break;
+    case GameState::MAIN_MENU:
+        break;
 	default:
-		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
+		fprintf(stderr, "Fatal: entered invalid game state: %i", current_game_state);
 		exit(1);
 	}
 }
 
 void GameSystem::on_mouse_button(int button, int action, int mod) {
-	switch (game_state) {
+    double cursor_window_x, cursor_window_y;
+    glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+    vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+    Entity& camera = registry.cameras.entities[0];
+    vec2 camera_pos = registry.motions.get(camera).position;
+    vec2 camera_offset = registry.cameras.get(camera).offset;
+
+    vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+
+	switch (current_game_state) {
 	case GameState::IN_LEVEL:
 		level_manager.on_mouse_button(button, action, mod);
 		break;
+    case GameState::MAIN_MENU:
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+            Motion click_motion;
+            click_motion.position = cursor_world_pos;
+            click_motion.scale = { 1.f, 1.f };
+
+            Motion level_selection_button_motion = registry.motions.get(level_selection_button);
+            Motion help_button_motion = registry.motions.get(help_button);
+            Motion exit_button_motion = registry.motions.get(exit_button);
+
+            if (collides(click_motion, level_selection_button_motion)) {
+                // move to IN_LEVEL state
+                move_to_state(GameState::IN_LEVEL);
+            } else if (collides(click_motion, help_button_motion)) {
+                // TODO: handle help
+            } else if (collides(click_motion, exit_button_motion)) {
+                // exit game
+                did_player_exit = true;
+            }
+        }
+    }
+    break;
 	default:
-		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
+		fprintf(stderr, "Fatal: entered invalid game state: %i", current_game_state);
 		exit(1);
 	}
 }
 
 void GameSystem::handle_collisions() {
-	switch (game_state) {
+
+	switch (current_game_state) {
 	case GameState::IN_LEVEL:
 		level_manager.handle_collisions();
 		break;
+    case GameState::MAIN_MENU:
+        break;
 	default:
-		fprintf(stderr, "Fatal: entered invalid game state: %i", game_state);
+		fprintf(stderr, "Fatal: entered invalid game state: %i", current_game_state);
 		exit(1);
 	}
 
 	// Remove all collisions from this simulation step
 	registry.collisions.clear();
+}
+
+void GameSystem::move_to_state(GameState next_game_state) {
+    //registry.clear_all_components();
+
+    
+    if (next_game_state == GameState::IN_LEVEL) {
+        this->destroy_entities();
+        level_manager.init(window, window_width_px, window_height_px);
+        level_manager.load_level(0);
+    } else if (next_game_state == GameState::MAIN_MENU) {
+        this->init_entities();
+    }
+
+    this->next_game_state = next_game_state;      
+}
+
+bool GameSystem::is_in_level() {
+    return this->current_game_state == GameState::IN_LEVEL;
 }

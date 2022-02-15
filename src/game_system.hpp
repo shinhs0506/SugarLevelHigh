@@ -35,6 +35,10 @@ public:
 	// starts the game
 	void init(RenderSystem* renderer);
 
+    // initialize main menu entities
+    void init_entities();
+    void destroy_entities();
+
 	// Releases all associated resources
 	~GameSystem();
 
@@ -44,6 +48,8 @@ public:
 	void handle_collisions();
 
 	bool is_over();
+
+    bool is_in_level();
 
 private:
 	// Input callback functions
@@ -58,9 +64,22 @@ private:
 	RenderSystem* renderer;
 
 	// Game states
-	GameState game_state;
+	GameState current_game_state;
+	GameState next_game_state;
 	 
 	// music references
 	Mix_Music* background_music;
 
+    // main menu buttons
+    Entity level_selection_button;
+    Entity help_button;
+    Entity exit_button;
+
+    bool did_player_exit = false;
+
+    void move_to_state(GameState next_game_state);
+
+    // camera setting
+    vec2 menu_pos;
+    vec2 game_pos;
 };
