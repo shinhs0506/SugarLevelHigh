@@ -4,14 +4,13 @@
 #include <GLFW/glfw3.h>
 #include <cfloat>
 #include <vector>
+#include <iostream>
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
 #include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "ability.hpp"
-
-#include <iostream>
 
 LevelManager::LevelManager()
 {
@@ -25,8 +24,8 @@ LevelManager::~LevelManager()
 
 void LevelManager::init(GLFWwindow* window, int window_width_px, int window_height_px)
 {
-	this->window = window;
-	this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
+    this->window = window;
+    this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 }
 
 bool compare(Entity a, Entity b) {
@@ -38,15 +37,15 @@ bool compare(Entity a, Entity b) {
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
-	
-	Camera& camera = registry.cameras.get(main_camera);
-	Motion& motion = registry.motions.get(main_camera);
+
+    Camera& camera = registry.cameras.get(main_camera);
+    Motion& motion = registry.motions.get(main_camera);
 
     if (level == 0) {
         // change camera limits based on level
         camera.lower_limit = motion.position - vec2(100);
         camera.higer_limit = motion.position + vec2(100);
-        
+
         Entity background = createBackground(vec2(1480, 920), level);
         Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
@@ -74,7 +73,7 @@ void LevelManager::load_level(int level)
             level_entity_vector.push_back(curr2);
             terrain_y_offset += 100.001;
         }
-      
+
         order_vector.push_back(enemy);
         order_vector.push_back(player);
 
@@ -92,7 +91,7 @@ void LevelManager::load_level(int level)
         level_state = LevelState::PREPARE;
 
         is_level_over = false;
-	}
+    }
 }
 
 void LevelManager::restart_level()
@@ -142,93 +141,95 @@ bool LevelManager::step(float elapsed_ms)
             if (registry.playables.has(entity)) {
                 remove_character(entity);
                 removePlayer(entity);
-            } else if (registry.enemies.has(entity)) {
+            }
+            else if (registry.enemies.has(entity)) {
                 remove_character(entity);
                 removeEnemy(entity);
-            } else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable) {
+            }
+            else if (registry.terrains.has(entity) && registry.terrains.get(entity).breakable) {
                 removeTerrain(entity);
             }
         }
     }
 
+    bool only_player_left = registry.playables.size() == registry.initiatives.size();
+    bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
     switch (level_state) {
-        case LevelState::PREPARE: 
-            {
-                bool only_player_left = registry.playables.size() == registry.initiatives.size();
-                bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
+    case LevelState::PREPARE:
+        // check whether level completed/failed
+        if (only_player_left || only_enemy_left) {
+            move_to_state(LevelState::TERMINATION);
+            break;
+        }
 
-                if (only_player_left || only_enemy_left) {
-                    move_to_state(LevelState::TERMINATION);
-                    break;
-                }
+        // determine turn order
+        if (should_initialize_active_turn) {
+            registry.activeTurns.emplace(order_vector[0]);
+            should_initialize_active_turn = false;
+        }
+        else {
+            // advance turn order
+            int num_characters = registry.initiatives.size();
 
-                if (should_initialize_active_turn) {
-                    registry.activeTurns.emplace(order_vector[0]);
-                    should_initialize_active_turn = false;
-                } else {
-                    // advance turn order
-                    int num_characters = registry.initiatives.size();
-                    
-                    curr_order_ind = (curr_order_ind + 1) % num_characters;
-                    Entity& next_character = order_vector[curr_order_ind];
+            curr_order_ind = (curr_order_ind + 1) % num_characters;
+            Entity& next_character = order_vector[curr_order_ind];
 
-                    registry.activeTurns.clear();
-                    registry.activeTurns.emplace(next_character);
-                }
+            registry.activeTurns.clear();
+            registry.activeTurns.emplace(next_character);
+        }
 
-                if (registry.playables.has(registry.activeTurns.entities[0])) {
-                    std::cout << "player is current character" << std::endl;
-                    move_to_state(LevelState::PLAYER_MOVE);
-                } else {
-                    std::cout << "enemy is current character" << std::endl;
-                    move_to_state(LevelState::ENEMY_MOVE);
+        if (registry.playables.has(registry.activeTurns.entities[0])) {
+            std::cout << "player is current character" << std::endl;
+            // reset player controller
+            player_controller.reset(registry.activeTurns.entities[0]);
+            move_to_state(LevelState::PLAYER_TURN);
+        }
+        else {
+            std::cout << "enemy is current character" << std::endl;
+            move_to_state(LevelState::ENEMY_MOVE);
+        }
+        break;
+
+    case LevelState::PLAYER_TURN:
+        // step player controller
+        player_controller.step(elapsed_ms);
+        if (player_controller.should_end_player_turn())
+        {
+            move_to_state(LevelState::EVALUATION);
+        }
+        break;
+
+    case LevelState::EVALUATION:
+        // remove timed out attack objects
+        for (uint i = 0; i < registry.attackObjects.size(); i++) {
+            Entity entity = registry.attackObjects.entities[i];
+            AttackObject& obj = registry.attackObjects.components[i];
+            obj.ttl_ms -= elapsed_ms;
+            if (obj.ttl_ms < 0) {
+                removeAttackObject(entity);
+            }
+        }
+
+        // update hit effect ttl
+        for (uint i = 0; i < registry.hitEffects.size(); i++) {
+            Entity entity = registry.hitEffects.entities[i];
+            HitEffect& effect = registry.hitEffects.components[i];
+            effect.ttl_ms -= elapsed_ms;
+            if (effect.ttl_ms < 0) {
+                removeHitEffect(entity);
+
+                // only set dead after hit effect played 
+                if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
+                    registry.healths.get(entity).dead = true;
                 }
             }
-            break;
+        }
 
-        case LevelState::PLAYER_MOVE:
-            break;
-
-        case LevelState::PLAYER_ATTACK:
-            break;
-
-        case LevelState::ENEMY_MOVE:
-            break;
-
-        case LevelState::ENEMY_ATTACK: 
-            break;
-
-        case LevelState::EVALUATION:
-            // remove timed out attack objects
-            for (uint i = 0; i < registry.attackObjects.size(); i ++) {
-                Entity entity = registry.attackObjects.entities[i];
-                AttackObject& obj = registry.attackObjects.components[i];
-                obj.ttl_ms -= elapsed_ms;
-                if (obj.ttl_ms < 0) {
-                    removeAttackObject(entity);
-                }
-            }
-
-            // update hit effect ttl
-            for (uint i = 0; i < registry.hitEffects.size(); i++) {
-                Entity entity = registry.hitEffects.entities[i];
-                HitEffect& effect = registry.hitEffects.components[i];
-                effect.ttl_ms -= elapsed_ms;
-                if (effect.ttl_ms < 0) {
-                    removeHitEffect(entity);
-
-                    // only set dead after hit effect played 
-                    if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
-                        registry.healths.get(entity).dead = true;
-                    }
-                }
-            }
-
-            // check if all attacks finished
-            if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
-                move_to_state(LevelState::PREPARE);
-            }
-            break;
+        // check if all attacks finished
+        if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
+            move_to_state(LevelState::PREPARE);
+        }
+        break;
     }
 
     return true;
@@ -286,108 +287,63 @@ bool LevelManager::is_over() {
     return is_level_over;
 }
 
-bool LevelManager::level_ended()
-{
-	return ended;
-}
+void LevelManager::update_camera(vec2 velocity) {
+    auto& motion_registry = registry.motions;
 
-void LevelManager::update_ui(vec2 velocity) {
-	auto& motion_registry = registry.motions;
-
-	// update camera position
-	Motion& camera_motion = motion_registry.get(main_camera);
-	camera_motion.velocity += velocity;
+    // update camera position
+    Motion& camera_motion = motion_registry.get(main_camera);
+    camera_motion.velocity += velocity;
 
 }
 
-void LevelManager::on_key(int key, int, int action, int mod)
+void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
     switch (level_state) {
-        case LevelState::PREPARE:
-            // do nothing
-            break;
+    case LevelState::PLAYER_TURN: 
+        // handle all player logic to a player controller
+        player_controller.on_key(key, scancode, action, mod);
+        break;
 
-        case LevelState::PLAYER_MOVE: 
-            {
-                // move player
-                // then move to player attack state
-                
-                // player horizontal movement logic
-                Entity player = registry.activeTurns.entities[0];
-                Motion& player_horizontal_movement = registry.motions.get(player);
-
-                if (action == GLFW_PRESS)
-                {
-                    switch (key)
-                    {
-                    case GLFW_KEY_A:
-                        player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
-                    case GLFW_KEY_D:
-                        player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
-                    }
-                }
-                else if (action == GLFW_RELEASE)
-                {
-                    switch (key)
-                    {
-                    case GLFW_KEY_A:
-                        player_horizontal_movement.velocity += vec2(player_horizontal_movement.speed, 0); break;
-                    case GLFW_KEY_D:
-                        player_horizontal_movement.velocity += vec2(-player_horizontal_movement.speed, 0); break;
-
-                    }
-                }
-            }
-            break;
-            
-        case LevelState::ENEMY_MOVE:
-            // do nothing
-            break;
-
-        case LevelState::ENEMY_ATTACK:
-            // do nothing
-            break;
-
-        case LevelState::EVALUATION:
-            // do nothing
-            break;
-        case LevelState::TERMINATION:
-            if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE) {
-                is_level_over = true;
-            }
+    case LevelState::TERMINATION:
+        if (action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE) 
+        {
+            is_level_over = true;
+        }
+        break;
     }
 
     // actions to perform regardless of the state
-	// camera control logic
-	Motion& camera_motion = registry.motions.get(main_camera);
-	if (action == GLFW_PRESS)
-	{
-		switch (key)
-		{
-		case GLFW_KEY_LEFT:
-			update_ui(vec2(-CAM_MOVE_SPEED, 0)); break;
-		case GLFW_KEY_RIGHT:
-			update_ui(vec2(CAM_MOVE_SPEED, 0)); break;
-		case GLFW_KEY_UP:
-			update_ui(vec2(0, -CAM_MOVE_SPEED)); break;
-		case GLFW_KEY_DOWN:
-			update_ui(vec2(0, CAM_MOVE_SPEED)); break;
-		}
+    // camera control logic
+    Motion& camera_motion = registry.motions.get(main_camera);
+    if (action == GLFW_PRESS)
+    {
+        switch (key)
+        {
+        case GLFW_KEY_LEFT:
+            update_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
+        case GLFW_KEY_RIGHT:
+            update_camera(vec2(CAM_MOVE_SPEED, 0)); break;
+        case GLFW_KEY_UP:
+            update_camera(vec2(0, -CAM_MOVE_SPEED)); break;
+        case GLFW_KEY_DOWN:
+            update_camera(vec2(0, CAM_MOVE_SPEED)); break;
+        }
 
-	} else if (action == GLFW_RELEASE)
-	{
-		switch (key)
-		{
-		case GLFW_KEY_LEFT:
-			update_ui(vec2(CAM_MOVE_SPEED, 0)); break;
-		case GLFW_KEY_RIGHT:
-			update_ui(vec2(-CAM_MOVE_SPEED, 0)); break;
-		case GLFW_KEY_UP:
-			update_ui(vec2(0, CAM_MOVE_SPEED)); break;
-		case GLFW_KEY_DOWN:
-			update_ui(vec2(0, -CAM_MOVE_SPEED)); break;
-		}
-	}
+    }
+    else if (action == GLFW_RELEASE)
+    {
+        switch (key)
+        {
+        case GLFW_KEY_LEFT:
+            update_camera(vec2(CAM_MOVE_SPEED, 0)); break;
+        case GLFW_KEY_RIGHT:
+            update_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
+        case GLFW_KEY_UP:
+            update_camera(vec2(0, CAM_MOVE_SPEED)); break;
+        case GLFW_KEY_DOWN:
+            update_camera(vec2(0, -CAM_MOVE_SPEED)); break;
+        }
+    }
 
 }
 
@@ -408,91 +364,11 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
     vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
 
     switch (level_state) {
-        case LevelState::PREPARE:
-            // do nothing
-            break;
-
-        case LevelState::PLAYER_MOVE: 
-            {
-                // click on attack action to go to PLAYER_ATTACK state
-                if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-                    Motion click_motion;
-                    click_motion.position = cursor_world_pos;
-                    click_motion.scale = { 1.f, 1.f };
-
-                    // check to see if click was on a button first
-                    for (uint i = 0; i < registry.clickables.size(); i++) {
-
-                        Entity entity = registry.clickables.entities[i];
-                        Motion motion = registry.motions.get(entity);
-
-                        if (collides(click_motion, motion)) {
-                            registry.clickables.get(entity).on_click();
-                            move_to_state(LevelState::PLAYER_ATTACK);
-                        }
-                    }
-                }
-            }
-            break;
-
-        case LevelState::PLAYER_ATTACK: {
-            // player can use right click to cancel attack preview
-            if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-                move_to_state(LevelState::PLAYER_MOVE);
-                break;
-            }
-            // tmp use left click for buttons or perform attck only
-            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-                Motion click_motion;
-                click_motion.position = cursor_world_pos;
-                click_motion.scale = { 1.f, 1.f };
-
-                // check to see if click was on a button first
-                for (uint i = 0; i < registry.clickables.size(); i++) {
-
-                    Entity entity = registry.clickables.entities[i];
-                    Motion motion = registry.motions.get(entity);
-
-                    if (collides(click_motion, motion)) {
-                        registry.clickables.get(entity).on_click();
-                        break;
-                    }
-                }
-
-                Entity player = registry.activeTurns.entities[0];
-
-                // manually calculate a world position with some offsets
-                vec2 player_pos = registry.motions.get(player).position;
-                
-                vec2 direction = cursor_world_pos - player_pos;
-
-                vec2 offset{ 75.f, 0.f }; // a bit before the character
-                Transform trans;
-                trans.translate(player_pos);
-                trans.rotate(-atan2(direction[0], direction[1]) + M_PI/2);
-                trans.translate(offset);
-                
-                vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-                createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
-                move_to_state(LevelState::EVALUATION);
-            }
-            break;
-            
-        }
-        case LevelState::ENEMY_MOVE:
-            // do nothing
-            break;
-
-        case LevelState::ENEMY_ATTACK:
-            // do nothing
-            break;
-
-        case LevelState::EVALUATION:
-            // do nothing
-            break;
+    case LevelState::PLAYER_TURN:
+        // handle all player logic to a player controller
+        player_controller.on_mouse_button(button, action, mod, cursor_world_pos);
+        break;
     }
-    
-    // actions to perform regardless of the state
 }
 
 LevelManager::LevelState LevelManager::current_state()
@@ -503,41 +379,33 @@ LevelManager::LevelState LevelManager::current_state()
 // state machine functions
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
-    switch(next_state) {
-        case LevelState::PREPARE:
-            std::cout << "moving to prepare state" << std::endl;
-            assert(this->level_state == LevelState::EVALUATION); break;
+    switch (next_state) {
+    case LevelState::PREPARE:
+        std::cout << "moving to prepare state" << std::endl;
+        assert(this->level_state == LevelState::EVALUATION); break;
 
-        case LevelState::PLAYER_MOVE:
-            std::cout << "moving to player move state, " << 
-                "press 'a' or 'd' to move, " << 
-                "or click on the blue box to prepare for an attack" << std::endl;
-            assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::PLAYER_ATTACK); break;
+    case LevelState::PLAYER_TURN:
+        std::cout << "moving to player's state" << std::endl;
+        assert(this->level_state == LevelState::PREPARE); break;
 
-        case LevelState::ENEMY_MOVE:
-            std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
-            assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::ENEMY_ATTACK); break;
+    case LevelState::ENEMY_MOVE:
+        std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
+        assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::ENEMY_ATTACK); break;
 
-        case LevelState::PLAYER_ATTACK:
-            std::cout << "moving to player attack state, " << 
-                "left click to trigger attack, " << 
-                "or right click to move around again" << std::endl;
-            assert(this->level_state == LevelState::PLAYER_MOVE); break;
+    case LevelState::ENEMY_ATTACK:
+        std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
+        assert(this->level_state == LevelState::ENEMY_MOVE); break;
 
-        case LevelState::ENEMY_ATTACK:
-            std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
-            assert(this->level_state == LevelState::ENEMY_MOVE); break;
+    case LevelState::EVALUATION:
+        std::cout << "moving to evaluation state, calculating damages..." << std::endl;
+        assert(this->level_state == LevelState::PLAYER_TURN || this->level_state == LevelState::ENEMY_ATTACK); break;
 
-        case LevelState::EVALUATION:
-            std::cout << "moving to evaluation state, calculating damages..." << std::endl;
-            assert(this->level_state == LevelState::PLAYER_ATTACK || this->level_state == LevelState::ENEMY_ATTACK); break;
+    case LevelState::TERMINATION:
+        std::cout << "game is over!, press 'ESC' to exit" << std::endl;
+        assert(this->level_state == LevelState::PREPARE); break;
 
-        case LevelState::TERMINATION:
-            std::cout << "game is over!, press 'ESC' to exit" << std::endl;
-            assert(this->level_state == LevelState::PREPARE); break;
-
-        default:
-            assert(false && "Entered invalid state"); break;
+    default:
+        assert(false && "Entered invalid state"); break;
     }
     this->level_state = next_state;
 }

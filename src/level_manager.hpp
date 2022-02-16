@@ -1,8 +1,8 @@
 #pragma once
-
-#include <tiny_ecs.hpp>
-#include <tiny_ecs_registry.hpp>
 #include <vector>
+
+#include "tiny_ecs_registry.hpp"
+#include "player_controller.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -11,8 +11,7 @@ class LevelManager
 public:
 	enum class LevelState {
 		PREPARE, // advance turn order  
-		PLAYER_MOVE, // player move state
-		PLAYER_ATTACK, // player attack state
+		PLAYER_TURN, // player doesn't press anything
 		ENEMY_MOVE, // enemy move state
 		ENEMY_ATTACK, // enemy attack state
 		EVALUATION, // attack processing state
@@ -40,12 +39,12 @@ public:
 	// Should be called from GameSystem to step level content
 	bool step(float elapsed_ms);
 	void handle_collisions();
-    bool is_over();
 
 	// Whether this level ended
-	bool level_ended();
+    bool is_over();
 
-	void update_ui(vec2 velocity);
+
+	void update_camera(vec2 velocity);
 
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
@@ -58,7 +57,6 @@ public:
 	LevelState current_state();
 
 private:
-	bool ended;
 	int curr_level;
 
 	Entity main_camera;
@@ -75,6 +73,9 @@ private:
 
 	// OpenGL window handle
 	GLFWwindow* window;
+
+	// controller that handles player's input
+	PlayerController player_controller;
 	
 	LevelState level_state;
   
