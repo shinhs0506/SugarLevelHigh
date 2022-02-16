@@ -22,7 +22,7 @@ public:
 
 	~LevelManager();
 
-	void init(GLFWwindow* window, int window_width_px, int window_height_px);
+	void init(GLFWwindow* window);
 
 	// Load all needed entities for the level
 	void load_level(int level);

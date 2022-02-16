@@ -126,13 +126,7 @@ void GameSystem::init(RenderSystem* renderer_arg) {
     // start with main menu
     this->current_game_state = GameState::MAIN_MENU;
     this->next_game_state = GameState::MAIN_MENU;
-    move_to_state(GameState::MAIN_MENU);
-}
-
-void GameSystem::destroy_entities() {
-    registry.remove_all_components_of(level_selection_button);
-    registry.remove_all_components_of(help_button);
-    registry.remove_all_components_of(exit_button);
+    menu_manager.init(window, this);
 }
 
 bool GameSystem::is_over() {
@@ -142,7 +136,6 @@ bool GameSystem::is_over() {
             bool is_level_over = level_manager.is_over();
             if (is_level_over) {
                 // TODO: move to the main menu state
-                level_manager.abandon_level();
                 move_to_state(GameState::MAIN_MENU);
             }
         }
@@ -249,17 +242,31 @@ void GameSystem::handle_collisions() {
 }
 
 void GameSystem::move_to_state(GameState next_game_state) {
-    //registry.clear_all_components();
-
     
-    if (next_game_state == GameState::IN_LEVEL) {
-        menu_manager.destroy();
-        level_manager.init(window, window_width_px, window_height_px);
-        level_manager.load_level(0);
-    } else if (next_game_state == GameState::MAIN_MENU) {
-        menu_manager.init(window, this);
+    // destroy current state's entities
+    switch (current_game_state) {
+        case GameState::MAIN_MENU:
+            menu_manager.destroy();
+            break;
+        case GameState::IN_LEVEL:
+            level_manager.abandon_level();
+            break;
     }
 
+    // init next game state's entities
+    // also check for correct state movement
+    switch (next_game_state) {
+        case GameState::MAIN_MENU:
+            assert(current_game_state == GameState::IN_LEVEL);
+            menu_manager.init(window, this);
+            break;
+        case GameState::IN_LEVEL:
+            assert(current_game_state == GameState::MAIN_MENU);
+            level_manager.init(window);
+            level_manager.load_level(0);
+            break;
+    }
+        
     this->next_game_state = next_game_state;      
 }
 

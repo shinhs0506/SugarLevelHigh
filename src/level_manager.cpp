@@ -22,7 +22,7 @@ LevelManager::~LevelManager()
 
 }
 
-void LevelManager::init(GLFWwindow* window, int window_width_px, int window_height_px)
+void LevelManager::init(GLFWwindow* window)
 {
     this->window = window;
     this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
