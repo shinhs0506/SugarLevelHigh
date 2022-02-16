@@ -26,6 +26,7 @@ void PlayerController::step(float elapsed_ms)
 void PlayerController::on_key(int key, int, int action, int mod)
 {
 	Motion& player_motion = registry.motions.get(player);
+	float y_velocity = player_motion.velocity[1];
 	switch (current_state)
 	{	
 	case PlayerState::IDLE:
@@ -34,18 +35,18 @@ void PlayerController::on_key(int key, int, int action, int mod)
 			switch (key)
 			{
 			case GLFW_KEY_A:
-				player_motion.velocity = vec2(-player_motion.speed, 0);
+				player_motion.velocity = vec2(-player_motion.speed, y_velocity);
 				move_to_state(PlayerState::MOVE_LEFT); break;
 			case GLFW_KEY_D:
-				player_motion.velocity = vec2(player_motion.speed, 0);
+				player_motion.velocity = vec2(player_motion.speed, y_velocity);
 				move_to_state(PlayerState::MOVE_RIGHT); break;
 			case GLFW_KEY_W:
-				// TODO: player not moving for up
-				player_motion.velocity = vec2(0);
+				// TODO: player not moving for up	
+				player_motion.velocity = vec2(0, -player_motion.speed);
 				move_to_state(PlayerState::MOVE_UP); break;
 			case GLFW_KEY_S:
 				// TODO: player not moving for down
-				player_motion.velocity = vec2(0);
+				player_motion.velocity = vec2(0, player_motion.speed);
 				move_to_state(PlayerState::MOVE_DOWN); break;
 			}
 		}
@@ -54,7 +55,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	case PlayerState::MOVE_LEFT:
 		if (key == GLFW_KEY_A && action == GLFW_RELEASE)
 		{
-			player_motion.velocity = vec2(0);
+			player_motion.velocity = vec2(0, y_velocity);
 			move_to_state(PlayerState::IDLE);
 		}
 		break;
@@ -62,7 +63,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	case PlayerState::MOVE_RIGHT:
 		if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 		{
-			player_motion.velocity = vec2(0);
+			player_motion.velocity = vec2(0, y_velocity);
 			move_to_state(PlayerState::IDLE);
 		}
 		break;
@@ -70,7 +71,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	case PlayerState::MOVE_UP:
 		if (key == GLFW_KEY_W && action == GLFW_RELEASE)
 		{
-			player_motion.velocity = vec2(0);
+			player_motion.velocity = vec2(0, y_velocity);
 			move_to_state(PlayerState::IDLE);
 		}
 		break;
@@ -78,7 +79,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	case PlayerState::MOVE_DOWN:
 		if (key == GLFW_KEY_S && action == GLFW_RELEASE)
 		{
-			player_motion.velocity = vec2(0);
+			player_motion.velocity = vec2(0, y_velocity);
 			move_to_state(PlayerState::IDLE);
 		}
 		break;
