@@ -37,10 +37,6 @@ public:
 	// starts the game
 	void init(RenderSystem* renderer);
 
-    // initialize main menu entities
-    void init_entities();
-    void destroy_entities();
-
 	// Releases all associated resources
 	~GameSystem();
 
@@ -73,10 +69,4 @@ private:
 	 
 	// music references
 	Mix_Music* background_music;
-
-
-    // main menu buttons
-    Entity level_selection_button;
-    Entity help_button;
-    Entity exit_button;
 };

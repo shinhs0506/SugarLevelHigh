@@ -5,14 +5,8 @@
 #include <cassert>
 #include <sstream>
 
-#include "SDL_shape.h"
-#include "ability.hpp"
-#include "common.hpp"
 #include "physics_system.hpp"
 #include "level_init.hpp"
-#include "tiny_ecs_registry.hpp"
-
-#include <iostream>
 
 const char* GAME_TITLE = "Sugar Level: High";
 

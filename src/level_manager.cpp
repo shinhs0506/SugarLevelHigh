@@ -126,8 +126,6 @@ void LevelManager::remove_character(Entity entity)
     order_vector.erase(it);
 }
 
-#include <iostream>
-
 bool LevelManager::step(float elapsed_ms)
 {
     // remove dead entities (with health component and current health below 0)

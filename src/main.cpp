@@ -11,8 +11,6 @@
 #include "render_system.hpp"
 #include "game_system.hpp"
 
-#include <iostream>
-
 using Clock = std::chrono::high_resolution_clock;
 
 // Entry point
@@ -58,7 +56,6 @@ int main()
             physics.step(elapsed_ms);
             game.handle_collisions();
         }
-        //physics.step(elapsed_ms);
 
 		renderer.draw();
 	}

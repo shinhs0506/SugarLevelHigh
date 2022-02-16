@@ -4,8 +4,6 @@
 
 #include "tiny_ecs_registry.hpp"
 
-#include <iostream>
-
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
 {
