@@ -56,9 +56,9 @@ int main()
 		ai.step(elapsed_ms);
         if (game.is_in_level()) {
             physics.step(elapsed_ms);
+            game.handle_collisions();
         }
         //physics.step(elapsed_ms);
-        game.handle_collisions();
 
 		renderer.draw();
 	}

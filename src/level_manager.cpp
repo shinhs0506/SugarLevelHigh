@@ -131,7 +131,6 @@ void LevelManager::remove_character(Entity entity)
 
 bool LevelManager::step(float elapsed_ms)
 {
-    std::cout << "level step" << std::endl;
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
         Entity entity = registry.healths.entities[i];
@@ -152,7 +151,6 @@ bool LevelManager::step(float elapsed_ms)
         }
     }
 
-    std::cout << "before switch" << std::endl;
     switch (level_state) {
         case LevelState::PREPARE: 
             {
