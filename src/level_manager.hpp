@@ -76,7 +76,8 @@ private:
 	// controller that handles player's input
 	PlayerController player_controller;
 	
-	LevelState level_state;
+	LevelState current_level_state;
+	LevelState next_level_state;
   
   // remove the character from order_vector
 	void remove_character(Entity entity);

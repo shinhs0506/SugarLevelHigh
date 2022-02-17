@@ -26,6 +26,12 @@ void LevelManager::init(GLFWwindow* window)
 {
     this->window = window;
     this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
+
+    // start with a move state
+    this->current_level_state = LevelState::PREPARE;
+    this->next_level_state = LevelState::PREPARE;
+
+    is_level_over = false;
 }
 
 bool compare(Entity a, Entity b) {
@@ -78,11 +84,6 @@ void LevelManager::load_level(int level)
         // should_initialize_active_turn = true means game has just started
         curr_order_ind = 0;
         should_initialize_active_turn = true;
-
-        // start with a move state
-        level_state = LevelState::PREPARE;
-
-        is_level_over = false;
     }
 }
 
@@ -115,6 +116,9 @@ void LevelManager::remove_character(Entity entity)
 
 bool LevelManager::step(float elapsed_ms)
 {
+    // advance state
+    this->current_level_state = this->next_level_state;
+
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
         Entity entity = registry.healths.entities[i];
@@ -139,7 +143,7 @@ bool LevelManager::step(float elapsed_ms)
 
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
-    switch (level_state) {
+    switch (current_level_state) {
     case LevelState::PREPARE:
         // check whether level completed/failed
         if (only_player_left || only_enemy_left) {
@@ -283,7 +287,7 @@ void LevelManager::update_camera(vec2 velocity) {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
-    switch (level_state) {
+    switch (current_level_state) {
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
         player_controller.on_key(key, scancode, action, mod);
@@ -348,7 +352,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
     vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
 
-    switch (level_state) {
+    switch (current_level_state) {
     case LevelState::PLAYER_TURN:
         // handle all player logic to a player controller
         player_controller.on_mouse_button(button, action, mod, cursor_world_pos);
@@ -358,7 +362,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
 LevelManager::LevelState LevelManager::current_state()
 {
-    return this->level_state;
+    return this->current_level_state;
 }
 
 // state machine functions
@@ -367,30 +371,31 @@ void LevelManager::move_to_state(LevelState next_state) {
     switch (next_state) {
     case LevelState::PREPARE:
         std::cout << "moving to prepare state" << std::endl;
-        assert(this->level_state == LevelState::EVALUATION); break;
+        assert(this->current_level_state == LevelState::EVALUATION); break;
 
     case LevelState::PLAYER_TURN:
         std::cout << "moving to player's state" << std::endl;
-        assert(this->level_state == LevelState::PREPARE); break;
+        assert(this->current_level_state == LevelState::PREPARE); break;
 
     case LevelState::ENEMY_MOVE:
         std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
-        assert(this->level_state == LevelState::PREPARE || this->level_state == LevelState::ENEMY_ATTACK); break;
+        assert(this->current_level_state == LevelState::PREPARE || this->current_level_state == LevelState::ENEMY_ATTACK); break;
 
     case LevelState::ENEMY_ATTACK:
         std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
-        assert(this->level_state == LevelState::ENEMY_MOVE); break;
+        assert(this->current_level_state == LevelState::ENEMY_MOVE); break;
 
     case LevelState::EVALUATION:
         std::cout << "moving to evaluation state, calculating damages..." << std::endl;
-        assert(this->level_state == LevelState::PLAYER_TURN || this->level_state == LevelState::ENEMY_ATTACK); break;
+        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_ATTACK); break;
 
     case LevelState::TERMINATION:
         std::cout << "game is over!, press 'ESC' to exit" << std::endl;
-        assert(this->level_state == LevelState::PREPARE); break;
+        assert(this->current_level_state == LevelState::PREPARE); break;
 
     default:
         assert(false && "Entered invalid state"); break;
     }
-    this->level_state = next_state;
+
+    this->next_level_state = next_state;
 }
