@@ -57,10 +57,16 @@ void LevelManager::load_level(int level)
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
         Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
+        level_entity_vector.push_back(background);
+        level_entity_vector.push_back(enemy);
+        level_entity_vector.push_back(player);
+        level_entity_vector.push_back(button);
+
         float terrain_x_offset = 0.f;
         while (terrain_x_offset < 1200.f) {
             Entity curr = createTerrain(vec2(100.001 + terrain_x_offset, 600.001), vec2(100, 100));
             terrain_vector.push_back(curr);
+            level_entity_vector.push_back(curr);
             terrain_x_offset += 100.001;
         }
         float terrain_y_offset = 100.001;
@@ -69,6 +75,8 @@ void LevelManager::load_level(int level)
             Entity curr2 = createTerrain(vec2(1200.001, 600.001 - terrain_y_offset), vec2(100, 100));
             terrain_vector.push_back(curr1);
             terrain_vector.push_back(curr2);
+            level_entity_vector.push_back(curr1);
+            level_entity_vector.push_back(curr2);
             terrain_y_offset += 100.001;
         }
 
@@ -94,7 +102,12 @@ void LevelManager::restart_level()
 
 void LevelManager::abandon_level()
 {
-
+    for (auto& entity : level_entity_vector) {
+        registry.remove_all_components_of(entity); 
+    }
+    terrain_vector.clear();
+    level_entity_vector.clear();
+    order_vector.clear();
 }
 
 void LevelManager::remove_character(Entity entity)

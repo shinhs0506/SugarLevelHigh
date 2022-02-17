@@ -151,12 +151,12 @@ void RenderSystem::drawToScreen()
 	gl_has_errors();
 	const GLuint post_program = effects[(GLuint)EFFECT_ASSET_ID::POST_PROCESS];
 	// Set clock
-	GLuint time_uloc = glGetUniformLocation(post_program, "time");
-	GLuint dead_timer_uloc = glGetUniformLocation(post_program, "darken_screen_factor");
-	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
-	ScreenState &screen = registry.screenStates.get(screen_state_entity);
-	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
-	gl_has_errors();
+    GLuint time_uloc = glGetUniformLocation(post_program, "time");
+    GLuint dead_timer_uloc = glGetUniformLocation(post_program, "darken_screen_factor");
+    glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+    ScreenState &screen = registry.screenStates.get(screen_state_entity);
+    glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
+    gl_has_errors();
 	// Set the vertex position and vertex texture coordinates (both stored in the
 	// same VBO)
 	GLint in_position_loc = glGetAttribLocation(post_program, "in_position");

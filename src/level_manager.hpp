@@ -69,6 +69,7 @@ private:
 	int num_characters;
 
 	std::vector<Entity> terrain_vector;
+    std::vector<Entity> level_entity_vector;
 
 	// OpenGL window handle
 	GLFWwindow* window;

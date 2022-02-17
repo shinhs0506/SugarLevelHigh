@@ -10,12 +10,14 @@
 
 #include "render_system.hpp"
 #include "level_manager.hpp"
+#include "menu_manager.hpp"
 
 // Container for all our entities and game logic
 class GameSystem
 {
 public:
 	// Manges Level-scoped entities and logic
+    MenuManager menu_manager;
 	LevelManager level_manager;
 
 	// different screen states
@@ -45,6 +47,10 @@ public:
 
 	bool is_over();
 
+    bool is_in_level();
+
+    void move_to_state(GameState next_game_state);
+
 private:
 	// Input callback functions
 	void on_key(int key, int, int action, int mod);
@@ -58,9 +64,9 @@ private:
 	RenderSystem* renderer;
 
 	// Game states
-	GameState game_state;
+	GameState current_game_state;
+	GameState next_game_state;
 	 
 	// music references
 	Mix_Music* background_music;
-
 };
