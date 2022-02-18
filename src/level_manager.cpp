@@ -53,8 +53,8 @@ void LevelManager::load_level(int level)
         camera.higer_limit = motion.position + vec2(100);
 
         Entity background = createBackground(vec2(1480, 920), level);
-        Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
+        Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
 
         level_entity_vector.push_back(background);
@@ -167,17 +167,20 @@ bool LevelManager::step(float elapsed_ms)
         // determine turn order
         if (should_initialize_active_turn) {
             registry.activeTurns.emplace(order_vector[0]);
+            registry.motions.get(order_vector[0]).depth = 10; 
             should_initialize_active_turn = false;
         }
         else {
-            // advance turn order
+            // advance turn order & give active character closest depth
             int num_characters = registry.initiatives.size();
 
+            registry.motions.get(order_vector[curr_order_ind]).depth = DEPTH::CHARACTER;
             curr_order_ind = (curr_order_ind + 1) % num_characters;
             Entity& next_character = order_vector[curr_order_ind];
 
             registry.activeTurns.clear();
             registry.activeTurns.emplace(next_character);
+            registry.motions.get(next_character).depth = DEPTH::ACTIVE;
         }
 
         if (registry.playables.has(registry.activeTurns.entities[0])) {

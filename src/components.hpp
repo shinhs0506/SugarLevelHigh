@@ -98,6 +98,7 @@ struct Motion {
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
     float speed = 100;
+	int depth = DEPTH::CHARACTER;
 };
 
 // Stucture to store collision information
@@ -228,3 +229,12 @@ struct RenderRequest {
 	GEOMETRY_BUFFER_ID used_geometry = GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 };
 
+enum DEPTH {
+	CAMERA = -1,
+	UI = 1,
+	ATTACK = 5,
+	ACTIVE = 10,
+	CHARACTER = 20,
+	TERRAIN = 100,
+	BACKGROUND = 1000
+};
