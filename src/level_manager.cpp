@@ -28,7 +28,7 @@ void LevelManager::init(GLFWwindow* window)
     this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 }
 
-bool compare(Entity a, Entity b) {
+bool compare(Entity& a, Entity& b) {
     auto a_init = registry.initiatives.get(a);
     auto b_init = registry.initiatives.get(b);
     return a_init.value < b_init.value;
