@@ -167,7 +167,7 @@ bool LevelManager::step(float elapsed_ms)
         // determine turn order
         if (should_initialize_active_turn) {
             registry.activeTurns.emplace(order_vector[0]);
-            registry.motions.get(order_vector[0]).depth = 10; 
+            registry.motions.get(order_vector[0]).depth = DEPTH::ACTIVE; 
             should_initialize_active_turn = false;
         }
         else {
