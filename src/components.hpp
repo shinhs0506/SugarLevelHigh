@@ -89,6 +89,17 @@ struct Terrain
 	bool breakable = false;
 };
 
+// proximity to camera
+enum DEPTH {
+	CAMERA = -1,
+	UI = 1,
+	ATTACK = 5,
+	ACTIVE = 10,
+	CHARACTER = 20,
+	TERRAIN = 100,
+	BACKGROUND = 1000
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
@@ -229,12 +240,3 @@ struct RenderRequest {
 	GEOMETRY_BUFFER_ID used_geometry = GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 };
 
-enum DEPTH {
-	CAMERA = -1,
-	UI = 1,
-	ATTACK = 5,
-	ACTIVE = 10,
-	CHARACTER = 20,
-	TERRAIN = 100,
-	BACKGROUND = 1000
-};
