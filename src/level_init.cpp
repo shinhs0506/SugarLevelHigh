@@ -39,6 +39,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.gravity_affected = true;
+	motion.depth = DEPTH::CHARACTER;
 
 	registry.enemies.emplace(entity);
 
@@ -87,6 +88,7 @@ Entity createPlayer(vec2 pos, vec2 size)
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.gravity_affected = true;
+	motion.depth = DEPTH::CHARACTER;
 
 	registry.playables.emplace(entity);
 
@@ -132,6 +134,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.depth = DEPTH::TERRAIN;
 
 	// TODO: terrains might have more components
 	Terrain terrain{ false }; 
@@ -169,6 +172,7 @@ Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damag
 	motion.angle = angle;
 	motion.velocity = velocity;
 	motion.scale = size;
+	motion.depth = DEPTH::ATTACK;
 
 	AttackObject obj{ ttl, damage, attacker};
 	registry.attackObjects.insert(entity, obj);
@@ -202,6 +206,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	motion.angle = 0.f;
 	motion.velocity = {0.f, 0.f};
 	motion.scale = {1.f, 1.f};
+	motion.depth = DEPTH::CAMERA;
 
 	Camera camera{ offset, lower_limit, higher_limit };
 	registry.cameras.insert(entity, camera);
@@ -225,6 +230,7 @@ Entity createButton(vec2 pos, vec2 size, void (*on_click)())
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.depth = DEPTH::UI;
 
 	Clickable clickable{ on_click };
 	registry.clickables.insert(entity, clickable);
@@ -272,6 +278,7 @@ Entity createBackground(vec2 size, int level)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.depth = DEPTH::BACKGROUND;
 
 	Background background{ };
 	registry.backgrounds.insert(entity, background);
