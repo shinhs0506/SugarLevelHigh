@@ -16,7 +16,7 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->game_system = game_system;
 
     level_selection_button = createStartButton(vec2(700, 200), vec2(200,50));
-    //help_button = createMenuButton(vec2(700, 300), vec2(200,50));
+    help_button = createHelpButton(vec2(700, 300), vec2(200,50));
     exit_button = createExitButton(vec2(700, 400), vec2(200,50));
 }
 
@@ -62,14 +62,15 @@ void MenuManager::on_mouse_button(int button, int action, int mod) {
         click_motion.scale = { 1.f, 1.f };
 
         Motion level_selection_button_motion = registry.motions.get(level_selection_button);
-        //Motion help_button_motion = registry.motions.get(help_button);
+        Motion help_button_motion = registry.motions.get(help_button);
         Motion exit_button_motion = registry.motions.get(exit_button);
 
         if (collides(click_motion, level_selection_button_motion)) {
             // move to IN_LEVEL state
             this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
-        //} else if (collides(click_motion, help_button_motion)) {
-            //// TODO: handle help
+        } else if (collides(click_motion, help_button_motion)) {
+            // open help menu
+            this->game_system->move_to_state(GameSystem::GameState::HELP);
         } else if (collides(click_motion, exit_button_motion)) {
             // exit game
             did_player_exit = true;

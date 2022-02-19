@@ -11,6 +11,7 @@
 #include "render_system.hpp"
 #include "level_manager.hpp"
 #include "menu_manager.hpp"
+#include "help_manager.hpp"
 
 // Container for all our entities and game logic
 class GameSystem
@@ -19,10 +20,12 @@ public:
 	// Manges Level-scoped entities and logic
     MenuManager menu_manager;
 	LevelManager level_manager;
+    HelpManager help_manager;
 
 	// different screen states
 	enum class GameState {
 		MAIN_MENU, // main menu screen
+        HELP, // help menu
 		MAIN_SETTING, // main menu settings for sound, etc.
 		LEVEL_SELECTION, // select which level to start
 		CHARACTER_SELECTION, // select characters to form a team for the level
