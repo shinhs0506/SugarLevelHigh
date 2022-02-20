@@ -15,9 +15,9 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->window = window;
     this->game_system = game_system;
 
-    level_selection_button = createStartButton(vec2(700, 200), vec2(200,50));
+    level_selection_button = createStartButton(vec2(700, 200), vec2(200,50), NULL);
     //help_button = createMenuButton(vec2(700, 300), vec2(200,50));
-    exit_button = createExitButton(vec2(700, 400), vec2(200,50));
+    exit_button = createExitButton(vec2(700, 400), vec2(200,50), NULL);
 }
 
 void MenuManager::destroy() {
