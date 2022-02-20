@@ -4,6 +4,12 @@
 
 #include "tiny_ecs_registry.hpp"
 
+struct {
+	bool operator()(Entity entity1, Entity entity2) const {
+		return registry.motions.get(entity1).depth > registry.motions.get(entity2).depth;
+	}
+} compare_depths;
+
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
 {
@@ -201,6 +207,10 @@ void RenderSystem::draw()
 							  // sprites back to front
 	gl_has_errors();
 	mat3 projection_2D = createProjectionMatrix();
+
+	// Sort the render requests in depth order (painter's algorithm)
+	registry.renderRequests.sort(compare_depths);
+
 	// Draw all textured meshes that have a position and size component
 	for (Entity entity : registry.renderRequests.entities)
 	{

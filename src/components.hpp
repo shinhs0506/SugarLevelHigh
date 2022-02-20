@@ -90,6 +90,17 @@ struct Terrain
 	bool breakable = false;
 };
 
+// proximity to camera
+enum DEPTH {
+	CAMERA = -1,
+	UI = 1,
+	ATTACK = 5,
+	ACTIVE = 10,
+	CHARACTER = 20,
+	TERRAIN = 100,
+	BACKGROUND = 1000
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
@@ -99,6 +110,7 @@ struct Motion {
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
     float speed = 100;
+	int depth = DEPTH::CHARACTER;
 };
 
 // Stucture to store collision information
