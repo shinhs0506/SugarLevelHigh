@@ -53,9 +53,7 @@ bool collide_bottom(Entity entity1, Entity entity2)
 
     if (
         // y axis collision check
-        //(pos1[1] - bb1[1] <= pos2[1] + bb2[1] && pos1[1] + bb1[1] >= pos2[1] - bb2[1]))
-        (pos1[1] - bb1[1] <= pos2[1] + bb2[1]))
-
+        (pos1[1] - bb1[1] <= pos2[1] + bb2[1] && pos1[1] + bb1[1] >= pos2[1] - bb2[1]))
     {
         return true;
     }
@@ -311,12 +309,14 @@ void LevelManager::handle_collisions()
             Entity other_entity = registry.collisions.components[i].other;
             if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
                 Motion& position = registry.motions.get(other_entity);
+                //position.position = position.prev_position;
                 //if (collide_bottom(entity, other_entity)) {
                 //    position.position.y = position.prev_position.y;
                 //    //printf("collide bottom only. \n");
                 //}
                 if (collide_bottom(entity, other_entity)) {
                     position.position.y = position.prev_position.y;
+                    position.velocity.y = 0;
                     printf("Collide with BOTTOM. \n");
                 }
                 if (collide_side(entity, other_entity) && collide_bottom(entity, other_entity)) {
