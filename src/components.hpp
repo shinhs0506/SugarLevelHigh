@@ -45,20 +45,28 @@ struct ActiveTurn {
     //    
 };
 
-struct AttackAbility
-{
-	float range;
-	float damage;
-};
-
 // Represent an attack to be rendered
 // Handled by collision with others
 struct AttackObject
 {
+	bool activated;
 	float ttl_ms;
 	float damage;
+	float range;
+	int shape; // This is the GEOMETRY_BUFFER_ID
+	vec2 size;
+	bool gravity_affected;
+	int max_cooldown;
+	int current_cooldown;
 	Entity attacker;
 	std::unordered_set<Entity, EntityHash> attacked;
+};
+
+
+struct AttackArsenal
+{
+	AttackObject basic_attack;
+	AttackObject advanced_attack;
 };
 
 // Attached to all projectiles 

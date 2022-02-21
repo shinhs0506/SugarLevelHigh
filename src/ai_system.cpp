@@ -1,6 +1,7 @@
 // internal
 #include "ai_system.hpp"
 #include "level_init.hpp"
+#include "ability.hpp"
 
 void AISystem::init(LevelManager* level_manager)
 {
@@ -16,18 +17,18 @@ void AISystem::reset_Enemy(Energy& entity_energy, AI& entity_AI) {
 
 void enemy_Attack(Entity entity) {
 
+
 	Entity enemy = registry.activeTurns.entities[0];
 
-	// manually calculate a world position with some offsets
-	vec2 player_pos = registry.motions.get(enemy).position;
+	vec2 enemy_pos = registry.motions.get(enemy).position;
 
-	vec2 offset{ -75.f, 0.f }; // a bit before the character
-	Transform trans;
-	trans.translate(player_pos);
-	trans.translate(offset);
+	// TODO: Find closest player or lowest health player
+	// Attacks left for now
+	vec2 direction = vec2(-1,0);
 
-	vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-	createAttackObject(enemy, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100), false);
+	vec2 offset{ 75.f, 0.f }; // a bit before the character
+
+	perform_attack(offset, direction);
 
 }
 

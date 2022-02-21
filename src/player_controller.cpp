@@ -122,25 +122,13 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 		{
 			// manually calculate a world position with some offsets
-			// TODO: attacks should be generated from player's Ability stats
 			vec2 player_pos = registry.motions.get(player).position;
 
 			vec2 direction = cursor_world_pos - player_pos;
 
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-			advanced_attack(player, 50.f, offset, direction, vec2(100, 100), true);
-			//basic_attack(player, 50.f, offset, direction, vec2(100, 100));
-
-			/*
-			Transform trans;
-			trans.translate(player_pos);
-			trans.rotate(-atan2(direction[0], direction[1]) + M_PI / 2);
-			trans.translate(offset);
-
-			vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-			createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100), false);
-			*/
+			perform_attack(offset, direction);
 
 			move_to_state(PlayerState::END);
 
