@@ -40,8 +40,6 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 
-	// registry.healthBars.emplace(entity);
-
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
@@ -95,6 +93,12 @@ Entity createEnemy(vec2 pos, vec2 size)
 
 void removeEnemy(Entity entity)
 {
+	Enemy& enemy = registry.enemies.get(entity);
+	Entity healthBar = enemy.healthBar;
+	registry.motions.remove(healthBar);
+	registry.renderRequests.remove(healthBar);
+	registry.colors.remove(healthBar);
+
 	registry.motions.remove(entity);
 	registry.enemies.remove(entity);
 	registry.healths.remove(entity);
@@ -145,6 +149,12 @@ Entity createPlayer(vec2 pos, vec2 size)
 
 void removePlayer(Entity entity)
 {
+	Playable& playable = registry.playables.get(entity);
+	Entity healthBar = playable.healthBar;
+	registry.motions.remove(healthBar);
+	registry.renderRequests.remove(healthBar);
+	registry.colors.remove(healthBar);
+
 	registry.motions.remove(entity);
 	registry.playables.remove(entity);
 	registry.healths.remove(entity);
