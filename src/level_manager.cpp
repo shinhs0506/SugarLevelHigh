@@ -273,6 +273,21 @@ void LevelManager::handle_collisions()
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
+
+                // update Health bar length
+                if (registry.playables.has(other_entity)) {
+                    Playable& playable = registry.playables.get(other_entity);
+                    Entity healthBar = playable.healthBar;
+                    Motion& healthBar_motion = registry.motions.get(healthBar);
+                    healthBar_motion.scale = { healthBar_motion.scale.x*(health.cur_health/health.max_health), 10};
+                }
+                if (registry.enemies.has(other_entity)) {
+                    Enemy& enemy = registry.enemies.get(other_entity);
+                    Entity healthBar = enemy.healthBar;
+                    Motion& healthBar_motion = registry.motions.get(healthBar);
+                    healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+                }
+
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
             }
         }
