@@ -35,7 +35,7 @@ class MenuManager
         void init(GLFWwindow* window, GameSystem* game_system);
         void destroy();
 
-        bool step(float elapsed_ms);
+        void step(float elapsed_ms);
         void handle_collisions();
         bool is_over();
 

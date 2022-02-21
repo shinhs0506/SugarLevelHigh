@@ -25,7 +25,7 @@ void MenuManager::destroy() {
     registry.remove_all_components_of(exit_button);
 }
 
-bool MenuManager::step(float elapsed_ms) {
+void MenuManager::step(float elapsed_ms) {
     // do nothing;
 }
 

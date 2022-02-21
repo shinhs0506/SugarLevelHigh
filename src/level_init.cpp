@@ -26,6 +26,33 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	return entity;
 }
 
+Entity createHealthBar(vec2 pos, vec2 size)
+{
+	auto entity = Entity();
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { pos.x, pos.y - size.y/2 - 10 };
+	motion.prev_position = { pos.x, pos.y - size.y / 2 - 10 };
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = { size.x*0.8, 10 };
+	motion.gravity_affected = true;
+	motion.depth = DEPTH::CHARACTER;
+
+	// registry.healthBars.emplace(entity);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
+
+	return entity;
+}
+
 Entity createEnemy(vec2 pos, vec2 size)
 {
 	auto entity = Entity();
@@ -41,7 +68,9 @@ Entity createEnemy(vec2 pos, vec2 size)
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 
-	registry.enemies.emplace(entity);
+	Entity healthBar = createHealthBar(pos, size);
+	Enemy enemy{ healthBar };
+	registry.enemies.insert(entity, enemy);
 
 	// stats
 	Health health{ 100, 100 };
@@ -90,7 +119,9 @@ Entity createPlayer(vec2 pos, vec2 size)
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 
-	registry.playables.emplace(entity);
+	Entity healthBar = createHealthBar(pos, size);
+	Playable player{ healthBar };
+	registry.playables.insert(entity, player);
 
 	// stats
 	Health health{ 100, 100 };
