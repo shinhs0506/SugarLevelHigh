@@ -4,6 +4,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "level_init.hpp"
 #include "physics_system.hpp"
+#include "ability.hpp"
 
 PlayerController::PlayerController()
 {
@@ -127,14 +128,22 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			vec2 direction = cursor_world_pos - player_pos;
 
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
+
+			advanced_attack(player, 50.f, offset, direction, vec2(100, 100), true);
+			//basic_attack(player, 50.f, offset, direction, vec2(100, 100));
+
+			/*
 			Transform trans;
 			trans.translate(player_pos);
 			trans.rotate(-atan2(direction[0], direction[1]) + M_PI / 2);
 			trans.translate(offset);
 
 			vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-			createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
+			createAttackObject(player, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100), false);
+			*/
+
 			move_to_state(PlayerState::END);
+
 		}
 		break;
 

@@ -17,7 +17,7 @@ Entity createTerrain(vec2 pos, vec2 size);
 void removeTerrain(Entity entity);
 
 Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape,
-	float damage, float ttl, float angle, vec2 pos, vec2 velocity, vec2 size);
+	float damage, float ttl, float angle, vec2 pos, vec2 velocity, vec2 size, bool gravity_affected);
 void removeAttackObject(Entity entity);
 
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit);

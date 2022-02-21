@@ -55,12 +55,14 @@ void LevelManager::load_level(int level)
         Entity background = createBackground(vec2(1480, 920), level);
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
         Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
-        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
+        Entity basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
+        Entity advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
 
         level_entity_vector.push_back(background);
         level_entity_vector.push_back(enemy);
         level_entity_vector.push_back(player);
-        level_entity_vector.push_back(button);
+        level_entity_vector.push_back(basic_attack_button);
+        level_entity_vector.push_back(advanced_attack_button);
 
         float terrain_x_offset = 0.f;
         while (terrain_x_offset < 1200.f) {

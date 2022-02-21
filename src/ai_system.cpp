@@ -27,7 +27,7 @@ void enemy_Attack(Entity entity) {
 	trans.translate(offset);
 
 	vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-	createAttackObject(enemy, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
+	createAttackObject(enemy, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100), false);
 
 }
 

@@ -27,6 +27,7 @@ void MenuManager::destroy() {
 
 bool MenuManager::step(float elapsed_ms) {
     // do nothing;
+    return false;
 }
 
 void MenuManager::handle_collisions() {

@@ -162,7 +162,7 @@ void removeTerrain(Entity entity)
 }
 
 Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damage,
-	float ttl, float angle, vec2 pos, vec2 velocity, vec2 size)
+	float ttl, float angle, vec2 pos, vec2 velocity, vec2 size, bool gravity_affected)
 {
 	auto entity = Entity();
 
@@ -173,6 +173,7 @@ Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damag
 	motion.velocity = velocity;
 	motion.scale = size;
 	motion.depth = DEPTH::ATTACK;
+	motion.gravity_affected = gravity_affected;
 
 	AttackObject obj{ ttl, damage, attacker};
 	registry.attackObjects.insert(entity, obj);
