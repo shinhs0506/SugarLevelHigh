@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <cfloat>
 #include <nlohmann/json.hpp>
+#include <common.hpp>
 #include <vector>
 #include <iostream>
 
@@ -79,8 +80,8 @@ void LevelManager::init_data(int level){
         order_vector.push_back(enemy);
     }
 
-    auto terrain_data = js["terrains"];
-    for (auto& terrain_data: terrain_data) {
+    auto terrains_data = js["terrains"];
+    for (auto& terrain_data: terrains_data) {
         vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
         vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
         Entity terrain = createTerrain(terrain_pos, terrain_size);
@@ -98,7 +99,6 @@ bool compare(Entity a, Entity b) {
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
-    /* std::ifstream ifs(level_data_dir + "level0/init.json") */
 
     if (level == 0) {
         this->init_data(level);
