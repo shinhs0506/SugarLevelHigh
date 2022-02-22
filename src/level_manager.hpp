@@ -3,6 +3,7 @@
 
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
+#include "common.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -79,10 +80,13 @@ private:
 	
 	LevelState current_level_state;
 	LevelState next_level_state;
-  
-  // remove the character from order_vector
-	void remove_character(Entity entity);
 
     // game ending logic
     bool is_level_over;
+  
+    // remove the character from order_vector
+    void remove_character(Entity entity);
+
+    // read and initialize level data
+    void init_data(int level);
 };

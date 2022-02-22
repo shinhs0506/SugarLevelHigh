@@ -3,6 +3,7 @@
 
 #include <GLFW/glfw3.h>
 #include <cfloat>
+#include <nlohmann/json.hpp>
 #include <vector>
 #include <iostream>
 
@@ -34,6 +35,60 @@ void LevelManager::init(GLFWwindow* window)
     is_level_over = false;
 }
 
+std::string get_data_dir(int level) { 
+    return data_path() + "/levels" + 
+        "/level" + std::to_string(level) + 
+        "/init.json";
+}
+
+void LevelManager::init_data(int level){
+    Camera& camera = registry.cameras.get(main_camera);
+    Motion& motion = registry.motions.get(main_camera);
+
+    std::string datafile_path = get_data_dir(level);
+    std::ifstream ifs(datafile_path);
+    nlohmann::json js = nlohmann::json::parse(ifs);
+
+    vec2 camera_lower_limit_delta = vec2(js["camera"]["lower_limit"]["x"],
+            js["camera"]["lower_limit"]["y"]);
+    vec2 camera_upper_limit_delta = vec2(js["camera"]["upper_limit"]["x"],
+            js["camera"]["upper_limit"]["y"]);
+    camera.lower_limit = motion.position + camera_lower_limit_delta;
+    camera.higer_limit = motion.position + camera_upper_limit_delta;
+
+    vec2 background_pos = vec2(js["background"]["pos"]["x"], 
+            js["background"]["pos"]["y"]);
+    Entity background = createBackground(background_pos, level);
+    level_entity_vector.push_back(background);
+
+    auto players_data = js["players"];
+    for (auto& player_data: players_data) {
+        vec2 player_pos = vec2(player_data["pos"]["x"], player_data["pos"]["y"]);
+        vec2 player_size = vec2(player_data["size"]["w"], player_data["size"]["h"]);
+        Entity player = createPlayer(player_pos, player_size);
+        level_entity_vector.push_back(player);
+        order_vector.push_back(player);
+    }
+
+    auto enemies_data = js["enemies"];
+    for (auto& enemy_data: enemies_data) {
+        vec2 enemy_pos = vec2(enemy_data["pos"]["x"], enemy_data["pos"]["y"]);
+        vec2 enemy_size = vec2(enemy_data["size"]["w"], enemy_data["size"]["h"]);
+        Entity enemy = createEnemy(enemy_pos, enemy_size);
+        level_entity_vector.push_back(enemy);
+        order_vector.push_back(enemy);
+    }
+
+    auto terrain_data = js["terrains"];
+    for (auto& terrain_data: terrain_data) {
+        vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
+        vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
+        Entity terrain = createTerrain(terrain_pos, terrain_size);
+        level_entity_vector.push_back(terrain);
+    }
+
+}
+
 bool compare(Entity a, Entity b) {
     auto a_init = registry.initiatives.get(a);
     auto b_init = registry.initiatives.get(b);
@@ -43,56 +98,19 @@ bool compare(Entity a, Entity b) {
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
-
-    Camera& camera = registry.cameras.get(main_camera);
-    Motion& motion = registry.motions.get(main_camera);
+    /* std::ifstream ifs(level_data_dir + "level0/init.json") */
 
     if (level == 0) {
-        // change camera limits based on level
-        camera.lower_limit = motion.position - vec2(100);
-        camera.higer_limit = motion.position + vec2(100);
-
-        Entity background = createBackground(vec2(1480, 920), level);
-        Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
-        Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
-        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
-
-        level_entity_vector.push_back(background);
-        level_entity_vector.push_back(enemy);
-        level_entity_vector.push_back(player);
+        this->init_data(level);
+        
+        // should make a seperate function to initialize all overlays
+        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback); 
         level_entity_vector.push_back(button);
 
-        float terrain_x_offset = 0.f;
-        while (terrain_x_offset < 1200.f) {
-            Entity curr = createTerrain(vec2(100.001 + terrain_x_offset, 600.001), vec2(100, 100));
-            terrain_vector.push_back(curr);
-            level_entity_vector.push_back(curr);
-            terrain_x_offset += 100.001;
-        }
-        float terrain_y_offset = 100.001;
-        while (terrain_y_offset < 200.f) {
-            Entity curr1 = createTerrain(vec2(100.001, 600.001 - terrain_y_offset), vec2(100, 100));
-            Entity curr2 = createTerrain(vec2(1200.001, 600.001 - terrain_y_offset), vec2(100, 100));
-            terrain_vector.push_back(curr1);
-            terrain_vector.push_back(curr2);
-            level_entity_vector.push_back(curr1);
-            level_entity_vector.push_back(curr2);
-            terrain_y_offset += 100.001;
-        }
-
-        order_vector.push_back(enemy);
-        order_vector.push_back(player);
-
-        sort(order_vector.begin(), order_vector.end(), compare);
-        // to retrieve current entity
-        // registry.initiatives.entities[currOrderIndex];
-        // or 
-        // registry.activeTurns.entities[0] from outside level_manager
-        // or might add a global Entity variable later
-        // should_initialize_active_turn = true means game has just started
-        curr_order_ind = 0;
-        should_initialize_active_turn = true;
     }
+    sort(order_vector.begin(), order_vector.end(), compare);
+    curr_order_ind = 0;
+    should_initialize_active_turn = true;
 }
 
 void LevelManager::restart_level()
