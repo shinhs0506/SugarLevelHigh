@@ -35,7 +35,7 @@ jobs:
         working-directory: ./
         run: |
               sudo apt-get update
-              sudo apt-get install libglfw3-dev libsdl2-dev libsdl2-mixer-dev -y
+              sudo apt-get install libglfw3-dev libsdl2-dev libsdl2-mixer-dev nlohmann-json3-dev -y
               # package name on ubuntu is slightly different
               sed -i 's/pkg_search_module(SDL2 REQUIRED sdl)/pkg_search_module(SDL2 REQUIRED sdl2)/' ./CMakeLists.txt
               sed -i 's/pkg_search_module(SDL2MIXER REQUIRED SDL_mixer)/pkg_search_module(SDL2MIXER REQUIRED SDL2_mixer)/' ./CMakeLists.txt
