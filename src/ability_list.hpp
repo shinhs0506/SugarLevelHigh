@@ -25,7 +25,7 @@ AttackObject gingerbread_basic_attack = {
 };
 AttackObject gingerbread_advanced_attack = {
     false, // Chosen attack
-    9000, // TTL
+    7000, // TTL
     100, // Damage
     300, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
