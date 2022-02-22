@@ -130,7 +130,7 @@ struct Collision
 
 // Components with callback on click
 struct Clickable {
-	void (*on_click)();
+	bool (*on_click)();
 };
 
 // Attached to components that are unaffected by camera

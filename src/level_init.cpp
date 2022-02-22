@@ -227,7 +227,7 @@ void removeCamera(Entity entity)
 	registry.cameras.remove(entity);
 }
 
-Entity createButton(vec2 pos, vec2 size, void (*on_click)())
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
 {
 	auto entity = Entity();
 

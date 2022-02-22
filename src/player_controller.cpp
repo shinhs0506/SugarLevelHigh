@@ -114,8 +114,10 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 				Motion motion = registry.motions.get(entity);
 
 				if (collides(click_motion, motion)) {
-					registry.clickables.get(entity).on_click();
-					move_to_state(PlayerState::PERFORM_ABILITY);
+					bool ability_successfully_chosen = registry.clickables.get(entity).on_click();
+					if (ability_successfully_chosen) {
+						move_to_state(PlayerState::PERFORM_ABILITY);
+					}
 				}
 			}
 		}
@@ -134,21 +136,14 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			AttackArsenal& active_arsenal = registry.attackArsenals.get(player);
 			AttackObject& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
 
-			if (chosen_attack.current_cooldown == 0) {
-				// manually calculate a world position with some offsets
-				vec2 player_pos = registry.motions.get(player).position;
-				vec2 direction = cursor_world_pos - player_pos;
-				vec2 offset{ 75.f, 0.f }; // a bit before the character
+		
+			// manually calculate a world position with some offsets
+			vec2 player_pos = registry.motions.get(player).position;
+			vec2 direction = cursor_world_pos - player_pos;
+			vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-				perform_attack(player_pos, offset, direction, chosen_attack);
-				chosen_attack.current_cooldown = chosen_attack.max_cooldown;
-			}
-			else {
-				// We will need a way to display this in the game
-				std::cout << "Attack on cool down" << std::endl;
-				move_to_state(PlayerState::IDLE);
-				return;
-			}
+			perform_attack(player_pos, offset, direction, chosen_attack);
+			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 			move_to_state(PlayerState::END);
 

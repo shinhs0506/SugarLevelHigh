@@ -4,24 +4,32 @@
 #include "level_init.hpp"
 #include <iostream>
 
-void mock_callback() { 
+bool mock_callback() { 
 	printf("A button was clicked!\n");
+	return true;
 }
 
-void mock_basic_attack_callback() {
+// Basic attack will always return true b/c basic attacks will always have no cooldown
+bool mock_basic_attack_callback() {
 	printf("Basic attack callback button was clicked!\n");
 	Entity active_character = registry.activeTurns.entities[0];
 	AttackArsenal& active_arsenal = registry.attackArsenals.get(active_character);
 	active_arsenal.basic_attack.activated = true;
 	active_arsenal.advanced_attack.activated = false;
+	return true;
 }
 
-void mock_advanced_attack_callback() {
+bool mock_advanced_attack_callback() {
 	printf("Advanced attack callback button was clicked!\n");
 	Entity active_character = registry.activeTurns.entities[0];
 	AttackArsenal& active_arsenal = registry.attackArsenals.get(active_character);
-	active_arsenal.advanced_attack.activated = true;
-	active_arsenal.basic_attack.activated = false;
+	if (active_arsenal.advanced_attack.current_cooldown == 0) {
+		active_arsenal.advanced_attack.activated = true;
+		active_arsenal.basic_attack.activated = false;
+		return true;
+	}
+	std::cout << "Attack on cool down" << std::endl;
+	return false;
 }
 
 void perform_attack(vec2 attacker_pos, vec2 offset, vec2 direction, AttackObject chosen_attack) {
