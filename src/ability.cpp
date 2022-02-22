@@ -24,32 +24,27 @@ void mock_advanced_attack_callback() {
 	active_arsenal.basic_attack.activated = false;
 }
 
-void perform_attack( vec2 offset, vec2 direction) {
-	Entity active_character = registry.activeTurns.entities[0];
-	AttackArsenal active_arsenal = registry.attackArsenals.get(active_character);
+void perform_attack(vec2 attacker_pos, vec2 offset, vec2 direction, AttackObject chosen_attack) {
 
 	// manually calculate a world position with some offsets
-	vec2 attacker_pos = registry.motions.get(active_character).position;
-
+	double angle = -atan2(direction[0], direction[1]) + M_PI / 2;
 	Transform trans;
 	trans.translate(attacker_pos);
-	trans.rotate(-atan2(direction[0], direction[1]) + M_PI / 2);
+	trans.rotate(angle);
 	trans.translate(offset);
-
-	double angle = -atan2(direction[0], direction[1]) + M_PI / 2;
-
 	vec2 attack_pos = trans.mat * vec3(0, 0, 1);
 
-	AttackObject chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
-
-
+	// Creating the actual attack object
 	Entity attack_object = createAttackObject(chosen_attack, angle, attack_pos);
 
+	// If the attack has a range > 0 then its a projectile and NOT melee
 	if (chosen_attack.range > 0) {
 		registry.projectiles.emplace(attack_object);
 	}
 
+	// Sets angle of attack
 	Motion& attack_object_motion = registry.motions.get(attack_object);
 	attack_object_motion.angle = angle;
+
 }
 

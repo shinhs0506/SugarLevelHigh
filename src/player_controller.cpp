@@ -14,6 +14,16 @@ PlayerController::PlayerController()
 void PlayerController::reset(Entity player)
 {
 	this->player = player;
+
+	AttackArsenal& active_arsenal = registry.attackArsenals.get(this->player);
+	// Reduce all cooldowns by 1 that are not already 0.
+	if (active_arsenal.basic_attack.current_cooldown > 0) {
+		active_arsenal.basic_attack.current_cooldown -= 1;
+	}
+	if (active_arsenal.advanced_attack.current_cooldown > 0) {
+		active_arsenal.advanced_attack.current_cooldown -= 1;
+	}
+
 	this->current_state = PlayerState::IDLE;
 	this->next_state = PlayerState::IDLE;
 }
@@ -121,14 +131,24 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		// use left click for buttons or perform ability only
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 		{
-			// manually calculate a world position with some offsets
-			vec2 player_pos = registry.motions.get(player).position;
+			AttackArsenal& active_arsenal = registry.attackArsenals.get(player);
+			AttackObject& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
 
-			vec2 direction = cursor_world_pos - player_pos;
+			if (chosen_attack.current_cooldown == 0) {
+				// manually calculate a world position with some offsets
+				vec2 player_pos = registry.motions.get(player).position;
+				vec2 direction = cursor_world_pos - player_pos;
+				vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-			vec2 offset{ 75.f, 0.f }; // a bit before the character
-
-			perform_attack(offset, direction);
+				perform_attack(player_pos, offset, direction, chosen_attack);
+				chosen_attack.current_cooldown = chosen_attack.max_cooldown;
+			}
+			else {
+				// We will need a way to display this in the game
+				std::cout << "Attack on cool down" << std::endl;
+				move_to_state(PlayerState::IDLE);
+				return;
+			}
 
 			move_to_state(PlayerState::END);
 

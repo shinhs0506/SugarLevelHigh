@@ -15,21 +15,28 @@ void AISystem::reset_Enemy(Energy& entity_energy, AI& entity_AI) {
 
 }
 
-void enemy_Attack(Entity entity) {
+void enemy_Attack(Entity enemy) {
 
 
-	Entity enemy = registry.activeTurns.entities[0];
+	// TODO: Find closest player or lowest health player and choose appropriate attack based on some logic and cooldowns
+
+	AttackArsenal& active_arsenal = registry.attackArsenals.get(enemy);
+	AttackObject& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
 
 	vec2 enemy_pos = registry.motions.get(enemy).position;
-
-	// TODO: Find closest player or lowest health player
-	// Attacks left for now
-	vec2 direction = vec2(-1,0);
-
+	vec2 direction = vec2(-1,0);// Attacks left for now
 	vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-	perform_attack(offset, direction);
+	perform_attack(enemy_pos, offset, direction, chosen_attack);
+	chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
+	// Reduce all cooldowns by 1 that are not already 0.
+	if (active_arsenal.basic_attack.current_cooldown > 0) {
+		active_arsenal.basic_attack.current_cooldown -= 1;
+	}
+	if (active_arsenal.advanced_attack.current_cooldown > 0) {
+		active_arsenal.advanced_attack.current_cooldown -= 1;
+	}
 }
 
 void AISystem::end_Enemy_Turn(Energy& entity_energy, AI& entity_AI) {

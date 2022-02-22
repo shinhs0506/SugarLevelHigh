@@ -283,6 +283,7 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
+
             }
         }
 
