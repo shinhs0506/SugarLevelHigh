@@ -11,18 +11,11 @@
 #include "render_system.hpp"
 #include "game_system.hpp"
 
-// TO BE REMOVED
-#include <nlohmann/json.hpp>
-#include <iostream>
-
 using Clock = std::chrono::high_resolution_clock;
 
 // Entry point
 int main()
 {
-    // TO BE REMOVED
-    std::cout << nlohmann::json::meta() << std::endl;
-
 	// Global systems
 	GameSystem game;
 	RenderSystem renderer;
