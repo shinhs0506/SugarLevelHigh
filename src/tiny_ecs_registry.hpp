@@ -34,7 +34,8 @@ public:
 	ComponentContainer<Overlay> overlays;
 	ComponentContainer<HitEffect> hitEffects;
 	ComponentContainer<AI> AIs;
-  ComponentContainer<Background> backgrounds;
+	ComponentContainer<Background> backgrounds;
+	ComponentContainer<AttackPreview> attackPreviews;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -64,6 +65,7 @@ public:
 		registry_list.push_back(&hitEffects);
 		registry_list.push_back(&AIs);
 		registry_list.push_back(&backgrounds);
+		registry_list.push_back(&attackPreviews);
 	}
 
 	void clear_all_components() {

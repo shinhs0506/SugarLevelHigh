@@ -29,7 +29,7 @@ AttackObject gingerbread_advanced_attack = {
     100, // Damage
     300, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 100), // Size
+    vec2(100, 50), // Size
     true, // Gravit Affected
     2, // Max cooldown
     0, // Current cooldown

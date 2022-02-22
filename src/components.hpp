@@ -62,6 +62,12 @@ struct AttackObject
 	std::unordered_set<Entity, EntityHash> attacked;
 };
 
+struct AttackPreview {
+	//vec2 position;
+	//float angle;
+	//int shape;
+	//vec2 scale = { 75, 25 };
+};
 
 struct AttackArsenal
 {

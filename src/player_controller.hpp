@@ -29,6 +29,8 @@ public:
 
 	void on_key(int key, int, int action, int mod);
 
+	void on_mouse_move(vec2 cursor_pos);
+
 	void on_mouse_button(int button, int action, int mod, vec2 cursor_world_pos);
 
 	bool should_end_player_turn();
@@ -37,6 +39,7 @@ private:
 	Entity player;
 	PlayerState current_state;
 	PlayerState next_state;
+	vec2 player_pos;
 
 	void move_to_state(PlayerState next_state);
 };

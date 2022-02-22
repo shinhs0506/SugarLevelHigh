@@ -6,6 +6,53 @@
 #include "physics_system.hpp"
 #include "ability.hpp"
 
+// offset position for attack preview
+vec2 offset_position(vec2 direction, vec2 player_pos, double angle) {
+	vec2 offset{ 100.f, 0.f }; // a bit before the character
+	Transform trans;
+	trans.translate(player_pos);
+	trans.rotate(angle);
+	trans.translate(offset);
+	vec2 attack_preview_pos = trans.mat * vec3(0, 0, 1);
+	return attack_preview_pos;
+}
+
+void create_preview_object(vec2 player_pos) {
+
+	auto entity = Entity();
+
+	vec2 direction = -player_pos;
+	double angle = -atan2(direction[0], direction[1]) + M_PI / 2;
+	
+	vec2 attack_preview_pos = offset_position(direction, player_pos, angle);
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = attack_preview_pos;
+	motion.angle = angle;
+	motion.velocity = vec2(0, 0);
+	motion.scale = vec2(75, 20);
+	motion.depth = DEPTH::ATTACK;
+	motion.gravity_affected = false;
+
+	registry.attackPreviews.emplace(entity);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
+}
+
+void destroy_preview_objects() {
+	Entity attack_preview = registry.attackPreviews.entities[0];
+	registry.motions.remove(attack_preview);
+	registry.attackPreviews.remove(attack_preview);
+	registry.renderRequests.remove(attack_preview);
+	registry.colors.remove(attack_preview);
+}
+
 PlayerController::PlayerController()
 {
 
@@ -32,6 +79,7 @@ void PlayerController::step(float elapsed_ms)
 {
 	// update states
 	current_state = next_state;
+
 }
 
 void PlayerController::on_key(int key, int, int action, int mod)
@@ -96,6 +144,24 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	}
 }
 
+void PlayerController::on_mouse_move(vec2 cursor_pos) {
+	// Update attack preview to the correct angles/positions
+	if (current_state == PlayerState::PERFORM_ABILITY) {
+		Entity attack_preview = registry.attackPreviews.entities[0];
+		Motion& attack_preview_motion = registry.motions.get(attack_preview);
+
+		vec2 direction = cursor_pos - player_pos;
+		double angle = -atan2(direction[0], direction[1]) + M_PI / 2;
+
+		vec2 attack_preview_pos = offset_position(direction, player_pos, angle);
+
+		attack_preview_motion.position = attack_preview_pos;
+		attack_preview_motion.angle = angle;
+
+
+	}
+}
+
 void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cursor_world_pos)
 {
 	switch (current_state)
@@ -116,6 +182,11 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 				if (collides(click_motion, motion)) {
 					bool ability_successfully_chosen = registry.clickables.get(entity).on_click();
 					if (ability_successfully_chosen) {
+						// Get player position at time of choosing an ability successfully
+						player_pos = registry.motions.get(player).position;
+						// Create preview object
+						create_preview_object(player_pos);
+
 						move_to_state(PlayerState::PERFORM_ABILITY);
 					}
 				}
@@ -124,6 +195,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		break;
 
 	case PlayerState::PERFORM_ABILITY:
+
 		// player can use right click to cancel attack preview
 		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
 		{
@@ -138,12 +210,13 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 
 		
 			// manually calculate a world position with some offsets
-			vec2 player_pos = registry.motions.get(player).position;
 			vec2 direction = cursor_world_pos - player_pos;
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
 
 			perform_attack(player_pos, offset, direction, chosen_attack);
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
+
+			destroy_preview_objects();
 
 			move_to_state(PlayerState::END);
 
@@ -200,3 +273,4 @@ void PlayerController::move_to_state(PlayerState next_state)
 	}
 	this->next_state = next_state;
 }
+

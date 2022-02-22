@@ -279,7 +279,7 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
 
-                // If attack object is a projectile, reduce its ttl so that it dies shortly
+                // If attack object is a projectile, reduce its ttl so that it dies shortly on collision
                 // Shortly because we want abit of visuals that contact is made
                 if (registry.projectiles.has(entity)) {
                     attack.ttl_ms = 50.0f;
@@ -371,7 +371,11 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
 void LevelManager::on_mouse_move(vec2 pos)
 {
-
+    switch (current_level_state) {
+    case LevelState::PLAYER_TURN:
+        player_controller.on_mouse_move(pos);
+        break;
+    }
 }
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
