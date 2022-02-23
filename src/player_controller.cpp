@@ -26,6 +26,7 @@ void PlayerController::step(float elapsed_ms)
 void PlayerController::on_key(int key, int, int action, int mod)
 {
 	Motion& player_motion = registry.motions.get(player);
+	Energy& player_energy = registry.energies.get(player);
 	switch (current_state)
 	{	
 	case PlayerState::IDLE:
