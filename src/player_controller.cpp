@@ -87,13 +87,6 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	updateHealthBar(player);
 }
 
-void PlayerController::updateHealthBar(Entity entity) {
-	Playable& playable = registry.playables.get(entity);
-	Entity healthBar = playable.healthBar;
-	Motion& healthBar_motion = registry.motions.get(healthBar);
-	healthBar_motion.velocity = registry.motions.get(entity).velocity;
-}
-
 void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cursor_world_pos)
 {
 	switch (current_state)

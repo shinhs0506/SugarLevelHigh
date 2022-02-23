@@ -53,6 +53,21 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	return entity;
 }
 
+void updateHealthBar(Entity entity) {
+	if (registry.playables.has(entity)) {
+		Playable& playable = registry.playables.get(entity);
+		Entity healthBar = playable.healthBar;
+		Motion& healthBar_motion = registry.motions.get(healthBar);
+		healthBar_motion.velocity = registry.motions.get(entity).velocity;
+	}
+	if (registry.enemies.has(entity)) {
+		Enemy& enemy = registry.enemies.get(entity);
+		Entity healthBar = enemy.healthBar;
+		Motion& healthBar_motion = registry.motions.get(healthBar);
+		healthBar_motion.velocity = registry.motions.get(entity).velocity;
+	}
+}
+
 void removeHealthBar(Entity healthBar) {
 	registry.motions.remove(healthBar);
 	registry.renderRequests.remove(healthBar);

@@ -21,5 +21,4 @@ private:
 	void decision_Tree(Entity entity, AI& entity_AI);
 	void end_Enemy_Turn(Energy& entity_energy, AI& entity_AI);
 	void reset_Enemy(Energy& entity_energy, AI& entity_AI);
-	void updateHealthBar(Entity entity);
 };

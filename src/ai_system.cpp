@@ -73,13 +73,6 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 	updateHealthBar(entity);
 }
 
-void AISystem::updateHealthBar(Entity entity) {
-	Enemy& enemy = registry.enemies.get(entity);
-	Entity healthBar = enemy.healthBar;
-	Motion& healthBar_motion = registry.motions.get(healthBar);
-	healthBar_motion.velocity = registry.motions.get(entity).velocity;
-}
-
 void AISystem::step(float elapsed_ms)
 {
 

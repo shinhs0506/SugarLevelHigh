@@ -8,6 +8,7 @@
 Entity createDebugLine(vec2 position, vec2 size);
 
 Entity createHealthBar(vec2 pos, vec2 size);
+void updateHealthBar(Entity entity);
 Entity createEnemy(vec2 pos, vec2 size);
 void removeEnemy(Entity entity);
 

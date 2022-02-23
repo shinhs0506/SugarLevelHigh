@@ -39,5 +39,4 @@ private:
 	PlayerState next_state;
 
 	void move_to_state(PlayerState next_state);
-	void updateHealthBar(Entity entity);
 };
