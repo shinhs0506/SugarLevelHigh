@@ -7,13 +7,13 @@
 // Attached all player characters
 struct Playable
 {
-
+    Entity healthBar;
 };
 
 // Attached to all Enemies
 struct Enemy
 {
-
+    Entity healthBar;
 };
 
 // Attached to all playables, enemies, breakable terrains
@@ -22,6 +22,11 @@ struct Health
 	float max_health = 100.f;
 	float cur_health = 100.f;
 	bool dead = false; // set this to true to remove the entity to all registries
+};
+
+struct HealthBar
+{
+
 };
 
 // Attached to all playables, enemies
