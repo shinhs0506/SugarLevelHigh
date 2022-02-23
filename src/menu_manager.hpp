@@ -3,7 +3,6 @@
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
 #include "ability.hpp"
-#include "level_init.hpp"
 #include "physics_system.hpp"
 
 class GameSystem;
