@@ -15,6 +15,7 @@ public:
 	ComponentContainer<Playable> playables;
 	ComponentContainer<Enemy> enemies;
 	ComponentContainer<Health> healths;
+	ComponentContainer<HealthBar> healthBars;
 	ComponentContainer<Energy> energies;
 	ComponentContainer<Initiative> initiatives;
     ComponentContainer<ActiveTurn> activeTurns;
@@ -44,6 +45,7 @@ public:
 		registry_list.push_back(&playables);
 		registry_list.push_back(&enemies);
 		registry_list.push_back(&healths);
+		registry_list.push_back(&healthBars);
 		registry_list.push_back(&energies);
 		registry_list.push_back(&initiatives);
         registry_list.push_back(&activeTurns);
