@@ -59,7 +59,9 @@ void LevelManager::load_level(int level)
 
         level_entity_vector.push_back(background);
         level_entity_vector.push_back(enemy);
+        level_entity_vector.push_back(registry.enemies.get(enemy).healthBar);
         level_entity_vector.push_back(player);
+        level_entity_vector.push_back(registry.playables.get(player).healthBar);
         level_entity_vector.push_back(button);
 
         float terrain_x_offset = 0.f;
@@ -273,6 +275,29 @@ void LevelManager::handle_collisions()
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
+
+                // change health bar length
+                Entity healthBar;
+                if (registry.playables.has(other_entity)) {
+                    Playable& playable = registry.playables.get(other_entity);
+                    healthBar = playable.healthBar;
+                }
+                if (registry.enemies.has(other_entity)) {
+                    Enemy& enemy = registry.enemies.get(other_entity);
+                    healthBar = enemy.healthBar;
+                }
+                Motion& healthBar_motion = registry.motions.get(healthBar);
+                healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+                
+                // change health bar color based on remaining health
+                vec3& color = registry.colors.get(healthBar);
+                if (health.cur_health / health.max_health <= 0.2f) {
+                    color = vec3(1.f, 0.f, 0.f);
+                }
+                else if (health.cur_health / health.max_health <= 0.5f) {
+                    color = vec3(1.f, 0.5f, 0.f);
+                }
+
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
             }
         }
