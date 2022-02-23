@@ -59,7 +59,9 @@ void LevelManager::load_level(int level)
 
         level_entity_vector.push_back(background);
         level_entity_vector.push_back(enemy);
+        level_entity_vector.push_back(registry.enemies.get(enemy).healthBar);
         level_entity_vector.push_back(player);
+        level_entity_vector.push_back(registry.playables.get(player).healthBar);
         level_entity_vector.push_back(button);
 
         float terrain_x_offset = 0.f;
