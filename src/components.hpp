@@ -6,16 +6,27 @@
 #include <vector>
 
 // Attached all player characters
-struct Playable {};
+struct Playable
+{
+	Entity healthBar;
+};
 
 // Attached to all Enemies
-struct Enemy {};
+struct Enemy
+{
+	Entity healthBar;
+};
 
 // Attached to all playables, enemies, breakable terrains
 struct Health {
   float max_health = 100.f;
   float cur_health = 100.f;
   bool dead = false; // set this to true to remove the entity to all registries
+};
+
+struct HealthBar
+{
+	
 };
 
 // Attached to all playables, enemies
@@ -74,15 +85,27 @@ struct Terrain {
   bool breakable = false;
 };
 
+// proximity to camera
+enum DEPTH {
+	CAMERA = -1,
+	UI = 1,
+	ATTACK = 5,
+	ACTIVE = 10,
+	CHARACTER = 20,
+	TERRAIN = 100,
+	BACKGROUND = 1000
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
-  vec2 position = {0, 0};
-  float angle = 0;
-  vec2 velocity = {0, 0};
-  vec2 scale = {10, 10};
-  vec2 prev_position = {0, 0};
-  bool gravity_affected = false;
-  float speed = 100;
+	vec2 position = { 0, 0 };
+	float angle = 0;
+	vec2 velocity = { 0, 0 };
+	vec2 scale = { 10, 10 };
+	vec2 prev_position = { 0, 0 };
+	bool gravity_affected = false;
+    float speed = 100;
+	int depth = DEPTH::CHARACTER;
 };
 
 // Stucture to store collision information

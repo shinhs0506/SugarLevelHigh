@@ -15,18 +15,18 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->window = window;
     this->game_system = game_system;
 
-    level_selection_button = createStartButton(vec2(700, 200), vec2(200,50));
-    help_button = createHelpButton(vec2(700, 300), vec2(200,50));
-    exit_button = createExitButton(vec2(700, 400), vec2(200,50));
+    level_selection_button = createStartButton(vec2(700, 200), vec2(200,50), NULL);
+    help_button = createHelpButton(vec2(700, 300), vec2(200,50), NULL);
+    exit_button = createExitButton(vec2(700, 400), vec2(200,50), NULL);
 }
 
 void MenuManager::destroy() {
     registry.remove_all_components_of(level_selection_button);
-    //registry.remove_all_components_of(help_button);
+    registry.remove_all_components_of(help_button);
     registry.remove_all_components_of(exit_button);
 }
 
-bool MenuManager::step(float elapsed_ms) {
+void MenuManager::step(float elapsed_ms) {
     // do nothing;
 }
 
