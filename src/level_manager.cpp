@@ -192,6 +192,10 @@ bool LevelManager::step(float elapsed_ms)
             // reset player controller
             player_controller.reset(registry.activeTurns.entities[0]);
             move_to_state(LevelState::PLAYER_TURN);
+
+            // reset energy
+            Energy& energy = registry.energies.get(registry.activeTurns.entities[0]);
+            energy.cur_energy = energy.max_energy;
             resetEnergyBar();
         }
         else {

@@ -1,12 +1,9 @@
 #include <iostream>
-#include <chrono>
 
 #include "player_controller.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "level_init.hpp"
 #include "physics_system.hpp"
-
-using Clock = std::chrono::high_resolution_clock;
 
 PlayerController::PlayerController()
 {
@@ -31,15 +28,14 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	Motion& player_motion = registry.motions.get(player);
 	Energy& player_energy = registry.energies.get(player);
 
-	// Player can only move when cur_energy > 0
 	if (player_energy.cur_energy > 0.f) {
+		player_energy.cur_energy -= 2;
+		updateEnergyBar(player_energy);
 		switch (current_state)
 		{
 		case PlayerState::IDLE:
 			if (action == GLFW_PRESS || action == GLFW_REPEAT)
 			{
-				auto t = Clock::now();
-
 				switch (key)
 				{
 				case GLFW_KEY_A:
@@ -57,12 +53,6 @@ void PlayerController::on_key(int key, int, int action, int mod)
 					player_motion.velocity = vec2(0);
 					move_to_state(PlayerState::MOVE_DOWN); break;
 				}
-
-				auto now = Clock::now();
-				float elapsed_ms =
-					(float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
-				t = now;
-				player_energy.cur_energy -= 5 * elapsed_ms;
 			}
 			break;
 
@@ -98,12 +88,15 @@ void PlayerController::on_key(int key, int, int action, int mod)
 			}
 			break;
 		}
-		updateEnergyBar(player_energy);
 	}
 	else {
-		move_to_state(PlayerState::IDLE);
+		if (current_state == PlayerState::MOVE_LEFT || current_state == PlayerState::MOVE_RIGHT ||
+			current_state == PlayerState::MOVE_UP || current_state == PlayerState::MOVE_DOWN) {
+			player_motion.velocity = vec2(0);
+			move_to_state(PlayerState::IDLE);
+		}
 	}
-
+	updateEnergyBar(player_energy);
 	updateHealthBar(player);
 }
 
