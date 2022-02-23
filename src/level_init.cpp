@@ -71,7 +71,6 @@ void resetEnergyBar()
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
-	motion.position.x -= motion.scale.x * ((energy.max_energy - energy.cur_energy) / energy.max_energy);
 	motion.scale.x = motion.scale.x * (energy.cur_energy / energy.max_energy);
 }
 

@@ -58,6 +58,7 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 			//Only left and right ai movement for now
 			entity_motion.velocity = vec2(entity_motion.speed * entity_AI.movement_direction.x, 0);
 			entity_energy.cur_energy -= 1.0f;
+			updateEnergyBar(entity_energy);
 		}
 		else {
 			// Reset velocities

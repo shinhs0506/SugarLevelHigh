@@ -1,9 +1,12 @@
 #include <iostream>
+#include <chrono>
 
 #include "player_controller.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "level_init.hpp"
 #include "physics_system.hpp"
+
+using Clock = std::chrono::high_resolution_clock;
 
 PlayerController::PlayerController()
 {
@@ -27,62 +30,78 @@ void PlayerController::on_key(int key, int, int action, int mod)
 {
 	Motion& player_motion = registry.motions.get(player);
 	Energy& player_energy = registry.energies.get(player);
-	switch (current_state)
-	{	
-	case PlayerState::IDLE:
-		if (action == GLFW_PRESS || action == GLFW_REPEAT)
+
+	// Player can only move when cur_energy > 0
+	if (player_energy.cur_energy > 0.f) {
+		switch (current_state)
 		{
-			switch (key)
+		case PlayerState::IDLE:
+			if (action == GLFW_PRESS || action == GLFW_REPEAT)
 			{
-			case GLFW_KEY_A:
-				player_motion.velocity = vec2(-player_motion.speed, 0);
-				move_to_state(PlayerState::MOVE_LEFT); break;
-			case GLFW_KEY_D:
-				player_motion.velocity = vec2(player_motion.speed, 0);
-				move_to_state(PlayerState::MOVE_RIGHT); break;
-			case GLFW_KEY_W:
-				// TODO: player not moving for up
-				player_motion.velocity = vec2(0);
-				move_to_state(PlayerState::MOVE_UP); break;
-			case GLFW_KEY_S:
-				// TODO: player not moving for down
-				player_motion.velocity = vec2(0);
-				move_to_state(PlayerState::MOVE_DOWN); break;
+				auto t = Clock::now();
+
+				switch (key)
+				{
+				case GLFW_KEY_A:
+					player_motion.velocity = vec2(-player_motion.speed, 0);
+					move_to_state(PlayerState::MOVE_LEFT); break;
+				case GLFW_KEY_D:
+					player_motion.velocity = vec2(player_motion.speed, 0);
+					move_to_state(PlayerState::MOVE_RIGHT); break;
+				case GLFW_KEY_W:
+					// TODO: player not moving for up
+					player_motion.velocity = vec2(0);
+					move_to_state(PlayerState::MOVE_UP); break;
+				case GLFW_KEY_S:
+					// TODO: player not moving for down
+					player_motion.velocity = vec2(0);
+					move_to_state(PlayerState::MOVE_DOWN); break;
+				}
+
+				auto now = Clock::now();
+				float elapsed_ms =
+					(float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
+				t = now;
+				player_energy.cur_energy -= 5 * elapsed_ms;
 			}
-		}
-		break;
+			break;
 
-	case PlayerState::MOVE_LEFT:
-		if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
-		}
-		break;
+		case PlayerState::MOVE_LEFT:
+			if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 
-	case PlayerState::MOVE_RIGHT:
-		if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
-		}
-		break;
+		case PlayerState::MOVE_RIGHT:
+			if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 
-	case PlayerState::MOVE_UP:
-		if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
-		}
-		break;
+		case PlayerState::MOVE_UP:
+			if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 
-	case PlayerState::MOVE_DOWN:
-		if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
+		case PlayerState::MOVE_DOWN:
+			if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 		}
-		break;
+		updateEnergyBar(player_energy);
+	}
+	else {
+		move_to_state(PlayerState::IDLE);
 	}
 
 	updateHealthBar(player);
