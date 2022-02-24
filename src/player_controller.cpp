@@ -21,7 +21,6 @@ void PlayerController::step(float elapsed_ms)
 {
 	Motion& player_motion = registry.motions.get(player);
 	Energy& player_energy = registry.energies.get(player);
-	std::cout << player_energy.cur_energy << std::endl;
 	if (current_state == PlayerState::MOVE_LEFT || current_state == PlayerState::MOVE_RIGHT ||
 		current_state == PlayerState::MOVE_UP || current_state == PlayerState::MOVE_DOWN) {
 		if (player_energy.cur_energy > 0.f) {

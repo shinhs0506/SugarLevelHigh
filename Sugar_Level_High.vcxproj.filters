@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\ability.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\ai_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\components.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\game_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\game_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\level_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\level_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\menu_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\menu_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\physics_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\player_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\render_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\render_system_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\tiny_ecs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\tiny_ecs_registry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\ability.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\ai_system.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\components.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\game_init.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\game_system.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\level_init.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\level_manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\menu_init.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\menu_manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\physics_system.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\player_controller.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\render_system.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\tiny_ecs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\src\tiny_ecs_registry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhang\source\repos\shinhs0506\SugarLevelHigh\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="C:\Users\zhang\source\repos\vcpkg\installed\x64-windows\share\nlohmann_json\nlohmann_json.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6E0EB1F5-DF16-3948-B07B-CD9EB677494C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9C596B55-9AAD-3FBC-A729-A56440B5D79A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
