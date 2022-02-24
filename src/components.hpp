@@ -189,6 +189,21 @@ struct AI
 	vec2 movement_direction = vec2(-1, 0);
 };
 
+// Character states for players and enemies
+// This will be later used for animation system as well
+
+enum class CharacterState
+{
+	IDLE,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	MOVE_UP,
+	MOVE_DOWN,
+	PERFORM_ABILITY,
+	END, // should not move to any other states from here
+		 // this is set to prevent player continue to act after his turn
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
