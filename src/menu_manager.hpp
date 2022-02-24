@@ -3,7 +3,6 @@
 #include <tiny_ecs.hpp>
 #include <tiny_ecs_registry.hpp>
 #include "ability.hpp"
-#include "level_init.hpp"
 #include "physics_system.hpp"
 
 class GameSystem;
@@ -35,7 +34,7 @@ class MenuManager
         void init(GLFWwindow* window, GameSystem* game_system);
         void destroy();
 
-        bool step(float elapsed_ms);
+        void step(float elapsed_ms);
         void handle_collisions();
         bool is_over();
 
