@@ -5,6 +5,7 @@
 #include "level_init.hpp"
 #include "physics_system.hpp"
 #include "ability.hpp"
+#include "components.hpp"
 
 PlayerController::PlayerController()
 {
@@ -30,6 +31,17 @@ void PlayerController::reset(Entity player)
 
 void PlayerController::step(float elapsed_ms)
 {
+	Motion& player_motion = registry.motions.get(player);
+	Energy& player_energy = registry.energies.get(player);
+	if (current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
+		current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN) {
+		if (player_energy.cur_energy > 0.f) {
+			player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
+		}
+	}
+	updateEnergyBar(player_energy);
+	updateHealthBar(player);
+
 	// update states
 	current_state = next_state;
 
@@ -38,70 +50,72 @@ void PlayerController::step(float elapsed_ms)
 void PlayerController::on_key(int key, int, int action, int mod)
 {
 	Motion& player_motion = registry.motions.get(player);
-	switch (current_state)
-	{	
-	case CharacterState::IDLE:
-		if (action == GLFW_PRESS || action == GLFW_REPEAT)
+	Energy& player_energy = registry.energies.get(player);
+
+	if (player_energy.cur_energy > 0.f) {
+		switch (current_state)
 		{
-			switch (key)
+		case CharacterState::IDLE:
+			if (action == GLFW_PRESS || action == GLFW_REPEAT)
 			{
-			case GLFW_KEY_A:
-				player_motion.velocity = vec2(-player_motion.speed, 0);
-				move_to_state(CharacterState::MOVE_LEFT); break;
-			case GLFW_KEY_D:
-				player_motion.velocity = vec2(player_motion.speed, 0);
-				move_to_state(CharacterState::MOVE_RIGHT); break;
-			case GLFW_KEY_W:
-				// TODO: player not moving for up
+				switch (key)
+				{
+				case GLFW_KEY_A:
+					player_motion.velocity = vec2(-player_motion.speed, 0);
+					move_to_state(CharacterState::MOVE_LEFT); break;
+				case GLFW_KEY_D:
+					player_motion.velocity = vec2(player_motion.speed, 0);
+					move_to_state(CharacterState::MOVE_RIGHT); break;
+				case GLFW_KEY_W:
+					// TODO: player not moving for up
+					player_motion.velocity = vec2(0);
+					move_to_state(CharacterState::MOVE_UP); break;
+				case GLFW_KEY_S:
+					// TODO: player not moving for down
+					player_motion.velocity = vec2(0);
+					move_to_state(CharacterState::MOVE_DOWN); break;
+				}
+			}
+			break;
+
+		case CharacterState::MOVE_LEFT:
+			if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+			{
 				player_motion.velocity = vec2(0);
-				move_to_state(CharacterState::MOVE_UP); break;
-			case GLFW_KEY_S:
-				// TODO: player not moving for down
+				move_to_state(CharacterState::IDLE);
+			}
+			break;
+
+		case CharacterState::MOVE_RIGHT:
+			if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+			{
 				player_motion.velocity = vec2(0);
-				move_to_state(CharacterState::MOVE_DOWN); break;
+				move_to_state(CharacterState::IDLE);
+			}
+			break;
+
+		case CharacterState::MOVE_UP:
+			if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(CharacterState::IDLE);
+			}
+			break;
+
+		case CharacterState::MOVE_DOWN:
+			if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(CharacterState::IDLE);
 			}
 		}
-		break;
-
-	case CharacterState::MOVE_LEFT:
-		if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(CharacterState::IDLE);
-		}
-		break;
-
-	case CharacterState::MOVE_RIGHT:
-		if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(CharacterState::IDLE);
-		}
-		break;
-
-	case CharacterState::MOVE_UP:
-		if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(CharacterState::IDLE);
-		}
-		break;
-
-	case CharacterState::MOVE_DOWN:
-		if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(CharacterState::IDLE);
-		}
-		break;
 	}
-
-	updateHealthBar(player);
 }
 
 void PlayerController::on_mouse_move(vec2 cursor_pos) {
 	// Update attack preview to the correct angles/positions
-	if (current_state == CharacterState::PERFORM_ABILITY) {
+	// Note it's possible that the attack preview has been destroyed in PERFORM_ABILITY state
+	if (current_state == CharacterState::PERFORM_ABILITY && registry.attackPreviews.size() > 0) { 
 		Entity attack_preview = registry.attackPreviews.entities[0];
 		Motion& attack_preview_motion = registry.motions.get(attack_preview);
 
@@ -112,8 +126,6 @@ void PlayerController::on_mouse_move(vec2 cursor_pos) {
 
 		attack_preview_motion.position = attack_preview_pos;
 		attack_preview_motion.angle = angle;
-
-
 	}
 }
 

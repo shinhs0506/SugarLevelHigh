@@ -38,6 +38,11 @@ struct Energy
 	float cur_energy = 100.f;
 };
 
+struct EnergyBar
+{
+	
+};
+
 // Initiative used to determine the turn order of all enemies and players
 // Slower the initiative means faster the speed
 // When an enemy and a playable character have the same initiative, the player move first

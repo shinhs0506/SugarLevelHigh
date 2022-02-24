@@ -17,6 +17,7 @@ public:
 	ComponentContainer<Health> healths;
 	ComponentContainer<HealthBar> healthBars;
 	ComponentContainer<Energy> energies;
+	ComponentContainer<EnergyBar> energyBars;
 	ComponentContainer<Initiative> initiatives;
     ComponentContainer<ActiveTurn> activeTurns;
 	ComponentContainer<AttackArsenal> attackArsenals;
@@ -49,6 +50,7 @@ public:
 		registry_list.push_back(&healths);
 		registry_list.push_back(&healthBars);
 		registry_list.push_back(&energies);
+		registry_list.push_back(&energyBars);
 		registry_list.push_back(&initiatives);
         registry_list.push_back(&activeTurns);
 		registry_list.push_back(&attackArsenals);

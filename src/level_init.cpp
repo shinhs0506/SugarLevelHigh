@@ -27,6 +27,63 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	return entity;
 }
 
+Entity createEnergyBar()
+{
+	auto entity = Entity();
+
+	registry.energyBars.emplace(entity);
+	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { pos };
+	motion.prev_position = { pos };
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = { 300, 20 };
+	motion.gravity_affected = false;
+	motion.depth = DEPTH::UI;
+
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
+
+	return entity;
+}
+
+void resetEnergyBar() 
+{
+	// As all characters share one energy bar, there should always be only 1 entity inside energyBars
+	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
+	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	motion.position = { pos };
+	motion.prev_position = { pos };
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = { 300, 20 };
+}
+
+void updateEnergyBar(Energy energy)
+{
+	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
+	motion.scale.x = 300 * (energy.cur_energy / energy.max_energy);
+}
+
+void removeEnergyBar()
+{
+	Entity entity = registry.energyBars.entities[0];
+	registry.motions.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.overlays.remove(entity);
+	registry.colors.remove(entity);
+	registry.energyBars.remove(entity);
+}
 
 Entity createHealthBar(vec2 pos, vec2 size)
 {

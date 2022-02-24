@@ -7,6 +7,11 @@
 // a red line for debugging purposes
 Entity createDebugLine(vec2 position, vec2 size);
 
+Entity createEnergyBar();
+void resetEnergyBar();
+void updateEnergyBar(Energy energy);
+void removeEnergyBar();
+
 Entity createHealthBar(vec2 pos, vec2 size);
 void updateHealthBar(Entity entity);
 

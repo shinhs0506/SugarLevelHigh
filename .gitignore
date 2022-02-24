@@ -1,6 +1,13 @@
 # Build files
 **build
 
+# CMake files
+CMakeFiles/
+*.vcxproj
+*.vcxproj.filters
+*.cmake
+*.sln
+
 # Prerequisites
 *.d
 
@@ -439,3 +446,5 @@ FodyWeavers.xsd
 !/ext/*.dll
 !/ext/*.lib
 /ext/project_path.hpp
+
+CMakeSettings.json
