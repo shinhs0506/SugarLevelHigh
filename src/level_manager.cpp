@@ -13,6 +13,8 @@
 #include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "ability.hpp"
+#include "ability_list.hpp"
+
 
 LevelManager::LevelManager()
 {
@@ -66,7 +68,8 @@ void LevelManager::init_data(int level){
     for (auto& player_data: players_data) {
         vec2 player_pos = vec2(player_data["pos"]["x"], player_data["pos"]["y"]);
         vec2 player_size = vec2(player_data["size"]["w"], player_data["size"]["h"]);
-        Entity player = createPlayer(player_pos, player_size);
+        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        Entity player = createPlayer(player_pos, player_size, ginerbread_arsenal);
         level_entity_vector.push_back(player);
         level_entity_vector.push_back(registry.playables.get(player).healthBar);
         order_vector.push_back(player);
@@ -76,7 +79,8 @@ void LevelManager::init_data(int level){
     for (auto& enemy_data: enemies_data) {
         vec2 enemy_pos = vec2(enemy_data["pos"]["x"], enemy_data["pos"]["y"]);
         vec2 enemy_size = vec2(enemy_data["size"]["w"], enemy_data["size"]["h"]);
-        Entity enemy = createEnemy(enemy_pos, enemy_size);
+        AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
+        Entity enemy = createEnemy(enemy_pos, enemy_size, gumball_arsenal);
         level_entity_vector.push_back(enemy);
         level_entity_vector.push_back(registry.enemies.get(enemy).healthBar);
         order_vector.push_back(enemy);
@@ -101,15 +105,17 @@ void LevelManager::load_level(int level)
 {
     this->curr_level = level;
 
+    // level specific logic
     if (level == 0) {
         this->init_data(level);
-        
-        // should make a seperate function to initialize all overlays
-        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback); 
-        level_entity_vector.push_back(button);
     }
 
     // common to all levels
+    Entity basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
+    Entity advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
+
+    level_entity_vector.push_back(basic_attack_button);
+    level_entity_vector.push_back(advanced_attack_button);
 
     Entity energyBar = createEnergyBar();
     level_entity_vector.push_back(energyBar);
@@ -281,10 +287,6 @@ void LevelManager::handle_collisions()
             // using get() will always retrieve the first collision component
             Entity other_entity = registry.collisions.components[i].other;
 
-            if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
-                continue;
-            }
-
             AttackObject& attack = registry.attackObjects.get(entity);
             bool is_player_attack = registry.playables.has(attack.attacker);
 
@@ -299,6 +301,17 @@ void LevelManager::handle_collisions()
             bool attacked = attack.attacked.find(other_entity) != attack.attacked.end();
 
             if (damagable && different_team && !attacked) {
+
+                // If attack object is a projectile, reduce its ttl so that it dies shortly on collision
+                // Shortly because we want abit of visuals that contact is made
+                if (registry.projectiles.has(entity)) {
+                    attack.ttl_ms = 10.0f;
+                }
+                // If attack was made to unbreakable terrain, shortcircut and do not do hit effect/damage
+                if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
+                    continue;
+                }
+                // Attack hit damagable object
                 Health& health = registry.healths.get(other_entity);
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
@@ -327,6 +340,7 @@ void LevelManager::handle_collisions()
                 }
 
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
+          
             }
         }
 
@@ -411,7 +425,11 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
 void LevelManager::on_mouse_move(vec2 pos)
 {
-
+    switch (current_level_state) {
+    case LevelState::PLAYER_TURN:
+        player_controller.on_mouse_move(pos);
+        break;
+    }
 }
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
