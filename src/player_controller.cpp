@@ -19,6 +19,17 @@ void PlayerController::reset(Entity player)
 
 void PlayerController::step(float elapsed_ms)
 {
+	Motion& player_motion = registry.motions.get(player);
+	Energy& player_energy = registry.energies.get(player);
+	if (current_state == PlayerState::MOVE_LEFT || current_state == PlayerState::MOVE_RIGHT ||
+		current_state == PlayerState::MOVE_UP || current_state == PlayerState::MOVE_DOWN) {
+		if (player_energy.cur_energy > 0.f) {
+			player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
+		}
+	}
+	updateEnergyBar(player_energy);
+	updateHealthBar(player);
+
 	// update states
 	current_state = next_state;
 }
@@ -26,65 +37,74 @@ void PlayerController::step(float elapsed_ms)
 void PlayerController::on_key(int key, int, int action, int mod)
 {
 	Motion& player_motion = registry.motions.get(player);
-	switch (current_state)
-	{	
-	case PlayerState::IDLE:
-		if (action == GLFW_PRESS || action == GLFW_REPEAT)
+	Energy& player_energy = registry.energies.get(player);
+
+	if (player_energy.cur_energy > 0.f) {
+		switch (current_state)
 		{
-			switch (key)
+		case PlayerState::IDLE:
+			if (action == GLFW_PRESS || action == GLFW_REPEAT)
 			{
-			case GLFW_KEY_A:
-				player_motion.velocity = vec2(-player_motion.speed, 0);
-				move_to_state(PlayerState::MOVE_LEFT); break;
-			case GLFW_KEY_D:
-				player_motion.velocity = vec2(player_motion.speed, 0);
-				move_to_state(PlayerState::MOVE_RIGHT); break;
-			case GLFW_KEY_W:
-				// TODO: player not moving for up
-				player_motion.velocity = vec2(0);
-				move_to_state(PlayerState::MOVE_UP); break;
-			case GLFW_KEY_S:
-				// TODO: player not moving for down
-				player_motion.velocity = vec2(0);
-				move_to_state(PlayerState::MOVE_DOWN); break;
+				switch (key)
+				{
+				case GLFW_KEY_A:
+					player_motion.velocity = vec2(-player_motion.speed, 0);
+					move_to_state(PlayerState::MOVE_LEFT); break;
+				case GLFW_KEY_D:
+					player_motion.velocity = vec2(player_motion.speed, 0);
+					move_to_state(PlayerState::MOVE_RIGHT); break;
+				case GLFW_KEY_W:
+					// TODO: player not moving for up
+					player_motion.velocity = vec2(0);
+					move_to_state(PlayerState::MOVE_UP); break;
+				case GLFW_KEY_S:
+					// TODO: player not moving for down
+					player_motion.velocity = vec2(0);
+					move_to_state(PlayerState::MOVE_DOWN); break;
+				}
 			}
-		}
-		break;
+			break;
 
-	case PlayerState::MOVE_LEFT:
-		if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
-		}
-		break;
+		case PlayerState::MOVE_LEFT:
+			if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 
-	case PlayerState::MOVE_RIGHT:
-		if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
-		}
-		break;
+		case PlayerState::MOVE_RIGHT:
+			if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 
-	case PlayerState::MOVE_UP:
-		if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
-		}
-		break;
+		case PlayerState::MOVE_UP:
+			if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 
-	case PlayerState::MOVE_DOWN:
-		if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		{
-			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
+		case PlayerState::MOVE_DOWN:
+			if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+			{
+				player_motion.velocity = vec2(0);
+				move_to_state(PlayerState::IDLE);
+			}
+			break;
 		}
-		break;
 	}
-
-	updateHealthBar(player);
+	else {
+		if (current_state == PlayerState::MOVE_LEFT || current_state == PlayerState::MOVE_RIGHT ||
+			current_state == PlayerState::MOVE_UP || current_state == PlayerState::MOVE_DOWN) {
+			player_motion.velocity = vec2(0);
+			move_to_state(PlayerState::IDLE);
+		}
+	}
 }
 
 void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cursor_world_pos)

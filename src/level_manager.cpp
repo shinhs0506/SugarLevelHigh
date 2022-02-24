@@ -56,6 +56,7 @@ void LevelManager::load_level(int level)
         Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
         Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
         Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
+        Entity energyBar = createEnergyBar();
 
         level_entity_vector.push_back(background);
         level_entity_vector.push_back(enemy);
@@ -63,6 +64,7 @@ void LevelManager::load_level(int level)
         level_entity_vector.push_back(player);
         level_entity_vector.push_back(registry.playables.get(player).healthBar);
         level_entity_vector.push_back(button);
+        level_entity_vector.push_back(energyBar);
 
         float terrain_x_offset = 0.f;
         while (terrain_x_offset < 1200.f) {
@@ -190,10 +192,16 @@ bool LevelManager::step(float elapsed_ms)
             // reset player controller
             player_controller.reset(registry.activeTurns.entities[0]);
             move_to_state(LevelState::PLAYER_TURN);
+
+            // reset energy
+            Energy& energy = registry.energies.get(registry.activeTurns.entities[0]);
+            energy.cur_energy = energy.max_energy;
+            resetEnergyBar();
         }
         else {
             std::cout << "enemy is current character" << std::endl;
             move_to_state(LevelState::ENEMY_MOVE);
+            resetEnergyBar();
         }
         break;
 
@@ -308,6 +316,10 @@ void LevelManager::handle_collisions()
             if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
                 Motion& position = registry.motions.get(other_entity);
                 position.position = position.prev_position;
+                Playable& playable = registry.playables.get(other_entity);
+                Entity healthBar = playable.healthBar;
+                Motion& healthBar_motion = registry.motions.get(healthBar);
+                healthBar_motion.position = healthBar_motion.prev_position;
             }
         }
     }
