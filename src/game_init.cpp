@@ -20,3 +20,17 @@ Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)()){
 
     return entity;
 }
+
+Entity createBackButton(vec2 pos, vec2 size, bool (*on_click)())
+{
+    Entity entity = createGenericButton(pos, size, on_click);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::BACK_BUTTON,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+    return entity;
+}
+

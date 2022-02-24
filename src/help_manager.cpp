@@ -1,6 +1,7 @@
 #include "help_manager.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "menu_init.hpp"
+#include "game_init.hpp"
 #include "physics_system.hpp"
 #include "game_system.hpp"
 

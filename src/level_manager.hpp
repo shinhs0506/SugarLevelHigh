@@ -81,6 +81,9 @@ private:
 
     // game ending logic
     bool is_level_over;
+
+    // back button
+    Entity back_button;
   
     // remove the character from order_vector
     void remove_character(Entity entity);

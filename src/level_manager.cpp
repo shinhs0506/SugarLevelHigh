@@ -10,6 +10,7 @@
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
+#include "game_init.hpp"
 #include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "ability.hpp"
@@ -111,6 +112,10 @@ void LevelManager::load_level(int level)
     }
 
     // common to all levels
+    
+    back_button = createBackButton(vec2(100, 50), vec2(50,50), NULL); 
+    level_entity_vector.push_back(back_button);
+
     Entity basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
     Entity advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
 
@@ -443,12 +448,29 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
     vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
 
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        Motion click_motion;
+        click_motion.position = cursor_world_pos;
+        click_motion.scale = { 1.f, 1.f };
+
+        Motion back_button_motion = registry.motions.get(back_button);
+
+        if (collides(click_motion, back_button_motion)) {
+            // move to IN_LEVEL state
+            /* this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL); */
+            is_level_over = true; 
+            return;
+        }
+    }
+
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
         // handle all player logic to a player controller
         player_controller.on_mouse_button(button, action, mod, cursor_world_pos);
         break;
     }
+
+
 }
 
 LevelManager::LevelState LevelManager::current_state()

@@ -85,8 +85,8 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 void AISystem::step(float elapsed_ms)
 {
 
-	if (level_manager->current_state() == LevelManager::LevelState::ENEMY_MOVE ||
-		level_manager->current_state() == LevelManager::LevelState::ENEMY_ATTACK) {
+	if (!level_manager->is_over() && (level_manager->current_state() == LevelManager::LevelState::ENEMY_MOVE ||
+		level_manager->current_state() == LevelManager::LevelState::ENEMY_ATTACK)) {
 		Entity active_entity = registry.activeTurns.entities[0];
 		AI& entity_AI = registry.AIs.get(active_entity);
 		// A small delay before AI moves to allow for player to see AI abit easier
