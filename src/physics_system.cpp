@@ -28,6 +28,20 @@ bool collides(const Motion& motion1, const Motion& motion2)
 	return false;
 }
 
+float interpolation_acceleration(float goal_velocity, float current_velocity) {
+	
+	float acceleration = 20.0f;
+	float velocity_difference = goal_velocity - current_velocity;
+
+	if (velocity_difference > acceleration) {
+		return current_velocity + acceleration; // increase in velocity
+	}
+	else if (velocity_difference < -acceleration) {
+		return current_velocity - acceleration; // decrease in velocity
+	}
+	return goal_velocity; // reached goal
+}
+
 void PhysicsSystem::step(float elapsed_ms)
 {
 	// Move entities with motion component with respect to their velocity
@@ -40,15 +54,17 @@ void PhysicsSystem::step(float elapsed_ms)
 		// Gravity
 		if (motion.gravity_affected == true) {
 			//When collision with terrain is detected. Reset this velocity to 0
-			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
+			motion.goal_velocity.y += gravity * (elapsed_ms/1000.0f);
 		}
 
 		motion.prev_position = motion.position;
-		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+		motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
+		motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+		motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 
 		// Adapt angle/rotation for projectile motion
 		if (registry.projectiles.has(entity)) {
-			motion.angle = atan2(motion.velocity.y, motion.velocity.x);
+			motion.angle = atan2(motion.goal_velocity.y, motion.goal_velocity.x);
 		}
 
 		if (registry.cameras.has(entity))

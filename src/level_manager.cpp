@@ -351,7 +351,7 @@ void LevelManager::update_camera(vec2 velocity) {
 
     // update camera position
     Motion& camera_motion = motion_registry.get(main_camera);
-    camera_motion.velocity += velocity;
+    camera_motion.goal_velocity += velocity;
 
 }
 
