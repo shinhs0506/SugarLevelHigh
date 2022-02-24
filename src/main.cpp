@@ -6,7 +6,6 @@
 #include <chrono>
 
 // internal
-#include "ai_system.hpp"
 #include "physics_system.hpp"
 #include "render_system.hpp"
 #include "game_system.hpp"
@@ -20,7 +19,6 @@ int main()
 	GameSystem game;
 	RenderSystem renderer;
 	PhysicsSystem physics;
-	AISystem ai;
 
 	srand((unsigned int)time(NULL));
 
@@ -35,8 +33,7 @@ int main()
 
 	// initialize the main systems
 	renderer.init(window);
-	game.init(&renderer);
-	ai.init(&game.level_manager);
+	game.init(&renderer); 
 
 	// variable timestep loop
 	auto t = Clock::now();
@@ -51,7 +48,6 @@ int main()
 		t = now;
 
 		game.step(elapsed_ms);
-		ai.step(elapsed_ms);
         if (game.is_in_level()) {
             physics.step(elapsed_ms);
             game.handle_collisions();

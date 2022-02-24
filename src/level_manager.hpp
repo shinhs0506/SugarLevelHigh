@@ -3,7 +3,7 @@
 
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
-#include "ai_system.hpp"
+#include "enemy_controller.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -22,7 +22,7 @@ public:
 
 	~LevelManager();
 
-	void init(GLFWwindow* window, AISystem *ai_system);
+	void init(GLFWwindow* window);
 
 	// Load all needed entities for the level
 	void load_level(int level);
@@ -73,8 +73,8 @@ private:
 	// OpenGL window handle
 	GLFWwindow* window;
 
-	// ai system
-	AISystem* ai_system;
+	// controller that handles enemy's behaviors
+	EnemyController enemy_controller;
 
 	// controller that handles player's input
 	PlayerController player_controller;

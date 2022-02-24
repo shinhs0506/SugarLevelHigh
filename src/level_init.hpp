@@ -11,6 +11,7 @@ Entity createEnergyBar();
 void resetEnergyBar();
 void updateEnergyBar(Energy energy);
 void removeEnergyBar();
+void resetEnergy(Entity entity);
 
 Entity createHealthBar(vec2 pos, vec2 size);
 void updateHealthBar(Entity entity);

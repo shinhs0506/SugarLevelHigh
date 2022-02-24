@@ -24,10 +24,9 @@ LevelManager::~LevelManager()
 
 }
 
-void LevelManager::init(GLFWwindow* window, AISystem *ai_system)
+void LevelManager::init(GLFWwindow* window)
 {
     this->window = window;
-    this->ai_system = ai_system;
     this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 
     // start with a move state
@@ -200,20 +199,18 @@ bool LevelManager::step(float elapsed_ms)
         if (registry.playables.has(registry.activeTurns.entities[0])) {
             std::cout << "player is current character" << std::endl;
             // reset player controller
-            player_controller.reset(registry.activeTurns.entities[0]);
-            move_to_state(LevelState::PLAYER_TURN);
-
-            // reset energy
-            Energy& energy = registry.energies.get(registry.activeTurns.entities[0]);
-            energy.cur_energy = energy.max_energy;
+            player_controller.start_turn(registry.activeTurns.entities[0]);
+            
             resetEnergyBar();
+            move_to_state(LevelState::PLAYER_TURN);
         }
         else {
             std::cout << "enemy is current character" << std::endl;
             // reset ai system to prepare for enemy's turn
-            ai_system->reset(registry.activeTurns.entities[0]);
-            move_to_state(LevelState::ENEMY_TURN);
+            enemy_controller.start_turn(registry.activeTurns.entities[0]);
+            
             resetEnergyBar();
+            move_to_state(LevelState::ENEMY_TURN);
         }
         break;
 
@@ -221,6 +218,15 @@ bool LevelManager::step(float elapsed_ms)
         // step player controller
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
+        {
+            move_to_state(LevelState::EVALUATION);
+        }
+        break;
+
+    case LevelState::ENEMY_TURN:
+        // step player controller
+        enemy_controller.step(elapsed_ms);
+        if (enemy_controller.should_end_enemy_turn())
         {
             move_to_state(LevelState::EVALUATION);
         }
