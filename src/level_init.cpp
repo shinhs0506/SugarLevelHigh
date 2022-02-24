@@ -63,6 +63,7 @@ void resetEnergyBar()
 	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
 	motion.position = { pos };
 	motion.prev_position = { pos };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 300, 20 };
 }
 
