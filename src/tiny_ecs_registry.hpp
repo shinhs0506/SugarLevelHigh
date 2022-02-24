@@ -17,8 +17,10 @@ public:
 	ComponentContainer<Health> healths;
 	ComponentContainer<HealthBar> healthBars;
 	ComponentContainer<Energy> energies;
+	ComponentContainer<EnergyBar> energyBars;
 	ComponentContainer<Initiative> initiatives;
     ComponentContainer<ActiveTurn> activeTurns;
+	ComponentContainer<AttackArsenal> attackArsenals;
 	ComponentContainer<AttackAbility> attackAbilities;
 	ComponentContainer<AttackObject> attackObjects;
 	ComponentContainer<Projectile> projectiles;
@@ -35,7 +37,8 @@ public:
 	ComponentContainer<Overlay> overlays;
 	ComponentContainer<HitEffect> hitEffects;
 	ComponentContainer<AI> AIs;
-  ComponentContainer<Background> backgrounds;
+	ComponentContainer<Background> backgrounds;
+	ComponentContainer<AttackPreview> attackPreviews;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -47,9 +50,10 @@ public:
 		registry_list.push_back(&healths);
 		registry_list.push_back(&healthBars);
 		registry_list.push_back(&energies);
+		registry_list.push_back(&energyBars);
 		registry_list.push_back(&initiatives);
         registry_list.push_back(&activeTurns);
-		registry_list.push_back(&attackAbilities);
+		registry_list.push_back(&attackArsenals);
 		registry_list.push_back(&attackObjects);
 		registry_list.push_back(&projectiles);
 		registry_list.push_back(&terrains);
@@ -66,6 +70,8 @@ public:
 		registry_list.push_back(&hitEffects);
 		registry_list.push_back(&AIs);
 		registry_list.push_back(&backgrounds);
+		registry_list.push_back(&attackPreviews);
+		registry_list.push_back(&attackAbilities);
 	}
 
 	void clear_all_components() {

@@ -45,6 +45,12 @@ void PhysicsSystem::step(float elapsed_ms)
 
 		motion.prev_position = motion.position;
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+
+		// Adapt angle/rotation for projectile motion
+		if (registry.projectiles.has(entity)) {
+			motion.angle = atan2(motion.velocity.y, motion.velocity.x);
+		}
+
 		if (registry.cameras.has(entity))
 		{
 			Camera& camera = registry.cameras.get(entity);

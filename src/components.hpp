@@ -37,6 +37,11 @@ struct Energy
 	float cur_energy = 100.f;
 };
 
+struct EnergyBar
+{
+	
+};
+
 // Initiative used to determine the turn order of all enemies and players
 // Slower the initiative means faster the speed
 // When an enemy and a playable character have the same initiative, the player move first
@@ -50,12 +55,6 @@ struct ActiveTurn {
     //    
 };
 
-struct AttackAbility
-{
-	float range;
-	float damage;
-};
-
 // Represent an attack to be rendered
 // Handled by collision with others
 struct AttackObject
@@ -64,6 +63,27 @@ struct AttackObject
 	float damage;
 	Entity attacker;
 	std::unordered_set<Entity, EntityHash> attacked;
+};
+struct AttackAbility 
+{
+	bool activated;
+	float ttl_ms;
+	float damage;
+	float range;
+	int shape; // This is the GEOMETRY_BUFFER_ID
+	vec2 size;
+	bool gravity_affected;
+	int max_cooldown;
+	int current_cooldown;
+};
+struct AttackArsenal
+{
+	AttackAbility basic_attack;
+	AttackAbility advanced_attack;
+};
+
+struct AttackPreview {
+
 };
 
 // Attached to all projectiles 
@@ -127,7 +147,7 @@ struct Collision
 
 // Components with callback on click
 struct Clickable {
-	void (*on_click)();
+	bool (*on_click)();
 };
 
 // Attached to components that are unaffected by camera
@@ -186,6 +206,21 @@ struct AI
 {
 	// Only horizontal movement so far
 	vec2 movement_direction = vec2(-1, 0);
+};
+
+// Character states for players and enemies
+// This will be later used for animation system as well
+
+enum class CharacterState
+{
+	IDLE,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	MOVE_UP,
+	MOVE_DOWN,
+	PERFORM_ABILITY,
+	END, // should not move to any other states from here
+		 // this is set to prevent player continue to act after his turn
 };
 
 /**
