@@ -2,7 +2,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
 
-Entity createStartButton(vec2 pos, vec2 size, void (*on_click)())
+Entity createStartButton(vec2 pos, vec2 size, bool (*on_click)())
 {
     Entity entity = createGenericButton(pos, size, on_click);
 
@@ -15,7 +15,7 @@ Entity createStartButton(vec2 pos, vec2 size, void (*on_click)())
     return entity;
 }
 
-Entity createExitButton(vec2 pos, vec2 size, void (*on_click)())
+Entity createExitButton(vec2 pos, vec2 size, bool (*on_click)())
 {
     Entity entity = createGenericButton(pos, size, on_click);
 

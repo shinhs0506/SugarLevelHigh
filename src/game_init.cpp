@@ -2,7 +2,7 @@
 #include "components.hpp"
 #include "tiny_ecs_registry.hpp"
 
-Entity createGenericButton(vec2 pos, vec2 size, void (*on_click)()){
+Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)()){
     Entity entity = Entity();
 
 	Motion& motion = registry.motions.emplace(entity);
