@@ -34,13 +34,6 @@ bool compare(Entity a, Entity b) {
     return a_init.value < b_init.value;
 };
 
-// Returns the local bounding coordinates scaled by the current size of the entity
-vec2 get_bound_box(const Motion& motion)
-{
-    // abs is to avoid negative scale due to the facing direction.
-    return { abs(motion.scale.x), abs(motion.scale.y) };
-}
-
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
