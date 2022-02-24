@@ -3,6 +3,7 @@
 
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
+#include "ai_system.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -12,8 +13,7 @@ public:
 	enum class LevelState {
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
-		ENEMY_MOVE, // enemy move state
-		ENEMY_ATTACK, // enemy attack state
+		ENEMY_TURN, // handled by AI system
 		EVALUATION, // attack processing state
         TERMINATION, // game ending logic
 	};
@@ -22,7 +22,7 @@ public:
 
 	~LevelManager();
 
-	void init(GLFWwindow* window);
+	void init(GLFWwindow* window, AISystem *ai_system);
 
 	// Load all needed entities for the level
 	void load_level(int level);
@@ -73,13 +73,16 @@ private:
 	// OpenGL window handle
 	GLFWwindow* window;
 
+	// ai system
+	AISystem* ai_system;
+
 	// controller that handles player's input
 	PlayerController player_controller;
 	
 	LevelState current_level_state;
 	LevelState next_level_state;
   
-  // remove the character from order_vector
+    // remove the character from order_vector
 	void remove_character(Entity entity);
 
     // game ending logic

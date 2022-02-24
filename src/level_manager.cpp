@@ -24,9 +24,10 @@ LevelManager::~LevelManager()
 
 }
 
-void LevelManager::init(GLFWwindow* window)
+void LevelManager::init(GLFWwindow* window, AISystem *ai_system)
 {
     this->window = window;
+    this->ai_system = ai_system;
     this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 
     // start with a move state
@@ -209,7 +210,9 @@ bool LevelManager::step(float elapsed_ms)
         }
         else {
             std::cout << "enemy is current character" << std::endl;
-            move_to_state(LevelState::ENEMY_MOVE);
+            // reset ai system to prepare for enemy's turn
+            ai_system->reset(registry.activeTurns.entities[0]);
+            move_to_state(LevelState::ENEMY_TURN);
             resetEnergyBar();
         }
         break;
@@ -451,17 +454,13 @@ void LevelManager::move_to_state(LevelState next_state) {
         std::cout << "moving to player's state" << std::endl;
         assert(this->current_level_state == LevelState::PREPARE); break;
 
-    case LevelState::ENEMY_MOVE:
+    case LevelState::ENEMY_TURN:
         std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
-        assert(this->current_level_state == LevelState::PREPARE || this->current_level_state == LevelState::ENEMY_ATTACK); break;
-
-    case LevelState::ENEMY_ATTACK:
-        std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
-        assert(this->current_level_state == LevelState::ENEMY_MOVE); break;
+        assert(this->current_level_state == LevelState::PREPARE); break;
 
     case LevelState::EVALUATION:
         std::cout << "moving to evaluation state, calculating damages..." << std::endl;
-        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_ATTACK); break;
+        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_TURN); break;
 
     case LevelState::TERMINATION:
         std::cout << "game is over!, press 'ESC' to exit" << std::endl;

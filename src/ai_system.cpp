@@ -1,4 +1,5 @@
-// internal
+#include <iostream>
+
 #include "ai_system.hpp"
 #include "level_init.hpp"
 #include "ability.hpp"
@@ -6,6 +7,8 @@
 void AISystem::init(LevelManager* level_manager)
 {
 	this->level_manager = level_manager;
+	this->current_state = CharacterState::END;
+	this->next_state = CharacterState::END;
 }
 
 
@@ -84,6 +87,8 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 
 void AISystem::step(float elapsed_ms)
 {
+	// update state
+	current_state = next_state;
 
 	if (level_manager->current_state() == LevelManager::LevelState::ENEMY_MOVE ||
 		level_manager->current_state() == LevelManager::LevelState::ENEMY_ATTACK) {
@@ -99,4 +104,47 @@ void AISystem::step(float elapsed_ms)
 
 	}
 	(void)elapsed_ms; // placeholder to silence unused warning until implemented
+}
+
+void PlayerController::move_to_state(CharacterState next_state)
+{
+	switch (next_state) {
+	case CharacterState::IDLE:
+		std::cout << "moving to IDLE state" << std::endl;
+		assert(current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
+			current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN ||
+			current_state == CharacterState::PERFORM_ABILITY);
+		break;
+
+	case CharacterState::MOVE_LEFT:
+		std::cout << "moving to MOVE_LEFT state" << std::endl;
+		assert(current_state == CharacterState::IDLE);
+		break;
+
+	case CharacterState::MOVE_RIGHT:
+		std::cout << "moving to MOVE_RIGHT state" << std::endl;
+		assert(current_state == CharacterState::IDLE);
+		break;
+
+	case CharacterState::MOVE_UP:
+		std::cout << "moving to MOVE_UP state" << std::endl;
+		assert(current_state == CharacterState::IDLE);
+		break;
+
+	case CharacterState::MOVE_DOWN:
+		std::cout << "moving to MOVE_DOWN state" << std::endl;
+		assert(current_state == CharacterState::IDLE);
+		break;
+
+	case CharacterState::PERFORM_ABILITY:
+		std::cout << "moving to PERFORM_ABILITY state" << std::endl;
+		assert(current_state == CharacterState::IDLE);
+		break;
+
+	case CharacterState::END:
+		std::cout << "moving to END state" << std::endl;
+		assert(current_state == CharacterState::PERFORM_ABILITY);
+		break;
+	}
+	this->next_state = next_state;
 }
