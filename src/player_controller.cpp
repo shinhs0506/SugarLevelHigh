@@ -6,53 +6,6 @@
 #include "physics_system.hpp"
 #include "ability.hpp"
 
-// offset position for attack preview
-vec2 offset_position(vec2 direction, vec2 player_pos, double angle) {
-	vec2 offset{ 100.f, 0.f }; // a bit before the character
-	Transform trans;
-	trans.translate(player_pos);
-	trans.rotate(angle);
-	trans.translate(offset);
-	vec2 attack_preview_pos = trans.mat * vec3(0, 0, 1);
-	return attack_preview_pos;
-}
-
-void create_preview_object(vec2 player_pos) {
-
-	auto entity = Entity();
-
-	vec2 direction = -player_pos;
-	double angle = -atan2(direction[0], direction[1]) + M_PI / 2;
-	
-	vec2 attack_preview_pos = offset_position(direction, player_pos, angle);
-
-	Motion& motion = registry.motions.emplace(entity);
-	motion.position = attack_preview_pos;
-	motion.angle = angle;
-	motion.velocity = vec2(0, 0);
-	motion.scale = vec2(75, 20);
-	motion.depth = DEPTH::ATTACK;
-	motion.gravity_affected = false;
-
-	registry.attackPreviews.emplace(entity);
-
-	registry.renderRequests.insert(
-		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
-}
-
-void destroy_preview_objects() {
-	Entity attack_preview = registry.attackPreviews.entities[0];
-	registry.motions.remove(attack_preview);
-	registry.attackPreviews.remove(attack_preview);
-	registry.renderRequests.remove(attack_preview);
-	registry.colors.remove(attack_preview);
-}
-
 PlayerController::PlayerController()
 {
 
@@ -199,6 +152,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		// player can use right click to cancel attack preview
 		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
 		{
+			destroy_preview_objects();
 			move_to_state(PlayerState::IDLE);
 			break;
 		}
@@ -206,14 +160,14 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 		{
 			AttackArsenal& active_arsenal = registry.attackArsenals.get(player);
-			AttackObject& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
+			AttackAbility& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
 
 		
 			// manually calculate a world position with some offsets
 			vec2 direction = cursor_world_pos - player_pos;
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-			perform_attack(player_pos, offset, direction, chosen_attack);
+			perform_attack(player, player_pos, offset, direction, chosen_attack);
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 			destroy_preview_objects();

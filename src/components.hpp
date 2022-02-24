@@ -49,6 +49,13 @@ struct ActiveTurn {
 // Handled by collision with others
 struct AttackObject
 {
+	float ttl_ms;
+	float damage;
+	Entity attacker;
+	std::unordered_set<Entity, EntityHash> attacked;
+};
+struct AttackAbility 
+{
 	bool activated;
 	float ttl_ms;
 	float damage;
@@ -58,21 +65,15 @@ struct AttackObject
 	bool gravity_affected;
 	int max_cooldown;
 	int current_cooldown;
-	Entity attacker;
-	std::unordered_set<Entity, EntityHash> attacked;
+};
+struct AttackArsenal
+{
+	AttackAbility basic_attack;
+	AttackAbility advanced_attack;
 };
 
 struct AttackPreview {
-	//vec2 position;
-	//float angle;
-	//int shape;
-	//vec2 scale = { 75, 25 };
-};
 
-struct AttackArsenal
-{
-	AttackObject basic_attack;
-	AttackObject advanced_attack;
 };
 
 // Attached to all projectiles 

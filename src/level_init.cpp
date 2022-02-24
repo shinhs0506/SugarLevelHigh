@@ -53,8 +53,6 @@ Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 	registry.initiatives.insert(entity, initiative);
 	registry.AIs.emplace(entity);
 	
-	attack_arsenal.basic_attack.attacker = entity;
-	attack_arsenal.advanced_attack.attacker = entity;
 	registry.attackArsenals.insert(entity, attack_arsenal);
 
 	registry.renderRequests.insert(
@@ -103,9 +101,6 @@ Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 	registry.energies.insert(entity, energy);
 	registry.initiatives.insert(entity, initiative);
 
-	
-	attack_arsenal.basic_attack.attacker = entity;
-	attack_arsenal.advanced_attack.attacker = entity;
 	registry.attackArsenals.insert(entity, attack_arsenal);
 
 	registry.renderRequests.insert(
@@ -167,28 +162,28 @@ void removeTerrain(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
-Entity createAttackObject(AttackObject attack, float angle, vec2 pos) {
+Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos) {
 	auto entity = Entity();
 
-	vec2 attack_object_velocity = vec2(attack.range * (float)cos(angle), attack.range * (float)sin(angle));
+	vec2 attack_object_velocity = vec2(ability.range * (float)cos(angle), ability.range * (float)sin(angle));
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = angle;
 	motion.velocity = attack_object_velocity;
-	motion.scale = attack.size;
+	motion.scale = ability.size;
 	motion.depth = DEPTH::ATTACK;
-	motion.gravity_affected = attack.gravity_affected;
+	motion.gravity_affected = ability.gravity_affected;
 
-	
-	registry.attackObjects.insert(entity, attack);
+	AttackObject obj{ ability.ttl_ms, ability.damage, attacker };
+	registry.attackObjects.insert(entity, obj);
 
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
 			EFFECT_ASSET_ID::COLOURED,
-			(GEOMETRY_BUFFER_ID)attack.shape });
+			(GEOMETRY_BUFFER_ID)ability.shape });
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 
@@ -201,6 +196,7 @@ void removeAttackObject(Entity entity)
 	registry.attackObjects.remove(entity);
 	registry.renderRequests.remove(entity);
 	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
+	registry.projectiles.remove(entity);
 }
 
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)

@@ -19,6 +19,7 @@ public:
 	ComponentContainer<Initiative> initiatives;
     ComponentContainer<ActiveTurn> activeTurns;
 	ComponentContainer<AttackArsenal> attackArsenals;
+	ComponentContainer<AttackAbility> attackAbilities;
 	ComponentContainer<AttackObject> attackObjects;
 	ComponentContainer<Projectile> projectiles;
 	ComponentContainer<Terrain> terrains;
@@ -66,6 +67,7 @@ public:
 		registry_list.push_back(&AIs);
 		registry_list.push_back(&backgrounds);
 		registry_list.push_back(&attackPreviews);
+		registry_list.push_back(&attackAbilities);
 	}
 
 	void clear_all_components() {

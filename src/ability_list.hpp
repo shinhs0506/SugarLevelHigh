@@ -12,7 +12,7 @@ COOLDOWN
 cd has to be > 2 for an actual cooldown. B/c at the start of a players turn, ability cd is reduced by 1
 so if a cd is only 1, then on that char's next turn, it'll be 0 (available) anyways.
 */
-AttackObject gingerbread_basic_attack = {
+AttackAbility gingerbread_basic_attack = {
     false, // Chosen attack
     200, // TTL
     50, // Damage
@@ -23,7 +23,7 @@ AttackObject gingerbread_basic_attack = {
     0, // Max cooldown
     0, // Current cooldown 
 };
-AttackObject gingerbread_advanced_attack = {
+AttackAbility gingerbread_advanced_attack = {
     false, // Chosen attack
     7000, // TTL
     100, // Damage
@@ -35,8 +35,8 @@ AttackObject gingerbread_advanced_attack = {
     0, // Current cooldown
 };
 
-// Gumball used for enemy, at the moment, enemy only uses melee attack (the basic attack hardcoded to true)
-AttackObject gumball_basic_attack = {
+// Gumball used for enemy, at the moment, enemy only uses melee attack (the basic attack active hardcoded to true)
+AttackAbility gumball_basic_attack = {
     true, // Chosen attack
     200, // TTL
     20, // Damage
@@ -47,7 +47,7 @@ AttackObject gumball_basic_attack = {
     0, // Max cooldown
     0, // Current cooldown 
 };
-AttackObject gumball_advanced_attack = {
+AttackAbility gumball_advanced_attack = {
     false, // Chosen attack
     2000, // TTL
     100, // Damage
