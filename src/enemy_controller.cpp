@@ -30,7 +30,7 @@ bool EnemyController::should_end_enemy_turn()
 // don't have vertical movement for now
 // direction: -1: left; 1: right
 void EnemyController::move(Motion& motion, int direction, float distance) {
-	move_counter = distance / motion.speed;
+	move_counter = distance / motion.speed * 1000;
 	motion.velocity = vec2(direction * motion.speed, 0);
 	if (direction == -1) {
 		move_to_state(CharacterState::MOVE_LEFT);
@@ -82,7 +82,6 @@ void EnemyController::make_decision() {
 		float dist = cal_actual_attack_range(chosen_attack) - 10 - min_dist;
 		// only move left/right now
 		move(motion, motion.position.x < target_motion.position.x ? -1 : 1, dist);
-		printf("move low health");
 		return;
 	}
 
@@ -95,20 +94,17 @@ void EnemyController::make_decision() {
 		chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 		move_to_state(CharacterState::END);
-		printf("attack");
 	}
 	// failed to move within range
 	else if (energy.cur_energy == 0.f) {
 		move_to_state(CharacterState::END);
-		printf("zero energy");
 	}
 	else {
 		// move distance is calculated only on x-axis
 		float x_dist = abs(target_motion.position.x - motion.position.x);
-		float dist = cal_actual_attack_range(chosen_attack) - 10 - x_dist;
+		float dist = x_dist - cal_actual_attack_range(chosen_attack);
 		// only move left/right now
 		move(motion, motion.position.x < target_motion.position.x ? 1 : -1, dist);
-		printf("move");
 	}
 }
 
@@ -143,6 +139,7 @@ void EnemyController::step(float elapsed_ms)
 
 		if (move_counter < 0.f || energy.cur_energy == 0.f) {
 			move_counter = 0.f;
+			motion.velocity = vec2(0);
 			move_to_state(CharacterState::IDLE);
 		}
 		break;

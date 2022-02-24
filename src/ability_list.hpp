@@ -28,7 +28,7 @@ AttackAbility gingerbread_advanced_attack = {
     false, // Chosen attack
     500, // speed
     50, // Damage
-    300, // Range
+    500, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 50), // Size
     true, // Gravit Affected

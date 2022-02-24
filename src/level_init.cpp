@@ -216,7 +216,7 @@ Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 
 	// stats
 	Health health{ 100, 100 };
-	Energy energy{ 100, 100 };
+	Energy energy{ 500, 500 };
 	Initiative initiative{ 50 };
 
 	registry.healths.insert(entity, health);
