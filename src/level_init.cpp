@@ -187,6 +187,8 @@ void removeEnemy(Entity entity)
 	registry.initiatives.remove(entity);
 	registry.renderRequests.remove(entity);
 	registry.AIs.remove(entity);
+    registry.attackArsenals.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
@@ -240,6 +242,7 @@ void removePlayer(Entity entity)
 	registry.initiatives.remove(entity);
 	registry.renderRequests.remove(entity);
 	registry.attackArsenals.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createTerrain(vec2 pos, vec2 size)
@@ -279,6 +282,7 @@ void removeTerrain(Entity entity)
 	registry.terrains.remove(entity);
 	registry.healths.remove(entity);
 	registry.renderRequests.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos) {
@@ -316,6 +320,7 @@ void removeAttackObject(Entity entity)
 	registry.renderRequests.remove(entity);
 	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 	registry.projectiles.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
@@ -362,6 +367,7 @@ void removeButton(Entity entity)
 	registry.motions.remove(entity);
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
+    registry.renderRequests.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)

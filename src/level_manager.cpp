@@ -72,7 +72,6 @@ void LevelManager::init_data(int level){
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         Entity player = createPlayer(player_pos, player_size, ginerbread_arsenal);
         level_entity_vector.push_back(player);
-        level_entity_vector.push_back(registry.playables.get(player).healthBar);
         order_vector.push_back(player);
     }
 
@@ -83,7 +82,6 @@ void LevelManager::init_data(int level){
         AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
         Entity enemy = createEnemy(enemy_pos, enemy_size, gumball_arsenal);
         level_entity_vector.push_back(enemy);
-        level_entity_vector.push_back(registry.enemies.get(enemy).healthBar);
         order_vector.push_back(enemy);
     }
 
@@ -116,16 +114,16 @@ void LevelManager::load_level(int level)
     back_button = createBackButton(vec2(100, 50), vec2(50,50), NULL); 
     level_entity_vector.push_back(back_button);
 
-    Entity basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
-    Entity advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
-
+    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
+    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
     level_entity_vector.push_back(basic_attack_button);
     level_entity_vector.push_back(advanced_attack_button);
 
-    Entity energyBar = createEnergyBar();
-    level_entity_vector.push_back(energyBar);
+    energy_bar = createEnergyBar();
+    level_entity_vector.push_back(energy_bar);
 
     sort(order_vector.begin(), order_vector.end(), compare);
+
     curr_order_ind = 0;
     should_initialize_active_turn = true;
 }
@@ -137,11 +135,41 @@ void LevelManager::restart_level()
 
 void LevelManager::abandon_level()
 {
-    for (auto& entity : level_entity_vector) {
-        registry.remove_all_components_of(entity); 
+    for (auto& attack_object : registry.attackObjects.entities) {
+        removeAttackObject(attack_object);
     }
-    terrain_vector.clear();
+
+    for (auto& player : registry.playables.entities) {
+        removePlayer(player);
+    }
+
+    for (auto& enemy : registry.enemies.entities) {
+        removeEnemy(enemy);
+    }
+
+    for (auto& terrain : registry.terrains.entities) {
+        removeTerrain(terrain);
+    }
+
+    removeButton(back_button);
+    removeButton(basic_attack_button);
+    removeButton(advanced_attack_button);
+
+    removeEnergyBar();
+
+    registry.activeTurns.clear();
+    /* registry.collisions.clear(); */
+    /* for (auto& entity : level_entity_vector) { */
+    /*     registry.remove_all_components_of(entity); */
+    /* } */
+
+    /* // have to manually clear healthbars */
+    /* for (auto& entity: registry.healthBars.entities) { */
+    /*     registry.remove_all_components_of(entity); */
+    /* } */
+
     level_entity_vector.clear();
+    terrain_vector.clear();
     order_vector.clear();
 }
 

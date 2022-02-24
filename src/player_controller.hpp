@@ -24,11 +24,14 @@ public:
 
 	bool should_end_player_turn();
 
+    void destroy_all_entities();
+
 private:
 	Entity player;
 	CharacterState current_state;
 	CharacterState next_state;
 	vec2 player_pos;
+    Entity curr_attack_object;
 
 	void move_to_state(CharacterState next_state);
 };

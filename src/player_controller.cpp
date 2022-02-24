@@ -187,7 +187,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			vec2 direction = cursor_world_pos - player_pos;
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-			perform_attack(player, player_pos, offset, direction, chosen_attack);
+		    curr_attack_object = perform_attack(player, player_pos, offset, direction, chosen_attack); 
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 			destroy_preview_objects();
@@ -203,6 +203,12 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 bool PlayerController::should_end_player_turn()
 {
 	return current_state == CharacterState::END;
+}
+
+void PlayerController::destroy_all_entities() {
+    if (curr_attack_object) {
+        registry.remove_all_components_of(curr_attack_object);
+    }
 }
 
 void PlayerController::move_to_state(CharacterState next_state)
