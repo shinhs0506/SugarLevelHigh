@@ -41,45 +41,6 @@ vec2 get_bound_box(const Motion& motion)
     return { abs(motion.scale.x), abs(motion.scale.y) };
 }
 
-// use AABB detection
-bool collide_bottom(Entity entity1, Entity entity2)
-{
-    Motion& motion1 = registry.motions.get(entity1);
-    Motion& motion2 = registry.motions.get(entity2);
-    const vec2 bb1 = get_bound_box(motion1) / 2.f;
-    const vec2 bb2 = get_bound_box(motion2) / 2.f;
-    const vec2 pos1 = motion1.position;
-    const vec2 pos2 = motion2.position;
-
-    if (
-        // y axis collision check
-        (pos1[1] - bb1[1] <= pos2[1] + bb2[1] && pos1[1] + bb1[1] >= pos2[1] - bb2[1]))
-    {
-        return true;
-    }
-    return false;
-}
-
-// use AABB detection
-bool collide_side(Entity entity1, Entity entity2)
-{
-    Motion& motion1 = registry.motions.get(entity1);
-    Motion& motion2 = registry.motions.get(entity2);
-    const vec2 bb1 = get_bound_box(motion1) / 2.f;
-    const vec2 bb2 = get_bound_box(motion2) / 2.f;
-    const vec2 pos1 = motion1.position;
-    const vec2 pos2 = motion2.position;
-
-    if (
-        // x axis collision check
-        (pos1[0] - bb1[0] <= pos2[0] + bb2[0] && pos1[0] + bb1[0] >= pos2[0] - bb2[0]))
-    {
-        return true;
-    }
-
-    return false;
-}
-
 void LevelManager::load_level(int level)
 {
     this->curr_level = level;
@@ -300,30 +261,6 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
-            }
-        }
-
-        // handle character and terrain collisions
-        if (registry.terrains.has(entity)) {
-            Entity other_entity = registry.collisions.components[i].other;
-            if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
-                Motion& position = registry.motions.get(other_entity);
-                //position.position = position.prev_position;
-                //if (collide_bottom(entity, other_entity)) {
-                //    position.position.y = position.prev_position.y;
-                //    //printf("collide bottom only. \n");
-                //}
-                    
-                //if (collide_side(other_entity, entity)) {
-                //    position.position.x = position.prev_position.x;
-                //    //printf("Collide with SIDE. \n");
-                //}
-                //if (collide_bottom(other_entity, entity)) {
-                //    //position.velocity.y = 0;
-                //    position.position.y = position.prev_position.y;
-                //    
-                //    printf("Collide with BOTTOM. \n");
-                //}
             }
         }
     }
