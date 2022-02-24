@@ -11,6 +11,8 @@
 #include "physics_system.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "ability.hpp"
+#include "ability_list.hpp"
+
 
 LevelManager::LevelManager()
 {
@@ -53,9 +55,16 @@ void LevelManager::load_level(int level)
         camera.higer_limit = motion.position + vec2(100);
 
         Entity background = createBackground(vec2(1480, 920), level);
-        Entity player = createPlayer(vec2(500, 500), vec2(80, 100));
-        Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100));
-        Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback);
+
+        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        Entity player = createPlayer(vec2(500, 500), vec2(80, 100), ginerbread_arsenal);
+
+        AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
+        Entity enemy = createEnemy(vec2(600, 500), vec2(80, 100), gumball_arsenal);
+
+        Entity basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
+        Entity advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
+
         Entity energyBar = createEnergyBar();
 
         level_entity_vector.push_back(background);
@@ -63,7 +72,8 @@ void LevelManager::load_level(int level)
         level_entity_vector.push_back(registry.enemies.get(enemy).healthBar);
         level_entity_vector.push_back(player);
         level_entity_vector.push_back(registry.playables.get(player).healthBar);
-        level_entity_vector.push_back(button);
+        level_entity_vector.push_back(basic_attack_button);
+        level_entity_vector.push_back(advanced_attack_button);
         level_entity_vector.push_back(energyBar);
 
         float terrain_x_offset = 0.f;
@@ -83,7 +93,6 @@ void LevelManager::load_level(int level)
             level_entity_vector.push_back(curr2);
             terrain_y_offset += 100.001;
         }
-
         order_vector.push_back(enemy);
         order_vector.push_back(player);
 
@@ -261,10 +270,6 @@ void LevelManager::handle_collisions()
             // using get() will always retrieve the first collision component
             Entity other_entity = registry.collisions.components[i].other;
 
-            if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
-                continue;
-            }
-
             AttackObject& attack = registry.attackObjects.get(entity);
             bool is_player_attack = registry.playables.has(attack.attacker);
 
@@ -279,6 +284,17 @@ void LevelManager::handle_collisions()
             bool attacked = attack.attacked.find(other_entity) != attack.attacked.end();
 
             if (damagable && different_team && !attacked) {
+
+                // If attack object is a projectile, reduce its ttl so that it dies shortly on collision
+                // Shortly because we want abit of visuals that contact is made
+                if (registry.projectiles.has(entity)) {
+                    attack.ttl_ms = 10.0f;
+                }
+                // If attack was made to unbreakable terrain, shortcircut and do not do hit effect/damage
+                if (registry.terrains.has(other_entity) && !registry.terrains.get(other_entity).breakable) {
+                    continue;
+                }
+                // Attack hit damagable object
                 Health& health = registry.healths.get(other_entity);
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
@@ -307,6 +323,7 @@ void LevelManager::handle_collisions()
                 }
 
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
+          
             }
         }
 
@@ -391,7 +408,11 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
 void LevelManager::on_mouse_move(vec2 pos)
 {
-
+    switch (current_level_state) {
+    case LevelState::PLAYER_TURN:
+        player_controller.on_mouse_move(pos);
+        break;
+    }
 }
 
 void LevelManager::on_mouse_button(int button, int action, int mod)

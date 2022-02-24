@@ -446,3 +446,5 @@ FodyWeavers.xsd
 !/ext/*.dll
 !/ext/*.lib
 /ext/project_path.hpp
+
+CMakeSettings.json

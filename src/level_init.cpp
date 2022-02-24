@@ -134,7 +134,8 @@ void removeHealthBar(Entity healthBar) {
 	registry.healthBars.remove(healthBar);
 }
 
-Entity createEnemy(vec2 pos, vec2 size)
+
+Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 {
 	auto entity = Entity();
 
@@ -163,7 +164,7 @@ Entity createEnemy(vec2 pos, vec2 size)
 	registry.initiatives.insert(entity, initiative);
 	registry.AIs.emplace(entity);
 	
-	// TODO: insert attack abilities
+	registry.attackArsenals.insert(entity, attack_arsenal);
 
 	registry.renderRequests.insert(
 		entity,
@@ -188,7 +189,7 @@ void removeEnemy(Entity entity)
 	registry.AIs.remove(entity);
 }
 
-Entity createPlayer(vec2 pos, vec2 size)
+Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 {
 	auto entity = Entity();
 
@@ -216,7 +217,7 @@ Entity createPlayer(vec2 pos, vec2 size)
 	registry.energies.insert(entity, energy);
 	registry.initiatives.insert(entity, initiative);
 
-	// TODO: insert attack abilities
+	registry.attackArsenals.insert(entity, attack_arsenal);
 
 	registry.renderRequests.insert(
 		entity,
@@ -238,6 +239,7 @@ void removePlayer(Entity entity)
 	registry.energies.remove(entity);
 	registry.initiatives.remove(entity);
 	registry.renderRequests.remove(entity);
+	registry.attackArsenals.remove(entity);
 }
 
 Entity createTerrain(vec2 pos, vec2 size)
@@ -279,27 +281,28 @@ void removeTerrain(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
-Entity createAttackObject(Entity attacker, GEOMETRY_BUFFER_ID shape, float damage,
-	float ttl, float angle, vec2 pos, vec2 velocity, vec2 size)
-{
+Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos) {
 	auto entity = Entity();
+
+	vec2 attack_object_velocity = vec2(ability.range * (float)cos(angle), ability.range * (float)sin(angle));
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = angle;
-	motion.velocity = velocity;
-	motion.scale = size;
+	motion.velocity = attack_object_velocity;
+	motion.scale = ability.size;
 	motion.depth = DEPTH::ATTACK;
+	motion.gravity_affected = ability.gravity_affected;
 
-	AttackObject obj{ ttl, damage, attacker};
+	AttackObject obj{ ability.ttl_ms, ability.damage, attacker };
 	registry.attackObjects.insert(entity, obj);
 
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
 			EFFECT_ASSET_ID::COLOURED,
-			shape });
+			(GEOMETRY_BUFFER_ID)ability.shape });
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 
@@ -312,6 +315,7 @@ void removeAttackObject(Entity entity)
 	registry.attackObjects.remove(entity);
 	registry.renderRequests.remove(entity);
 	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
+	registry.projectiles.remove(entity);
 }
 
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
@@ -338,7 +342,7 @@ void removeCamera(Entity entity)
 	registry.cameras.remove(entity);
 }
 
-Entity createButton(vec2 pos, vec2 size, void (*on_click)())
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
 {
 	auto entity = createGenericButton(pos, size, on_click);
 
