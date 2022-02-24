@@ -1,40 +1,34 @@
 #pragma once
 
-#include <tiny_ecs.hpp>
-#include <tiny_ecs_registry.hpp>
-#include "ability.hpp"
-#include "physics_system.hpp"
+#include <vector>
+
+#include "common.hpp"
+#include "tiny_ecs.hpp"
 
 class GameSystem;
 
-class MenuManager
-{
+class HelpManager {
     private:
-
-        //game
         GameSystem* game_system;
 
-        // window
         GLFWwindow* window;
 
-        // buttons
-        Entity level_selection_button;
-        Entity help_button;
-        Entity exit_button;
+        Entity back_button;
+        Entity help_image;
+        std::vector<Entity> all_entities;
 
-        // player exit click
-        bool did_player_exit = false;
+        bool is_back_button_clicked;
 
     public:
+        HelpManager();
 
-        MenuManager();
-
-        ~MenuManager();
+        ~HelpManager();
 
         void init(GLFWwindow* window, GameSystem* game_system);
+
         void destroy();
 
-        void step(float elapsed_ms);
+        bool step(float elapsed_ms);
         void handle_collisions();
         bool is_over();
 
@@ -42,3 +36,4 @@ class MenuManager
         void on_mouse_move(vec2 pos);
         void on_mouse_button(int button, int action, int mod);
 };
+

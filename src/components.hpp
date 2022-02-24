@@ -1,5 +1,4 @@
 #pragma once
-
 #include "common.hpp"
 #include <vector>
 #include <unordered_set>
@@ -8,13 +7,13 @@
 // Attached all player characters
 struct Playable
 {
-	Entity healthBar;
+    Entity healthBar;
 };
 
 // Attached to all Enemies
 struct Enemy
 {
-	Entity healthBar;
+    Entity healthBar;
 };
 
 // Attached to all playables, enemies, breakable terrains
@@ -27,7 +26,7 @@ struct Health
 
 struct HealthBar
 {
-	
+
 };
 
 // Attached to all playables, enemies
@@ -249,13 +248,17 @@ enum class CharacterState
  */
 
 enum class TEXTURE_ASSET_ID {
-    PLAYER = 0,
-    ENEMY = PLAYER + 1,
-    BACKGROUND1 = ENEMY + 1,
-    TERRAIN1 = BACKGROUND1 + 1,
+	PLAYER = 0,
+	ENEMY = PLAYER + 1,
+	BACKGROUND1 = ENEMY + 1,
+	TERRAIN1 = BACKGROUND1 + 1,
     START_BUTTON = TERRAIN1 + 1,
-    EXIT_BUTTON = START_BUTTON + 1,
-    TEXTURE_COUNT = EXIT_BUTTON + 1
+    HELP_BUTTON = START_BUTTON + 1,
+    EXIT_BUTTON = HELP_BUTTON + 1,
+    BACK_BUTTON = EXIT_BUTTON + 1,
+    HELP_IMAGE = BACK_BUTTON + 1,
+	TEXTURE_COUNT = HELP_IMAGE + 1
+    
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
