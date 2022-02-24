@@ -109,6 +109,12 @@ void PlayerController::on_key(int key, int, int action, int mod)
 				move_to_state(CharacterState::IDLE);
 			}
 		}
+	} else {
+		if (current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
+			current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN) {
+			player_motion.velocity = vec2(0);
+			move_to_state(CharacterState::IDLE);
+		}
 	}
 }
 
