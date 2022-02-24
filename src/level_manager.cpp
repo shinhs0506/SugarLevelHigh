@@ -93,6 +93,14 @@ void LevelManager::init_data(int level){
         Entity terrain = createTerrain(terrain_pos, terrain_size);
         level_entity_vector.push_back(terrain);
     }
+
+    auto ladders_data = js["ladders"];
+    for (auto& ladder_data : ladders_data) {
+        vec2 ladder_pos = vec2(ladder_data["pos"]["x"], ladder_data["pos"]["y"]);
+        vec2 ladder_size = vec2(ladder_data["size"]["w"], ladder_data["size"]["h"]);
+        Entity ladder = createLadder(ladder_pos, ladder_size);
+        level_entity_vector.push_back(ladder);
+    }
 }
 
 bool compare(Entity a, Entity b) {
@@ -348,12 +356,20 @@ void LevelManager::handle_collisions()
         if (registry.terrains.has(entity)) {
             Entity other_entity = registry.collisions.components[i].other;
             if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
-                Motion& position = registry.motions.get(other_entity);
-                position.position = position.prev_position;
-                Playable& playable = registry.playables.get(other_entity);
-                Entity healthBar = playable.healthBar;
-                Motion& healthBar_motion = registry.motions.get(healthBar);
-                healthBar_motion.position = healthBar_motion.prev_position;
+
+                // terrain collisions can't happen in the middle of climbing, so they now only matter if 
+                // the character is walking, or if they try to climb below the bottom of the ladder
+                if (registry.motions.get(other_entity).location == LOCATION::NORMAL
+                    || (registry.motions.get(other_entity).location == BELOW_CLIMBABLE 
+                        && registry.motions.get(other_entity).velocity.y > 0)) 
+                {
+                    Motion& position = registry.motions.get(other_entity);
+                    position.position = position.prev_position;
+                    Playable& playable = registry.playables.get(other_entity);
+                    Entity healthBar = playable.healthBar;
+                    Motion& healthBar_motion = registry.motions.get(healthBar);
+                    healthBar_motion.position = healthBar_motion.prev_position;
+                }
             }
         }
     }

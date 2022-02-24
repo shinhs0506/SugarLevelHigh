@@ -39,6 +39,7 @@ public:
 	ComponentContainer<AI> AIs;
 	ComponentContainer<Background> backgrounds;
 	ComponentContainer<AttackPreview> attackPreviews;
+	ComponentContainer<Climbable> climbables;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -72,6 +73,7 @@ public:
 		registry_list.push_back(&backgrounds);
 		registry_list.push_back(&attackPreviews);
 		registry_list.push_back(&attackAbilities);
+		registry_list.push_back(&climbables);
 	}
 
 	void clear_all_components() {

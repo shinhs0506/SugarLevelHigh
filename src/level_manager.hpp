@@ -69,6 +69,7 @@ private:
 
 	std::vector<Entity> terrain_vector;
     std::vector<Entity> level_entity_vector;
+    std::vector<Entity> ladder_vector;
 
 	// OpenGL window handle
 	GLFWwindow* window;

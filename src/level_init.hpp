@@ -41,3 +41,6 @@ void removeHitEffect(Entity entity);
 Entity createBackground(vec2 size, int level);
 void removeBackground(Entity entity);
 
+Entity createLadder(vec2 pos, vec2 size);
+void removeLadder(Entity entity);
+

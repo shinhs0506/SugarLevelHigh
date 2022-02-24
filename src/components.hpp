@@ -121,8 +121,17 @@ enum DEPTH {
 	ATTACK = 5,
 	ACTIVE = 10,
 	CHARACTER = 20,
+	LADDER = 50,
 	TERRAIN = 100,
 	BACKGROUND = 1000
+};
+
+
+enum LOCATION {
+	NORMAL = 0,
+	BELOW_CLIMBABLE = NORMAL + 1,
+	ON_CLIMBABLE = BELOW_CLIMBABLE + 1,
+	ABOVE_CLIMBABLE = ON_CLIMBABLE + 1
 };
 
 // All data relevant to the shape and motion of entities
@@ -135,6 +144,7 @@ struct Motion {
 	bool gravity_affected = false;
     float speed = 100;
 	int depth = DEPTH::CHARACTER;
+	int location = LOCATION::NORMAL;
 };
 
 // Stucture to store collision information
@@ -157,6 +167,11 @@ struct Overlay {
 
 // Backgrounds
 struct Background {
+
+};
+
+// Ladders
+struct Climbable {
 
 };
 

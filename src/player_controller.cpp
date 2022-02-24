@@ -61,19 +61,32 @@ void PlayerController::on_key(int key, int, int action, int mod)
 				switch (key)
 				{
 				case GLFW_KEY_A:
-					player_motion.velocity = vec2(-player_motion.speed, 0);
-					move_to_state(CharacterState::MOVE_LEFT); break;
+					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
+						player_motion.velocity = vec2(-player_motion.speed, 0);
+						move_to_state(CharacterState::MOVE_LEFT);
+					}
+					break;
 				case GLFW_KEY_D:
-					player_motion.velocity = vec2(player_motion.speed, 0);
-					move_to_state(CharacterState::MOVE_RIGHT); break;
+					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
+						player_motion.velocity = vec2(player_motion.speed, 0);
+						move_to_state(CharacterState::MOVE_RIGHT);
+					}
+					break;
 				case GLFW_KEY_W:
-					// TODO: player not moving for up
-					player_motion.velocity = vec2(0);
-					move_to_state(CharacterState::MOVE_UP); break;
+					if (registry.motions.get(player).location == BELOW_CLIMBABLE 
+						|| registry.motions.get(player).location == ON_CLIMBABLE) {
+						player_motion.velocity = vec2(0, -player_motion.speed);
+						move_to_state(CharacterState::MOVE_UP);
+					}
+					break;
+					
 				case GLFW_KEY_S:
-					// TODO: player not moving for down
-					player_motion.velocity = vec2(0);
-					move_to_state(CharacterState::MOVE_DOWN); break;
+					if (registry.motions.get(player).location == ABOVE_CLIMBABLE
+						|| registry.motions.get(player).location == ON_CLIMBABLE) {
+						player_motion.velocity = vec2(0, player_motion.speed);
+						move_to_state(CharacterState::MOVE_DOWN);
+					}
+					break;
 				}
 			}
 			break;
