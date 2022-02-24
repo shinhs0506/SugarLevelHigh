@@ -24,8 +24,8 @@ void PlayerController::reset(Entity player)
 		active_arsenal.advanced_attack.current_cooldown -= 1;
 	}
 
-	this->current_state = PlayerState::IDLE;
-	this->next_state = PlayerState::IDLE;
+	this->current_state = CharacterState::IDLE;
+	this->next_state = CharacterState::IDLE;
 }
 
 void PlayerController::step(float elapsed_ms)
@@ -40,58 +40,58 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	Motion& player_motion = registry.motions.get(player);
 	switch (current_state)
 	{	
-	case PlayerState::IDLE:
+	case CharacterState::IDLE:
 		if (action == GLFW_PRESS || action == GLFW_REPEAT)
 		{
 			switch (key)
 			{
 			case GLFW_KEY_A:
 				player_motion.velocity = vec2(-player_motion.speed, 0);
-				move_to_state(PlayerState::MOVE_LEFT); break;
+				move_to_state(CharacterState::MOVE_LEFT); break;
 			case GLFW_KEY_D:
 				player_motion.velocity = vec2(player_motion.speed, 0);
-				move_to_state(PlayerState::MOVE_RIGHT); break;
+				move_to_state(CharacterState::MOVE_RIGHT); break;
 			case GLFW_KEY_W:
 				// TODO: player not moving for up
 				player_motion.velocity = vec2(0);
-				move_to_state(PlayerState::MOVE_UP); break;
+				move_to_state(CharacterState::MOVE_UP); break;
 			case GLFW_KEY_S:
 				// TODO: player not moving for down
 				player_motion.velocity = vec2(0);
-				move_to_state(PlayerState::MOVE_DOWN); break;
+				move_to_state(CharacterState::MOVE_DOWN); break;
 			}
 		}
 		break;
 
-	case PlayerState::MOVE_LEFT:
+	case CharacterState::MOVE_LEFT:
 		if (key == GLFW_KEY_A && action == GLFW_RELEASE)
 		{
 			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
+			move_to_state(CharacterState::IDLE);
 		}
 		break;
 
-	case PlayerState::MOVE_RIGHT:
+	case CharacterState::MOVE_RIGHT:
 		if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 		{
 			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
+			move_to_state(CharacterState::IDLE);
 		}
 		break;
 
-	case PlayerState::MOVE_UP:
+	case CharacterState::MOVE_UP:
 		if (key == GLFW_KEY_W && action == GLFW_RELEASE)
 		{
 			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
+			move_to_state(CharacterState::IDLE);
 		}
 		break;
 
-	case PlayerState::MOVE_DOWN:
+	case CharacterState::MOVE_DOWN:
 		if (key == GLFW_KEY_S && action == GLFW_RELEASE)
 		{
 			player_motion.velocity = vec2(0);
-			move_to_state(PlayerState::IDLE);
+			move_to_state(CharacterState::IDLE);
 		}
 		break;
 	}
@@ -101,7 +101,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 
 void PlayerController::on_mouse_move(vec2 cursor_pos) {
 	// Update attack preview to the correct angles/positions
-	if (current_state == PlayerState::PERFORM_ABILITY) {
+	if (current_state == CharacterState::PERFORM_ABILITY) {
 		Entity attack_preview = registry.attackPreviews.entities[0];
 		Motion& attack_preview_motion = registry.motions.get(attack_preview);
 
@@ -121,7 +121,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 {
 	switch (current_state)
 	{
-	case PlayerState::IDLE:
+	case CharacterState::IDLE:
 		// click on attack action to go to PLAYER_ATTACK state
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
 			Motion click_motion;
@@ -142,20 +142,20 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 						// Create preview object
 						create_preview_object(player_pos);
 
-						move_to_state(PlayerState::PERFORM_ABILITY);
+						move_to_state(CharacterState::PERFORM_ABILITY);
 					}
 				}
 			}
 		}
 		break;
 
-	case PlayerState::PERFORM_ABILITY:
+	case CharacterState::PERFORM_ABILITY:
 
 		// player can use right click to cancel attack preview
 		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
 		{
 			destroy_preview_objects();
-			move_to_state(PlayerState::IDLE);
+			move_to_state(CharacterState::IDLE);
 			break;
 		}
 		// use left click for buttons or perform ability only
@@ -174,7 +174,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 
 			destroy_preview_objects();
 
-			move_to_state(PlayerState::END);
+			move_to_state(CharacterState::END);
 
 		}
 		break;
@@ -184,47 +184,47 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 
 bool PlayerController::should_end_player_turn()
 {
-	return current_state == PlayerState::END;
+	return current_state == CharacterState::END;
 }
 
-void PlayerController::move_to_state(PlayerState next_state)
+void PlayerController::move_to_state(CharacterState next_state)
 {
 	switch (next_state) {
-	case PlayerState::IDLE:
+	case CharacterState::IDLE:
 		std::cout << "moving to IDLE state" << std::endl;
-		assert(current_state == PlayerState::MOVE_LEFT || current_state == PlayerState::MOVE_RIGHT ||
-			current_state == PlayerState::MOVE_UP || current_state == PlayerState::MOVE_DOWN ||
-			current_state == PlayerState::PERFORM_ABILITY);
+		assert(current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
+			current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN ||
+			current_state == CharacterState::PERFORM_ABILITY);
 		break;
 
-	case PlayerState::MOVE_LEFT:
+	case CharacterState::MOVE_LEFT:
 		std::cout << "moving to MOVE_LEFT state" << std::endl;
-		assert(current_state == PlayerState::IDLE);
+		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case PlayerState::MOVE_RIGHT:
+	case CharacterState::MOVE_RIGHT:
 		std::cout << "moving to MOVE_RIGHT state" << std::endl;
-		assert(current_state == PlayerState::IDLE);
+		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case PlayerState::MOVE_UP:
+	case CharacterState::MOVE_UP:
 		std::cout << "moving to MOVE_UP state" << std::endl;
-		assert(current_state == PlayerState::IDLE);
+		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case PlayerState::MOVE_DOWN:
+	case CharacterState::MOVE_DOWN:
 		std::cout << "moving to MOVE_DOWN state" << std::endl;
-		assert(current_state == PlayerState::IDLE);
+		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case PlayerState::PERFORM_ABILITY:
+	case CharacterState::PERFORM_ABILITY:
 		std::cout << "moving to PERFORM_ABILITY state" << std::endl;
-		assert(current_state == PlayerState::IDLE);
+		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case PlayerState::END:
+	case CharacterState::END:
 		std::cout << "moving to END state" << std::endl;
-		assert(current_state == PlayerState::PERFORM_ABILITY);
+		assert(current_state == CharacterState::PERFORM_ABILITY);
 		break;
 	}
 	this->next_state = next_state;
