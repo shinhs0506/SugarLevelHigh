@@ -1,6 +1,7 @@
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
+#include "ability.hpp"
 
 Entity createDebugLine(vec2 position, vec2 scale)
 {
@@ -301,7 +302,7 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 
 	// ttl can be approximated by range/speed (gravity can increase speed)
 	// melee attack has a constant ttl
-	float ttl = ability.range == 0.f ? 200 : ability.range / ability.speed * 1000;
+	float ttl = ability.range == 0.f ? MELEE_ATTACK_TTL : ability.range / ability.speed * 1000;
 	AttackObject obj{ ttl, ability.damage, attacker };
 	registry.attackObjects.insert(entity, obj);
 

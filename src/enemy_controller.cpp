@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cfloat>
 
 #include "enemy_controller.hpp"
 #include "level_init.hpp"
