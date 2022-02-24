@@ -57,7 +57,6 @@ bool collide_bottom(Entity entity1, Entity entity2)
     {
         return true;
     }
-
     return false;
 }
 
@@ -314,15 +313,17 @@ void LevelManager::handle_collisions()
                 //    position.position.y = position.prev_position.y;
                 //    //printf("collide bottom only. \n");
                 //}
-                if (collide_bottom(entity, other_entity)) {
-                    position.position.y = position.prev_position.y;
-                    position.velocity.y = 0;
-                    printf("Collide with BOTTOM. \n");
-                }
-                if (collide_side(entity, other_entity) && collide_bottom(entity, other_entity)) {
-                    position.position.x = position.prev_position.x;
-                    printf("Collide with SIDE. \n");
-                }
+                    
+                //if (collide_side(other_entity, entity)) {
+                //    position.position.x = position.prev_position.x;
+                //    //printf("Collide with SIDE. \n");
+                //}
+                //if (collide_bottom(other_entity, entity)) {
+                //    //position.velocity.y = 0;
+                //    position.position.y = position.prev_position.y;
+                //    
+                //    printf("Collide with BOTTOM. \n");
+                //}
             }
         }
     }

@@ -97,7 +97,7 @@ struct Motion {
 	vec2 scale = { 10, 10 };
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
-    float speed = 100;
+    float speed = 200;
 };
 
 // Stucture to store collision information

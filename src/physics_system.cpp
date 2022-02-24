@@ -9,6 +9,120 @@ vec2 get_bounding_box(const Motion& motion)
 	return { abs(motion.scale.x), abs(motion.scale.y) };
 }
 
+bool collide_bottom(const Motion& motion1, const Motion& motion2)
+{
+	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
+	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
+	const vec2 pos1 = motion1.position;
+	const vec2 pos2 = motion2.position;
+
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (t_collision < b_collision && t_collision < l_collision && t_collision < r_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
+bool collide_top(const Motion& motion1, const Motion& motion2)
+{
+	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
+	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
+	const vec2 pos1 = motion1.position;
+	const vec2 pos2 = motion2.position;
+
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (b_collision < t_collision && b_collision < l_collision && b_collision < r_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
+bool collide_right(const Motion& motion1, const Motion& motion2)
+{
+	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
+	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
+	const vec2 pos1 = motion1.position;
+	const vec2 pos2 = motion2.position;
+
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (l_collision < r_collision && l_collision < t_collision && l_collision < b_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
+bool collide_left(const Motion& motion1, const Motion& motion2)
+{
+	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
+	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
+	const vec2 pos1 = motion1.position;
+	const vec2 pos2 = motion2.position;
+
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (r_collision < l_collision && r_collision < t_collision && r_collision < b_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
+
+
 // use AABB detection
 bool collides(const Motion& motion1, const Motion& motion2)
 {
@@ -16,7 +130,7 @@ bool collides(const Motion& motion1, const Motion& motion2)
 	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
 	const vec2 pos1 = motion1.position;
 	const vec2 pos2 = motion2.position;
-	
+
 	if (// x axis collision check
 		(pos1[0] - bb1[0] <= pos2[0] + bb2[0] && pos1[0] + bb1[0] >= pos2[0] - bb2[0]) &&
 		// y axis collision check
@@ -36,12 +150,6 @@ void PhysicsSystem::step(float elapsed_ms)
 	{
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
-
-		// Gravity
-		if (motion.gravity_affected == true) {
-			//When collision with terrain is detected. Reset this velocity to 0
-			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
-		}
 
 		motion.prev_position = motion.position;
 		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
@@ -77,13 +185,96 @@ void PhysicsSystem::step(float elapsed_ms)
 		for(uint j = i+1; j<motion_container.components.size(); j++)
 		{
 			Motion& motion_j = motion_container.components[j];
+			Entity entity_j = motion_container.entities[j];
+			
 			if (collides(motion_i, motion_j))
 			{
-				Entity entity_j = motion_container.entities[j];
 				// Create a collisions event
 				// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
 				registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 				registry.collisions.emplace_with_duplicates(entity_j, entity_i);
+
+				// Gravity
+				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
+					if (collide_bottom(motion_i, motion_j)) {
+						motion_i.velocity.y = 0;
+						motion_i.position.y = motion_i.prev_position.y;
+					}
+					if (collide_left(motion_i, motion_j)) {
+						motion_i.velocity.x = 0;
+						motion_i.position.x = motion_i.prev_position.x;
+					}
+					if (collide_top(motion_i, motion_j)) {
+						//motion_i.velocity.y = 0;
+						motion_i.position.y = motion_i.prev_position.y;
+					}
+					if (collide_right(motion_i, motion_j)) {
+						//motion_i.velocity.y = 0;
+						motion_i.velocity.x = 0;
+						motion_i.position.x = motion_i.prev_position.x;
+					}
+					//if (collide_side(motion_i, motion_j) && collide_bottom(motion_i, motion_j) == false) {
+					//	motion_i.position.x = motion_i.prev_position.x;
+					//	//printf("Not gravity affected motion_i ");
+					//}
+					//if (collide_bottom(motion_i, motion_j) && collide_side(motion_i, motion_j)) {
+					//	/*motion_i.velocity.y = 0;
+					//	motion_i.position.y = motion_i.prev_position.y;*/
+					//	printf("Not gravity affected motion_i ");
+					//}
+					//else {
+					//	//When collision with terrain is detected. Reset this velocity to 0
+					//	motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
+					//	printf("Gravity affected motion_i ");
+					//}
+				}
+				//else if (motion_j.gravity_affected == true && (registry.playables.has(entity_j) || registry.enemies.has(entity_j)) && registry.terrains.has(entity_i)) {
+				//	if (collide_bottom(motion_j, motion_i)) {
+				//		motion_j.velocity.y = 0;
+				//		motion_j.position.y = motion_j.prev_position.y;
+				//	}
+				//	if (collide_side(motion_j, motion_i)) {
+				//		motion_j.position.x = motion_j.prev_position.x;
+				//		//printf("Not gravity affected motion_i ");
+				//	}
+				//	//else {
+				//	//	//When collision with terrain is detected. Reset this velocity to 0
+				//	//	motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
+				//	//	//printf("Gravity affected motion_j ");
+				//	//}
+				//}
+				
+
+
+				//// Bottom collision handling
+				//if (collide_bottom(motion_i, motion_j)) {
+				//	if (motion_i.gravity_affected == true && registry.terrains.has(entity_j)) {
+				//		motion_i.position.y = motion_i.prev_position.y;
+				//	}
+				//	else if (motion_j.gravity_affected == true && registry.terrains.has(entity_i)) {
+				//		motion_j.position.y = motion_j.prev_position.y;
+				//	}
+				//}
+
+				// Side collision handling
+				/*if (collide_side(motion_i, motion_j)) {
+					if (motion_i.gravity_affected == true && registry.terrains.has(entity_j)) {
+						motion_i.position.x = motion_i.prev_position.x;
+					}
+					else if (motion_j.gravity_affected == true && registry.terrains.has(entity_i)) {
+						motion_j.position.x = motion_i.prev_position.x;
+					}
+				}*/
+			}
+			else {
+				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i))) {
+					motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
+					//printf("Gravity affected motion_j ");
+				}
+				else if (motion_j.gravity_affected == true && (registry.playables.has(entity_j) || registry.enemies.has(entity_j))) {
+					motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
+					//printf("Gravity affected motion_j ");
+				}
 			}
 		}
 	}
