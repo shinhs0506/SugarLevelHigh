@@ -68,6 +68,7 @@ void LevelManager::init_data(int level){
         vec2 player_size = vec2(player_data["size"]["w"], player_data["size"]["h"]);
         Entity player = createPlayer(player_pos, player_size);
         level_entity_vector.push_back(player);
+        level_entity_vector.push_back(registry.playables.get(player).healthBar);
         order_vector.push_back(player);
     }
 
@@ -77,6 +78,7 @@ void LevelManager::init_data(int level){
         vec2 enemy_size = vec2(enemy_data["size"]["w"], enemy_data["size"]["h"]);
         Entity enemy = createEnemy(enemy_pos, enemy_size);
         level_entity_vector.push_back(enemy);
+        level_entity_vector.push_back(registry.enemies.get(enemy).healthBar);
         order_vector.push_back(enemy);
     }
 
@@ -87,7 +89,6 @@ void LevelManager::init_data(int level){
         Entity terrain = createTerrain(terrain_pos, terrain_size);
         level_entity_vector.push_back(terrain);
     }
-
 }
 
 bool compare(Entity a, Entity b) {
@@ -106,8 +107,13 @@ void LevelManager::load_level(int level)
         // should make a seperate function to initialize all overlays
         Entity button = createButton(vec2(100, 300), vec2(50, 50), mock_callback); 
         level_entity_vector.push_back(button);
-
     }
+
+    // common to all levels
+
+    Entity energyBar = createEnergyBar();
+    level_entity_vector.push_back(energyBar);
+
     sort(order_vector.begin(), order_vector.end(), compare);
     curr_order_ind = 0;
     should_initialize_active_turn = true;
@@ -206,10 +212,16 @@ bool LevelManager::step(float elapsed_ms)
             // reset player controller
             player_controller.reset(registry.activeTurns.entities[0]);
             move_to_state(LevelState::PLAYER_TURN);
+
+            // reset energy
+            Energy& energy = registry.energies.get(registry.activeTurns.entities[0]);
+            energy.cur_energy = energy.max_energy;
+            resetEnergyBar();
         }
         else {
             std::cout << "enemy is current character" << std::endl;
             move_to_state(LevelState::ENEMY_MOVE);
+            resetEnergyBar();
         }
         break;
 
@@ -291,6 +303,29 @@ void LevelManager::handle_collisions()
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
+
+                // change health bar length
+                Entity healthBar;
+                if (registry.playables.has(other_entity)) {
+                    Playable& playable = registry.playables.get(other_entity);
+                    healthBar = playable.healthBar;
+                }
+                if (registry.enemies.has(other_entity)) {
+                    Enemy& enemy = registry.enemies.get(other_entity);
+                    healthBar = enemy.healthBar;
+                }
+                Motion& healthBar_motion = registry.motions.get(healthBar);
+                healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+                
+                // change health bar color based on remaining health
+                vec3& color = registry.colors.get(healthBar);
+                if (health.cur_health / health.max_health <= 0.2f) {
+                    color = vec3(1.f, 0.f, 0.f);
+                }
+                else if (health.cur_health / health.max_health <= 0.5f) {
+                    color = vec3(1.f, 0.5f, 0.f);
+                }
+
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
             }
         }
@@ -301,6 +336,10 @@ void LevelManager::handle_collisions()
             if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
                 Motion& position = registry.motions.get(other_entity);
                 position.position = position.prev_position;
+                Playable& playable = registry.playables.get(other_entity);
+                Entity healthBar = playable.healthBar;
+                Motion& healthBar_motion = registry.motions.get(healthBar);
+                healthBar_motion.position = healthBar_motion.prev_position;
             }
         }
     }

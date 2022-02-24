@@ -43,7 +43,6 @@ public:
 	// Whether this level ended
     bool is_over();
 
-
 	void update_camera(vec2 velocity);
 
 	// Input callback functions, should be called within GameSystem input callbacks

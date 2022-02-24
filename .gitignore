@@ -1,6 +1,13 @@
 # Build files
 **build
 
+# CMake files
+CMakeFiles/
+*.vcxproj
+*.vcxproj.filters
+*.cmake
+*.sln
+
 # Prerequisites
 *.d
 

@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include "menu_init.hpp"
 #include "menu_manager.hpp"
 #include "game_system.hpp"
 
@@ -14,9 +15,9 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->window = window;
     this->game_system = game_system;
 
-    level_selection_button = createButton(vec2(700, 200), vec2(200,50), mock_callback);
-    //help_button = createButton(vec2(700, 300), vec2(200,50), mock_callback);
-    exit_button = createButton(vec2(700, 400), vec2(200,50), mock_callback);
+    level_selection_button = createStartButton(vec2(700, 200), vec2(200,50), NULL);
+    //help_button = createMenuButton(vec2(700, 300), vec2(200,50));
+    exit_button = createExitButton(vec2(700, 400), vec2(200,50), NULL);
 }
 
 void MenuManager::destroy() {
@@ -25,7 +26,7 @@ void MenuManager::destroy() {
     registry.remove_all_components_of(exit_button);
 }
 
-bool MenuManager::step(float elapsed_ms) {
+void MenuManager::step(float elapsed_ms) {
     // do nothing;
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "common.hpp"
 #include <vector>
 #include <unordered_set>
@@ -7,13 +8,13 @@
 // Attached all player characters
 struct Playable
 {
-
+	Entity healthBar;
 };
 
 // Attached to all Enemies
 struct Enemy
 {
-
+	Entity healthBar;
 };
 
 // Attached to all playables, enemies, breakable terrains
@@ -24,12 +25,22 @@ struct Health
 	bool dead = false; // set this to true to remove the entity to all registries
 };
 
+struct HealthBar
+{
+	
+};
+
 // Attached to all playables, enemies
 // Indicate how far the character can move
 struct Energy
 {
 	float max_energy = 100.f;
 	float cur_energy = 100.f;
+};
+
+struct EnergyBar
+{
+	
 };
 
 // Initiative used to determine the turn order of all enemies and players
@@ -208,11 +219,13 @@ struct AI
  */
 
 enum class TEXTURE_ASSET_ID {
-	PLAYER = 0,
-	ENEMY = PLAYER + 1,
-	BACKGROUND1 = ENEMY + 1,
-	TERRAIN1 = BACKGROUND1 + 1,
-	TEXTURE_COUNT = TERRAIN1 + 1
+    PLAYER = 0,
+    ENEMY = PLAYER + 1,
+    BACKGROUND1 = ENEMY + 1,
+    TERRAIN1 = BACKGROUND1 + 1,
+    START_BUTTON = TERRAIN1 + 1,
+    EXIT_BUTTON = START_BUTTON + 1,
+    TEXTURE_COUNT = EXIT_BUTTON + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
