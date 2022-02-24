@@ -19,6 +19,18 @@ void PlayerController::reset(Entity player)
 
 void PlayerController::step(float elapsed_ms)
 {
+	Motion& player_motion = registry.motions.get(player);
+	Energy& player_energy = registry.energies.get(player);
+	std::cout << player_energy.cur_energy << std::endl;
+	if (current_state == PlayerState::MOVE_LEFT || current_state == PlayerState::MOVE_RIGHT ||
+		current_state == PlayerState::MOVE_UP || current_state == PlayerState::MOVE_DOWN) {
+		if (player_energy.cur_energy > 0.f) {
+			player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
+		}
+	}
+	updateEnergyBar(player_energy);
+	updateHealthBar(player);
+
 	// update states
 	current_state = next_state;
 }
@@ -29,8 +41,6 @@ void PlayerController::on_key(int key, int, int action, int mod)
 	Energy& player_energy = registry.energies.get(player);
 
 	if (player_energy.cur_energy > 0.f) {
-		player_energy.cur_energy -= 2;
-		updateEnergyBar(player_energy);
 		switch (current_state)
 		{
 		case PlayerState::IDLE:
@@ -96,8 +106,6 @@ void PlayerController::on_key(int key, int, int action, int mod)
 			move_to_state(PlayerState::IDLE);
 		}
 	}
-	updateEnergyBar(player_energy);
-	updateHealthBar(player);
 }
 
 void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cursor_world_pos)
