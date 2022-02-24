@@ -77,6 +77,8 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 		enemy_Attack(entity);
 		end_Enemy_Turn(entity_energy, entity_AI);
 	}
+
+	updateHealthBar(entity);
 }
 
 void AISystem::step(float elapsed_ms)

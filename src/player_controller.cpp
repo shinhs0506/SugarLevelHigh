@@ -95,6 +95,8 @@ void PlayerController::on_key(int key, int, int action, int mod)
 		}
 		break;
 	}
+
+	updateHealthBar(player);
 }
 
 void PlayerController::on_mouse_move(vec2 cursor_pos) {
