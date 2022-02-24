@@ -369,6 +369,8 @@ void LevelManager::handle_collisions()
                     Entity healthBar = playable.healthBar;
                     Motion& healthBar_motion = registry.motions.get(healthBar);
                     healthBar_motion.position = healthBar_motion.prev_position;
+                    Energy& energy = registry.energies.get(other_entity);
+                    energy.cur_energy = energy.prev_energy;
                 }
             }
         }

@@ -35,6 +35,7 @@ struct Energy
 {
 	float max_energy = 100.f;
 	float cur_energy = 100.f;
+	float prev_energy = 100.f;
 };
 
 struct EnergyBar
