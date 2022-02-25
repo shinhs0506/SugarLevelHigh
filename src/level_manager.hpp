@@ -68,11 +68,7 @@ private:
 	bool should_initialize_active_turn;
 	int num_characters;
 
-	std::vector<Entity> terrain_vector;
-
     nlohmann::json curr_level_data_json;
-    /* std::vector<Entity> level_entity_vector; */
-    /* std::vector<Entity> ladder_vector; */
 
 	// OpenGL window handle
 	GLFWwindow* window;

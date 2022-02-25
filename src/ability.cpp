@@ -23,7 +23,6 @@ bool mock_advanced_attack_callback() {
 	printf("Advanced attack callback button was clicked!\n");
 	Entity active_character = registry.activeTurns.entities[0];
 	AttackArsenal& active_arsenal = registry.attackArsenals.get(active_character);
-    std::cout << active_arsenal.advanced_attack.current_cooldown << std::endl;
 	if (active_arsenal.advanced_attack.current_cooldown == 0) {
 		active_arsenal.advanced_attack.activated = true;
 		active_arsenal.basic_attack.activated = false;

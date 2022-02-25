@@ -123,7 +123,6 @@ void LevelManager::init_data(int level){
         vec2 ladder_pos = vec2(ladder_data["pos"]["x"], ladder_data["pos"]["y"]);
         vec2 ladder_size = vec2(ladder_data["size"]["w"], ladder_data["size"]["h"]);
         Entity ladder = createLadder(ladder_pos, ladder_size);
-        /* level_entity_vector.push_back(ladder); */
     }
 }
 
@@ -189,6 +188,10 @@ void LevelManager::abandon_level()
         removeTerrain(terrain);
     }
 
+    for (auto& ladder : registry.climbables.entities) {
+        removeLadder(ladder);
+    }
+
     removeButton(back_button);
     removeButton(basic_attack_button);
     removeButton(advanced_attack_button);
@@ -198,7 +201,6 @@ void LevelManager::abandon_level()
 
     registry.activeTurns.clear();
 
-    terrain_vector.clear();
     order_vector.clear();
 }
 
@@ -636,9 +638,9 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         if (collides(click_motion, back_button_motion)) {
             // move to IN_LEVEL state
 
-        if (curr_level != (int) LevelState::TERMINATION) {
-            save_level_data();
-        }
+            if (curr_level != (int) LevelState::TERMINATION) {
+                save_level_data();
+            }
         is_level_over = true; 
         return;
         }
@@ -650,8 +652,6 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         player_controller.on_mouse_button(button, action, mod, cursor_world_pos);
         break;
     }
-
-
 }
 
 LevelManager::LevelState LevelManager::current_state()
