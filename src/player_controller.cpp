@@ -17,8 +17,6 @@ void PlayerController::start_turn(Entity player)
 {
 	this->player = player;
 
-	advance_ability_cd(player);
-
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 }
