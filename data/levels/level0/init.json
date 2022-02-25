@@ -30,7 +30,8 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100
+            "energy": 100,
+            "advanced_attack_cooldown": 0
         }
     ],
     "enemies": [
@@ -44,7 +45,8 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100
+            "energy": 100,
+            "advanced_attack_cooldown": 0
         }
     ],
     "terrains": [

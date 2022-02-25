@@ -87,6 +87,7 @@ void LevelManager::init_data(int level){
         vec2 player_size = vec2(player_data["size"]["w"], player_data["size"]["h"]);
         float player_health = player_data["health"];
         float player_energy = player_data["energy"];
+        gingerbread_advanced_attack.current_cooldown = player_data["advanced_attack_cooldown"];
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         Entity player = createPlayer(player_pos, player_size, player_health, 
                 player_energy, ginerbread_arsenal);
@@ -100,6 +101,7 @@ void LevelManager::init_data(int level){
         vec2 enemy_size = vec2(enemy_data["size"]["w"], enemy_data["size"]["h"]);
         float enemy_health = enemy_data["health"];
         float enemy_energy = enemy_data["energy"];
+        gumball_advanced_attack.current_cooldown = enemy_data["advanced_attack_cooldown"];
         AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
         Entity enemy = createEnemy(enemy_pos, enemy_size, enemy_health, 
                 enemy_energy, gumball_arsenal);
@@ -234,6 +236,7 @@ void LevelManager::update_curr_level_data_json(){
         Motion& player_motion = registry.motions.get(player);
         Health& player_health = registry.healths.get(player);
         Energy& player_energy = registry.energies.get(player);
+        AttackArsenal& player_arsenal = registry.attackArsenals.get(player);
         nlohmann::json temp_json;
         temp_json["pos"]["x"] = player_motion.position.x;
         temp_json["pos"]["y"] = player_motion.position.y;
@@ -241,6 +244,7 @@ void LevelManager::update_curr_level_data_json(){
         temp_json["size"]["h"] = player_motion.scale.y;
         temp_json["health"] = player_health.cur_health;
         temp_json["energy"] = player_energy.cur_energy;
+        temp_json["advanced_attack_cooldown"] = player_arsenal.advanced_attack.current_cooldown;
         player_data.push_back(temp_json);
     }
     curr_level_data_json["players"] = player_data;
@@ -251,6 +255,7 @@ void LevelManager::update_curr_level_data_json(){
         Motion& enemy_motion = registry.motions.get(enemy);
         Health& enemy_health = registry.healths.get(enemy);
         Energy& enemy_energy = registry.energies.get(enemy);
+        AttackArsenal& enemy_arsenal = registry.attackArsenals.get(enemy);
         nlohmann::json temp_json;
         temp_json["pos"]["x"] = enemy_motion.position.x;
         temp_json["pos"]["y"] = enemy_motion.position.y;
@@ -258,6 +263,7 @@ void LevelManager::update_curr_level_data_json(){
         temp_json["size"]["h"] = enemy_motion.scale.y;
         temp_json["health"] = enemy_health.cur_health;
         temp_json["energy"] = enemy_energy.cur_energy;
+        temp_json["advanced_attack_cooldown"] = enemy_arsenal.advanced_attack.current_cooldown;
         enemy_data.push_back(temp_json);
     }
     curr_level_data_json["enemies"] = enemy_data;
