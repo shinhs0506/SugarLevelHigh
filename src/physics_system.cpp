@@ -156,6 +156,9 @@ void PhysicsSystem::step(float elapsed_ms)
 					if (collide_bottom(motion_i, motion_j)) {
 						motion_i.velocity.y = 0;
 						motion_i.position.y = motion_i.prev_position.y;
+						if (motion_i.is_falling == true) {
+							motion_i.is_falling = false;
+						}
 					}
 					// Collision between right of the character and left of the terrain
 					if (collide_right(motion_i, motion_j)) {
@@ -173,10 +176,11 @@ void PhysicsSystem::step(float elapsed_ms)
 			else {
 				if (motion_i.gravity_affected == true) {
 					motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
+					motion_i.is_falling = true;
 				}
-				else if (motion_j.gravity_affected == true) {
+				/*else if (motion_j.gravity_affected == true) {
 					motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
-				}
+				}*/
 			}
 		}
 	}
