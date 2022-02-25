@@ -76,17 +76,25 @@ void update_location(Motion& motion) {
 		if (collides(motion, motion_registry.get(climbable))) {
 			if (is_below_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::BELOW_CLIMBABLE;
+				//printf("below\n");
+				return;
 			}
 			else {
 				motion.location = LOCATION::ON_CLIMBABLE;
+				//printf("on\n");
+				return;
 			}
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
+				//printf("above\n");
+				return;
 			}
 			else {
 				motion.location = LOCATION::NORMAL;
+				//printf("normal\n");
+				return;
 			}
 		}
 	}
