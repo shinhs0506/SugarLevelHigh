@@ -69,6 +69,7 @@ void resetEnergyBar()
 	motion.scale = { 300, 20 };
 }
 
+#include <iostream>
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
@@ -135,7 +136,8 @@ void removeHealthBar(Entity healthBar) {
 }
 
 
-Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
+Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
+        AttackArsenal attack_arsenal)
 {
 	auto entity = Entity();
 
@@ -155,8 +157,8 @@ Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, 100 };
-	Energy energy{ 100, 100 };
+	Health health{ 100, starting_health };
+	Energy energy{ 100, starting_energy };
 	Initiative initiative{ 80 };
 
 	registry.healths.insert(entity, health);
@@ -191,7 +193,9 @@ void removeEnemy(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
+#include <iostream>
+Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
+        AttackArsenal attack_arsenal)
 {
 	auto entity = Entity();
 
@@ -211,8 +215,8 @@ Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 	registry.playables.insert(entity, player);
 
 	// stats
-	Health health{ 100, 100 };
-	Energy energy{ 100, 100 };
+	Health health{ 100, starting_health };
+	Energy energy{ 100, starting_energy };
 	Initiative initiative{ 50 };
 
 	registry.healths.insert(entity, health);
@@ -416,5 +420,7 @@ Entity createBackground(vec2 size, int level)
 
 void removeBackground(Entity entity)
 {
+    registry.motions.remove(entity);
 	registry.backgrounds.remove(entity);
+    registry.renderRequests.remove(entity);
 }

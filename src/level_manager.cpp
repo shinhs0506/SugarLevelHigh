@@ -3,10 +3,10 @@
 
 #include <GLFW/glfw3.h>
 #include <cfloat>
-#include <nlohmann/json.hpp>
 #include <common.hpp>
 #include <vector>
 #include <iostream>
+#include <stdio.h>
 
 #include "level_manager.hpp"
 #include "level_init.hpp"
@@ -32,45 +32,67 @@ void LevelManager::init(GLFWwindow* window)
     this->window = window;
     this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
 
-    // start with a move state
+    is_level_over = false;
+
     this->current_level_state = LevelState::PREPARE;
     this->next_level_state = LevelState::PREPARE;
-
-    is_level_over = false;
 }
 
-std::string get_data_dir(int level) { 
+std::string get_init_level_data_file_path(int level) {
     return data_path() + "/levels" + 
         "/level" + std::to_string(level) + 
         "/init.json";
+}
+
+std::string get_saved_level_data_file_path(int level) {
+    return data_path() + "/levels" + 
+        "/level" + std::to_string(level) + 
+        "/saved.json";
 }
 
 void LevelManager::init_data(int level){
     Camera& camera = registry.cameras.get(main_camera);
     Motion& motion = registry.motions.get(main_camera);
 
-    std::string datafile_path = get_data_dir(level);
-    std::ifstream ifs(datafile_path);
-    nlohmann::json js = nlohmann::json::parse(ifs);
+    std::string init_datafile_path = get_init_level_data_file_path(level);
+    std::string saved_datafile_path = get_saved_level_data_file_path(level);    
+
+    std::ifstream iifs(init_datafile_path);
+    std::ifstream sifs(saved_datafile_path);
+
+    // if saved.json exists under curr level, it means the game was paused
+    // otherwise we can start a level from scratch
+    nlohmann::json js;
+    if (sifs.good()) {
+        js = nlohmann::json::parse(sifs);
+    } else {
+        js = nlohmann::json::parse(iifs);
+    }
 
     vec2 camera_lower_limit_delta = vec2(js["camera"]["lower_limit"]["x"],
             js["camera"]["lower_limit"]["y"]);
     vec2 camera_upper_limit_delta = vec2(js["camera"]["upper_limit"]["x"],
             js["camera"]["upper_limit"]["y"]);
+    vec2 camera_pos = vec2(js["camera"]["pos"]["x"], js["camera"]["pos"]["y"]);
     camera.lower_limit = motion.position + camera_lower_limit_delta;
     camera.higer_limit = motion.position + camera_upper_limit_delta;
+    /* motion.position = camera_pos; */
 
-    vec2 background_pos = vec2(js["background"]["pos"]["x"], 
-            js["background"]["pos"]["y"]);
-    Entity background = createBackground(background_pos, level);
+    vec2 background_pos = vec2(js["background"]["size"]["w"], 
+            js["background"]["size"]["h"]);
+    background = createBackground(background_pos, level);
     level_entity_vector.push_back(background);
 
     auto players_data = js["players"];
     for (auto& player_data: players_data) {
         vec2 player_pos = vec2(player_data["pos"]["x"], player_data["pos"]["y"]);
         vec2 player_size = vec2(player_data["size"]["w"], player_data["size"]["h"]);
+        float player_health = player_data["health"];
+        float player_energy = player_data["energy"];
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
-        Entity player = createPlayer(player_pos, player_size, ginerbread_arsenal);
+        Entity player = createPlayer(player_pos, player_size, player_health, 
+                player_energy, ginerbread_arsenal);
+        update_healthbar_len_color(player);
         level_entity_vector.push_back(player);
         order_vector.push_back(player);
     }
@@ -79,8 +101,12 @@ void LevelManager::init_data(int level){
     for (auto& enemy_data: enemies_data) {
         vec2 enemy_pos = vec2(enemy_data["pos"]["x"], enemy_data["pos"]["y"]);
         vec2 enemy_size = vec2(enemy_data["size"]["w"], enemy_data["size"]["h"]);
+        float enemy_health = enemy_data["health"];
+        float enemy_energy = enemy_data["energy"];
         AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
-        Entity enemy = createEnemy(enemy_pos, enemy_size, gumball_arsenal);
+        Entity enemy = createEnemy(enemy_pos, enemy_size, enemy_health, 
+                enemy_energy, gumball_arsenal);
+        update_healthbar_len_color(enemy);
         level_entity_vector.push_back(enemy);
         order_vector.push_back(enemy);
     }
@@ -92,6 +118,8 @@ void LevelManager::init_data(int level){
         Entity terrain = createTerrain(terrain_pos, terrain_size);
         level_entity_vector.push_back(terrain);
     }
+
+    curr_order_ind = js["curr_order_ind"];
 }
 
 bool compare(Entity a, Entity b) {
@@ -124,8 +152,7 @@ void LevelManager::load_level(int level)
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
-    curr_order_ind = 0;
-    should_initialize_active_turn = true;
+    // update energy bar
 }
 
 void LevelManager::restart_level()
@@ -133,10 +160,20 @@ void LevelManager::restart_level()
 
 }
 
+void LevelManager::save_level_data(){
+    std::string datafile_path = get_saved_level_data_file_path(curr_level);
+    std::ofstream ofs(datafile_path);
+    ofs << curr_level_data_json;
+}
+
 void LevelManager::abandon_level()
 {
     for (auto& attack_object : registry.attackObjects.entities) {
         removeAttackObject(attack_object);
+    }
+
+    for (auto& attack_preview: registry.attackPreviews.entities) {
+        registry.remove_all_components_of(attack_preview);
     }
 
     for (auto& player : registry.playables.entities) {
@@ -156,6 +193,7 @@ void LevelManager::abandon_level()
     removeButton(advanced_attack_button);
 
     removeEnergyBar();
+    removeBackground(background);
 
     registry.activeTurns.clear();
     /* registry.collisions.clear(); */
@@ -190,6 +228,77 @@ void LevelManager::remove_character(Entity entity)
     order_vector.erase(it);
 }
 
+void LevelManager::update_curr_level_data_json(){
+    curr_level_data_json.clear(); 
+
+    // save camera info
+    Camera& camera = registry.cameras.get(main_camera);
+    Motion& camera_motion = registry.motions.get(main_camera);
+    curr_level_data_json["camera"]["lower_limit"]["x"] = camera.lower_limit.x - camera_motion.position.x;
+    curr_level_data_json["camera"]["lower_limit"]["y"] = camera.lower_limit.y - camera_motion.position.y;
+    curr_level_data_json["camera"]["upper_limit"]["x"] = camera.higer_limit.x - camera_motion.position.x;
+    curr_level_data_json["camera"]["upper_limit"]["y"] = camera.higer_limit.y - camera_motion.position.y;
+    curr_level_data_json["camera"]["pos"]["x"] = camera_motion.position.x;
+    curr_level_data_json["camera"]["pos"]["y"] = camera_motion.position.y;
+
+    // save background info
+    Entity& background = registry.backgrounds.entities[0];
+    Motion& background_motion = registry.motions.get(background);
+    curr_level_data_json["background"]["size"]["w"] = background_motion.scale.x;
+    curr_level_data_json["background"]["size"]["h"] = background_motion.scale.y;
+
+    // save players info
+    std::vector<nlohmann::json> player_data;
+    for (auto& player : registry.playables.entities) {
+        Motion& player_motion = registry.motions.get(player);
+        Health& player_health = registry.healths.get(player);
+        Energy& player_energy = registry.energies.get(player);
+        nlohmann::json temp_json;
+        temp_json["pos"]["x"] = player_motion.position.x;
+        temp_json["pos"]["y"] = player_motion.position.y;
+        temp_json["size"]["w"] = player_motion.scale.x;
+        temp_json["size"]["h"] = player_motion.scale.y;
+        temp_json["health"] = player_health.cur_health;
+        temp_json["energy"] = player_energy.cur_energy;
+        player_data.push_back(temp_json);
+    }
+    curr_level_data_json["players"] = player_data;
+
+    // save enemies info
+    std::vector<nlohmann::json> enemy_data;
+    for (auto& enemy : registry.enemies.entities) {
+        Motion& enemy_motion = registry.motions.get(enemy);
+        Health& enemy_health = registry.healths.get(enemy);
+        Energy& enemy_energy = registry.energies.get(enemy);
+        nlohmann::json temp_json;
+        temp_json["pos"]["x"] = enemy_motion.position.x;
+        temp_json["pos"]["y"] = enemy_motion.position.y;
+        temp_json["size"]["w"] = enemy_motion.scale.x;
+        temp_json["size"]["h"] = enemy_motion.scale.y;
+        temp_json["health"] = enemy_health.cur_health;
+        temp_json["energy"] = enemy_energy.cur_energy;
+        enemy_data.push_back(temp_json);
+    }
+    curr_level_data_json["enemies"] = enemy_data;
+
+    // save enemies info
+    std::vector<nlohmann::json> terrain_data;
+    for (auto& terrain : registry.terrains.entities) {
+        Motion& terrain_motion = registry.motions.get(terrain);
+        nlohmann::json temp_json;
+        temp_json["pos"]["x"] = terrain_motion.position.x;
+        temp_json["pos"]["y"] = terrain_motion.position.y;
+        temp_json["size"]["w"] = terrain_motion.scale.x;
+        temp_json["size"]["h"] = terrain_motion.scale.y;
+        terrain_data.push_back(temp_json);
+    }
+    curr_level_data_json["terrains"] = terrain_data;
+
+    // save index of curr order
+    // minus 1 because we advance the order when the game begins
+    curr_level_data_json["curr_order_ind"] = curr_order_ind - 1;
+}
+
 bool LevelManager::step(float elapsed_ms)
 {
     // advance state
@@ -216,51 +325,53 @@ bool LevelManager::step(float elapsed_ms)
             }
         }
     }
+    
+    // update the curr_level_data_json
+    update_curr_level_data_json();
 
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
     switch (current_level_state) {
     case LevelState::PREPARE:
-        // check whether level completed/failed
-        if (only_player_left || only_enemy_left) {
-            move_to_state(LevelState::TERMINATION);
-            break;
-        }
+        {
+            // check whether level completed/failed
+            if (only_player_left || only_enemy_left) {
+                move_to_state(LevelState::TERMINATION);
+                break;
+            }
 
-        // determine turn order
-        if (should_initialize_active_turn) {
-            registry.activeTurns.emplace(order_vector[0]);
-            registry.motions.get(order_vector[0]).depth = DEPTH::ACTIVE; 
-            should_initialize_active_turn = false;
-        }
-        else {
-            // advance turn order & give active character closest depth
             int num_characters = registry.initiatives.size();
 
-            registry.motions.get(order_vector[curr_order_ind]).depth = DEPTH::CHARACTER;
+            int prev_ind = curr_order_ind % num_characters;
+            if (prev_ind < 0) {
+                prev_ind = prev_ind + num_characters;
+            }
+            registry.motions.get(order_vector[prev_ind]).depth = DEPTH::CHARACTER;
             curr_order_ind = (curr_order_ind + 1) % num_characters;
             Entity& next_character = order_vector[curr_order_ind];
 
             registry.activeTurns.clear();
             registry.activeTurns.emplace(next_character);
             registry.motions.get(next_character).depth = DEPTH::ACTIVE;
-        }
 
-        if (registry.playables.has(registry.activeTurns.entities[0])) {
-            std::cout << "player is current character" << std::endl;
-            // reset player controller
-            player_controller.reset(registry.activeTurns.entities[0]);
-            move_to_state(LevelState::PLAYER_TURN);
-
-            // reset energy
-            Energy& energy = registry.energies.get(registry.activeTurns.entities[0]);
+            // reset prev character's energy level
+            Energy& energy = registry.energies.get(order_vector[prev_ind]);
             energy.cur_energy = energy.max_energy;
-            resetEnergyBar();
-        }
-        else {
-            std::cout << "enemy is current character" << std::endl;
-            move_to_state(LevelState::ENEMY_MOVE);
-            resetEnergyBar();
+
+            if (registry.playables.has(registry.activeTurns.entities[0])) {
+                std::cout << "player is current character" << std::endl;
+                // reset player controller
+                player_controller.reset(registry.activeTurns.entities[0]);
+                move_to_state(LevelState::PLAYER_TURN);
+
+                // reset energy
+                resetEnergyBar();
+            }
+            else {
+                std::cout << "enemy is current character" << std::endl;
+                move_to_state(LevelState::ENEMY_MOVE);
+                resetEnergyBar();
+            }
         }
         break;
 
@@ -274,6 +385,7 @@ bool LevelManager::step(float elapsed_ms)
         break;
 
     case LevelState::EVALUATION:
+    {
         // remove timed out attack objects
         for (uint i = 0; i < registry.attackObjects.size(); i++) {
             Entity entity = registry.attackObjects.entities[i];
@@ -303,10 +415,42 @@ bool LevelManager::step(float elapsed_ms)
         if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
             move_to_state(LevelState::PREPARE);
         }
+
+
+    }
+        break;
+
+    case LevelState::TERMINATION:
+        destroy_saved_level_data_file();
         break;
     }
 
     return true;
+}
+
+void LevelManager::update_healthbar_len_color(Entity entity) {
+    Health& health = registry.healths.get(entity);
+    Entity healthBar;
+
+    if (registry.playables.has(entity)) {
+        Playable& playable = registry.playables.get(entity);
+        healthBar = playable.healthBar;
+    }
+    if (registry.enemies.has(entity)) {
+        Enemy& enemy = registry.enemies.get(entity);
+        healthBar = enemy.healthBar;
+    }
+    Motion& healthBar_motion = registry.motions.get(healthBar);
+    healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+
+    // change health bar color based on remaining health
+    vec3& color = registry.colors.get(healthBar);
+    if (health.cur_health / health.max_health <= 0.2f) {
+        color = vec3(1.f, 0.f, 0.f);
+    }
+    else if (health.cur_health / health.max_health <= 0.5f) {
+        color = vec3(1.f, 0.5f, 0.f);
+    }
 }
 
 void LevelManager::handle_collisions()
@@ -351,26 +495,7 @@ void LevelManager::handle_collisions()
                 attack.attacked.insert(other_entity);
 
                 // change health bar length
-                Entity healthBar;
-                if (registry.playables.has(other_entity)) {
-                    Playable& playable = registry.playables.get(other_entity);
-                    healthBar = playable.healthBar;
-                }
-                if (registry.enemies.has(other_entity)) {
-                    Enemy& enemy = registry.enemies.get(other_entity);
-                    healthBar = enemy.healthBar;
-                }
-                Motion& healthBar_motion = registry.motions.get(healthBar);
-                healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
-                
-                // change health bar color based on remaining health
-                vec3& color = registry.colors.get(healthBar);
-                if (health.cur_health / health.max_health <= 0.2f) {
-                    color = vec3(1.f, 0.f, 0.f);
-                }
-                else if (health.cur_health / health.max_health <= 0.5f) {
-                    color = vec3(1.f, 0.5f, 0.f);
-                }
+                update_healthbar_len_color(other_entity);
 
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
           
@@ -403,6 +528,15 @@ void LevelManager::update_camera(vec2 velocity) {
     Motion& camera_motion = motion_registry.get(main_camera);
     camera_motion.velocity += velocity;
 
+}
+
+void LevelManager::destroy_saved_level_data_file() {
+    std::string saved_datafile_path = get_saved_level_data_file_path(curr_level);    
+
+    // remove only takes c strings
+    // maybe we should upgrade to C++17
+    const char *cstring = saved_datafile_path.c_str();
+    remove(cstring);
 }
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
@@ -485,9 +619,12 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
 
         if (collides(click_motion, back_button_motion)) {
             // move to IN_LEVEL state
-            /* this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL); */
-            is_level_over = true; 
-            return;
+
+        if (curr_level != (int) LevelState::TERMINATION) {
+            save_level_data();
+        }
+        is_level_over = true; 
+        return;
         }
     }
 
