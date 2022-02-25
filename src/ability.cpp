@@ -32,7 +32,7 @@ bool mock_advanced_attack_callback() {
 	return false;
 }
 
-Entity perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 direction, AttackAbility chosen_attack) {
+void perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 direction, AttackAbility chosen_attack) {
 
 	// manually calculate a world position with some offsets
 	double angle = -atan2(direction[0], direction[1]) + M_PI / 2;
@@ -53,8 +53,6 @@ Entity perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 dire
 	// Sets angle of attack
 	Motion& attack_object_motion = registry.motions.get(attack_object);
 	attack_object_motion.angle = angle;
-
-    return attack_object;
 }
 
 vec2 offset_position(vec2 direction, vec2 player_pos, double angle) {
