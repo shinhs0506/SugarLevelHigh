@@ -95,7 +95,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 		case CharacterState::MOVE_LEFT:
 			if (key == GLFW_KEY_A && action == GLFW_RELEASE)
 			{
-				player_motion.velocity = vec2(0);
+				player_motion.velocity.x = 0;
 				move_to_state(CharacterState::IDLE);
 			}
 			break;
@@ -103,7 +103,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 		case CharacterState::MOVE_RIGHT:
 			if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 			{
-				player_motion.velocity = vec2(0);
+				player_motion.velocity.x = 0;
 				move_to_state(CharacterState::IDLE);
 			}
 			break;
