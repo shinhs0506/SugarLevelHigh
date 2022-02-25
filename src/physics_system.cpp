@@ -11,11 +11,6 @@ vec2 get_bounding_box(const Motion& motion)
 
 bool collide_bottom(const Motion& motion1, const Motion& motion2)
 {
-	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
-	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
-	const vec2 pos1 = motion1.position;
-	const vec2 pos2 = motion2.position;
-
 	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
 	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
 	const float player_right = motion1.position.x + abs(motion1.scale.x);
@@ -37,41 +32,8 @@ bool collide_bottom(const Motion& motion1, const Motion& motion2)
 	return false;
 }
 
-bool collide_top(const Motion& motion1, const Motion& motion2)
-{
-	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
-	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
-	const vec2 pos1 = motion1.position;
-	const vec2 pos2 = motion2.position;
-
-	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
-	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
-	const float player_right = motion1.position.x + abs(motion1.scale.x);
-	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
-
-	const float b_collision = terrain_bottom - motion1.position.y;
-	const float t_collision = player_bottom - motion2.position.y;
-	const float l_collision = player_right - motion2.position.x;
-	const float r_collision = terrain_right - motion1.position.x;
-
-	if (b_collision < t_collision && b_collision < l_collision && b_collision < r_collision)
-	{
-		return true;
-	}
-	else {
-		return false;
-	}
-
-	return false;
-}
-
 bool collide_right(const Motion& motion1, const Motion& motion2)
 {
-	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
-	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
-	const vec2 pos1 = motion1.position;
-	const vec2 pos2 = motion2.position;
-
 	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
 	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
 	const float player_right = motion1.position.x + abs(motion1.scale.x);
@@ -95,11 +57,6 @@ bool collide_right(const Motion& motion1, const Motion& motion2)
 
 bool collide_left(const Motion& motion1, const Motion& motion2)
 {
-	const vec2 bb1 = get_bounding_box(motion1) / 2.f;
-	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
-	const vec2 pos1 = motion1.position;
-	const vec2 pos2 = motion2.position;
-
 	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
 	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
 	const float player_right = motion1.position.x + abs(motion1.scale.x);
@@ -195,10 +152,6 @@ void PhysicsSystem::step(float elapsed_ms)
 				// Collision Handler
 				// Make sure the entity is a playable or enemy that is affected by gravity
 				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
-					// Collision between top of the character and bottom of the terrain
-					if (collide_top(motion_i, motion_j)) {
-						motion_i.position.y = motion_i.prev_position.y;
-					}
 					// Collision between bottom of the character and top of the terrain
 					if (collide_bottom(motion_i, motion_j)) {
 						motion_i.velocity.y = 0;
