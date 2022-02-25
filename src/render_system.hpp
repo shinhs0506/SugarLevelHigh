@@ -35,7 +35,7 @@ class RenderSystem {
         textures_path("help_button.png"),
 		textures_path("exit_button.png"),
 		textures_path("back_button.png"),
-		textures_path("help_image.png"),
+		textures_path("basic_help.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
