@@ -7,13 +7,13 @@
 // Attached all player characters
 struct Playable
 {
-
+    Entity healthBar;
 };
 
 // Attached to all Enemies
 struct Enemy
 {
-
+    Entity healthBar;
 };
 
 // Attached to all playables, enemies, breakable terrains
@@ -24,12 +24,23 @@ struct Health
 	bool dead = false; // set this to true to remove the entity to all registries
 };
 
+struct HealthBar
+{
+
+};
+
 // Attached to all playables, enemies
 // Indicate how far the character can move
 struct Energy
 {
 	float max_energy = 100.f;
 	float cur_energy = 100.f;
+	float prev_energy = 100.f;
+};
+
+struct EnergyBar
+{
+	
 };
 
 // Initiative used to determine the turn order of all enemies and players
@@ -45,12 +56,6 @@ struct ActiveTurn {
     //    
 };
 
-struct AttackAbility
-{
-	float range;
-	float damage;
-};
-
 // Represent an attack to be rendered
 // Handled by collision with others
 struct AttackObject
@@ -59,6 +64,27 @@ struct AttackObject
 	float damage;
 	Entity attacker;
 	std::unordered_set<Entity, EntityHash> attacked;
+};
+struct AttackAbility 
+{
+	bool activated;
+	float ttl_ms;
+	float damage;
+	float range;
+	int shape; // This is the GEOMETRY_BUFFER_ID
+	vec2 size;
+	bool gravity_affected;
+	int max_cooldown;
+	int current_cooldown;
+};
+struct AttackArsenal
+{
+	AttackAbility basic_attack;
+	AttackAbility advanced_attack;
+};
+
+struct AttackPreview {
+
 };
 
 // Attached to all projectiles 
@@ -89,6 +115,26 @@ struct Terrain
 	bool breakable = false;
 };
 
+// proximity to camera
+enum DEPTH {
+	CAMERA = -1,
+	UI = 1,
+	ATTACK = 5,
+	ACTIVE = 10,
+	CHARACTER = 20,
+	LADDER = 50,
+	TERRAIN = 100,
+	BACKGROUND = 1000
+};
+
+
+enum LOCATION {
+	NORMAL = 0,
+	BELOW_CLIMBABLE = NORMAL + 1,
+	ON_CLIMBABLE = BELOW_CLIMBABLE + 1,
+	ABOVE_CLIMBABLE = ON_CLIMBABLE + 1
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
@@ -98,7 +144,9 @@ struct Motion {
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
 	bool is_falling = false;
-    float speed = 200;
+    float speed = 100;
+	int depth = DEPTH::CHARACTER;
+	int location = LOCATION::NORMAL;
 };
 
 // Stucture to store collision information
@@ -111,7 +159,7 @@ struct Collision
 
 // Components with callback on click
 struct Clickable {
-	void (*on_click)();
+	bool (*on_click)();
 };
 
 // Attached to components that are unaffected by camera
@@ -121,6 +169,11 @@ struct Overlay {
 
 // Backgrounds
 struct Background {
+
+};
+
+// Ladders
+struct Climbable {
 
 };
 
@@ -172,6 +225,21 @@ struct AI
 	vec2 movement_direction = vec2(-1, 0);
 };
 
+// Character states for players and enemies
+// This will be later used for animation system as well
+
+enum class CharacterState
+{
+	IDLE,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	MOVE_UP,
+	MOVE_DOWN,
+	PERFORM_ABILITY,
+	END, // should not move to any other states from here
+		 // this is set to prevent player continue to act after his turn
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
@@ -201,7 +269,13 @@ enum class TEXTURE_ASSET_ID {
 	ENEMY = PLAYER + 1,
 	BACKGROUND1 = ENEMY + 1,
 	TERRAIN1 = BACKGROUND1 + 1,
-	TEXTURE_COUNT = TERRAIN1 + 1
+    START_BUTTON = TERRAIN1 + 1,
+    HELP_BUTTON = START_BUTTON + 1,
+    EXIT_BUTTON = HELP_BUTTON + 1,
+    BACK_BUTTON = EXIT_BUTTON + 1,
+    HELP_IMAGE = BACK_BUTTON + 1,
+	TEXTURE_COUNT = HELP_IMAGE + 1
+    
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

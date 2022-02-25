@@ -97,6 +97,70 @@ bool collides(const Motion& motion1, const Motion& motion2)
 	return false;
 }
 
+bool is_above_climbable(Motion& motion, Motion& climbable) {
+	
+	const vec2 climbable_bb = get_bounding_box(climbable) / 2.f;
+	const vec2 char_bb = get_bounding_box(motion) / 2.f;
+	const vec2 char_pos = motion.position;
+	const vec2 climbable_pos = climbable.position;
+
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0] + climbable_bb[0] // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0] - climbable_bb[0] // x collision right
+		&& char_pos[1] + char_bb[1] + 0.001 <= (climbable_pos[1] + climbable_bb[1]) // y collision
+		) {
+		motion.position.y = round(climbable_pos[1] - climbable_bb[1] - char_bb[1]); // tmp avoid fake collisions
+		return true;
+	}
+
+	return false;
+}
+
+
+bool is_below_climbable(Motion& motion, Motion& climbable) {
+
+	const vec2 climbable_bb = get_bounding_box(climbable) / 2.f;
+	const vec2 char_bb = get_bounding_box(motion) / 2.f;
+	const vec2 char_pos = motion.position;
+	const vec2 climbable_pos = climbable.position;
+
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0] + climbable_bb[0] // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0] - climbable_bb[0]  // x collision right
+		&& char_pos[1] + char_bb[1] + 0.001 >= (climbable_pos[1] + climbable_bb[1]) // y collision
+		) {
+		motion.position.y = round(climbable_pos[1] + climbable_bb[1] - char_bb[1]); // tmp avoid fake collisions
+		return true;
+	}
+
+	return false;
+}
+
+
+void update_location(Motion& motion) {
+	auto& climbable_registry = registry.climbables;
+	auto& motion_registry = registry.motions;
+	for (uint i = 0; i < climbable_registry.size(); i++) {
+		Entity& climbable = climbable_registry.entities[i];
+		Motion& climbable_motion = motion_registry.get(climbable);
+
+		if (collides(motion, motion_registry.get(climbable))) {
+			if (is_below_climbable(motion, climbable_motion)) {
+				motion.location = LOCATION::BELOW_CLIMBABLE;
+			}
+			else {
+				motion.location = LOCATION::ON_CLIMBABLE;
+			}
+		}
+		else {
+			if (is_above_climbable(motion, climbable_motion)) {
+				motion.location = LOCATION::ABOVE_CLIMBABLE;
+			}
+			else {
+				motion.location = LOCATION::NORMAL;
+			}
+		}
+	}
+}
+
 void PhysicsSystem::step(float elapsed_ms)
 {
 	// Move entities with motion component with respect to their velocity
@@ -106,8 +170,41 @@ void PhysicsSystem::step(float elapsed_ms)
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
 
-		motion.prev_position = motion.position;
-		motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+		// Gravity
+		if (motion.gravity_affected == true) {
+			//When collision with terrain is detected. Reset this velocity to 0
+			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
+		}
+
+
+		// Adapt angle/rotation for projectile motion
+		if (registry.projectiles.has(entity)) {
+			motion.angle = atan2(motion.velocity.y, motion.velocity.x);
+		}
+
+		if (registry.playables.has(entity)) {
+			update_location(motion);
+
+			if ((motion.location == LOCATION::ON_CLIMBABLE && motion.velocity.x == 0) // not trying to walk while on climbable
+				|| motion.location == LOCATION::BELOW_CLIMBABLE && !(motion.velocity.y > 0) // not trying to climb down if nothing below
+				|| motion.location == LOCATION::ABOVE_CLIMBABLE && !(motion.velocity.y < 0) // not trying to climb up if nothing above
+				|| motion.location == LOCATION::NORMAL && motion.velocity.y == 0 // not trying to climb if no climbable
+				) {
+				motion.prev_position = motion.position;
+				motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			}
+			else {
+				motion.velocity = { 0.f, 0.f };
+			}
+
+			updateHealthBar(entity);
+		}
+
+		else {
+			motion.prev_position = motion.position;
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+		}
+
 		if (registry.cameras.has(entity))
 		{
 			Camera& camera = registry.cameras.get(entity);

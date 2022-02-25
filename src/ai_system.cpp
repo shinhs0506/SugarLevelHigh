@@ -1,6 +1,7 @@
 // internal
 #include "ai_system.hpp"
 #include "level_init.hpp"
+#include "ability.hpp"
 
 void AISystem::init(LevelManager* level_manager)
 {
@@ -14,21 +15,28 @@ void AISystem::reset_Enemy(Energy& entity_energy, AI& entity_AI) {
 
 }
 
-void enemy_Attack(Entity entity) {
+void enemy_Attack(Entity enemy) {
 
-	Entity enemy = registry.activeTurns.entities[0];
 
-	// manually calculate a world position with some offsets
-	vec2 player_pos = registry.motions.get(enemy).position;
+	// TODO: Find closest player or lowest health player and choose appropriate attack based on some logic and cooldowns
 
-	vec2 offset{ -75.f, 0.f }; // a bit before the character
-	Transform trans;
-	trans.translate(player_pos);
-	trans.translate(offset);
+	AttackArsenal& active_arsenal = registry.attackArsenals.get(enemy);
+	AttackAbility& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
 
-	vec2 attack_pos = trans.mat * vec3(0, 0, 1);
-	createAttackObject(enemy, GEOMETRY_BUFFER_ID::SQUARE, 50.f, 200, 0, attack_pos, vec2(0, 0), vec2(100, 100));
+	vec2 enemy_pos = registry.motions.get(enemy).position;
+	vec2 direction = vec2(-1,0);// Attacks left for now
+	vec2 offset{ 75.f, 0.f }; // a bit before the character
 
+	perform_attack(enemy, enemy_pos, offset, direction, chosen_attack);
+	chosen_attack.current_cooldown = chosen_attack.max_cooldown;
+
+	// Reduce all cooldowns by 1 that are not already 0.
+	if (active_arsenal.basic_attack.current_cooldown > 0) {
+		active_arsenal.basic_attack.current_cooldown -= 1;
+	}
+	if (active_arsenal.advanced_attack.current_cooldown > 0) {
+		active_arsenal.advanced_attack.current_cooldown -= 1;
+	}
 }
 
 void AISystem::end_Enemy_Turn(Energy& entity_energy, AI& entity_AI) {
@@ -58,6 +66,7 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 			//Only left and right ai movement for now
 			entity_motion.velocity = vec2(entity_motion.speed * entity_AI.movement_direction.x, 0);
 			entity_energy.cur_energy -= 1.0f;
+			updateEnergyBar(entity_energy);
 		}
 		else {
 			// Reset velocities
@@ -69,6 +78,8 @@ void AISystem::decision_Tree(Entity entity, AI& entity_AI) {
 		enemy_Attack(entity);
 		end_Enemy_Turn(entity_energy, entity_AI);
 	}
+
+	updateHealthBar(entity);
 }
 
 void AISystem::step(float elapsed_ms)

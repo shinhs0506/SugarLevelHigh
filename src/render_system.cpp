@@ -4,6 +4,12 @@
 
 #include "tiny_ecs_registry.hpp"
 
+struct {
+	bool operator()(Entity entity1, Entity entity2) const {
+		return registry.motions.get(entity1).depth > registry.motions.get(entity2).depth;
+	}
+} compare_depths;
+
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
 {
@@ -151,12 +157,12 @@ void RenderSystem::drawToScreen()
 	gl_has_errors();
 	const GLuint post_program = effects[(GLuint)EFFECT_ASSET_ID::POST_PROCESS];
 	// Set clock
-	GLuint time_uloc = glGetUniformLocation(post_program, "time");
-	GLuint dead_timer_uloc = glGetUniformLocation(post_program, "darken_screen_factor");
-	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
-	ScreenState &screen = registry.screenStates.get(screen_state_entity);
-	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
-	gl_has_errors();
+    GLuint time_uloc = glGetUniformLocation(post_program, "time");
+    GLuint dead_timer_uloc = glGetUniformLocation(post_program, "darken_screen_factor");
+    glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+    ScreenState &screen = registry.screenStates.get(screen_state_entity);
+    glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
+    gl_has_errors();
 	// Set the vertex position and vertex texture coordinates (both stored in the
 	// same VBO)
 	GLint in_position_loc = glGetAttribLocation(post_program, "in_position");
@@ -201,6 +207,10 @@ void RenderSystem::draw()
 							  // sprites back to front
 	gl_has_errors();
 	mat3 projection_2D = createProjectionMatrix();
+
+	// Sort the render requests in depth order (painter's algorithm)
+	registry.renderRequests.sort(compare_depths);
+
 	// Draw all textured meshes that have a position and size component
 	for (Entity entity : registry.renderRequests.entities)
 	{

@@ -43,7 +43,6 @@ public:
 	// Whether this level ended
     bool is_over();
 
-
 	void update_camera(vec2 velocity);
 
 	// Input callback functions, should be called within GameSystem input callbacks
@@ -69,6 +68,8 @@ private:
 	int num_characters;
 
 	std::vector<Entity> terrain_vector;
+    std::vector<Entity> level_entity_vector;
+    std::vector<Entity> ladder_vector;
 
 	// OpenGL window handle
 	GLFWwindow* window;
@@ -76,11 +77,15 @@ private:
 	// controller that handles player's input
 	PlayerController player_controller;
 	
-	LevelState level_state;
-  
-  // remove the character from order_vector
-	void remove_character(Entity entity);
+	LevelState current_level_state;
+	LevelState next_level_state;
 
     // game ending logic
     bool is_level_over;
+  
+    // remove the character from order_vector
+    void remove_character(Entity entity);
+
+    // read and initialize level data
+    void init_data(int level);
 };

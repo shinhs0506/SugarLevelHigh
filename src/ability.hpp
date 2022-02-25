@@ -2,7 +2,12 @@
 #include "tiny_ecs.hpp"
 #include "tiny_ecs_registry.hpp"
 
-void mock_callback();
+bool mock_callback();
+bool mock_basic_attack_callback();
+bool mock_advanced_attack_callback();
 
-// TODO: those attacks should be associated with abilities later
-void melee_attack(Entity attacker, float damage, vec2 offset, vec2 direction, vec2 size);
+void perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 direction, AttackAbility chosen_attack);
+
+vec2 offset_position(vec2 direction, vec2 player_pos, double angle);
+void create_preview_object(vec2 player_pos);
+void destroy_preview_objects();
