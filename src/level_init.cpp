@@ -362,6 +362,7 @@ void removeButton(Entity entity)
 	registry.motions.remove(entity);
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
+	registry.renderRequests.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)
@@ -411,6 +412,7 @@ Entity createBackground(vec2 size, int level)
 void removeBackground(Entity entity)
 {
 	registry.backgrounds.remove(entity);
+	registry.renderRequests.remove(entity);
 }
 
 Entity createLadder(vec2 pos, vec2 size)
@@ -443,4 +445,5 @@ void removeLadder(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.climbables.remove(entity);
+	registry.renderRequests.remove(entity);
 }
