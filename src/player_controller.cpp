@@ -63,13 +63,13 @@ void PlayerController::on_key(int key, int, int action, int mod)
 				{
 				case GLFW_KEY_A:
 					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
-						player_motion.velocity = vec2(-player_motion.speed, 0);
+						player_motion.velocity.x = -player_motion.speed;
 						move_to_state(CharacterState::MOVE_LEFT);
 					}
 					break;
 				case GLFW_KEY_D:
 					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
-						player_motion.velocity = vec2(player_motion.speed, 0);
+						player_motion.velocity.x = player_motion.speed;
 						move_to_state(CharacterState::MOVE_RIGHT);
 					}
 					break;
