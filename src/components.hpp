@@ -35,6 +35,7 @@ struct Energy
 {
 	float max_energy = 100.f;
 	float cur_energy = 100.f;
+	float prev_energy = 100.f;
 };
 
 struct EnergyBar
@@ -67,7 +68,7 @@ struct AttackObject
 struct AttackAbility 
 {
 	bool activated;
-	float ttl_ms;
+	float speed; // ttl can be approvimated by range/speed
 	float damage;
 	float range;
 	int shape; // This is the GEOMETRY_BUFFER_ID
@@ -121,8 +122,17 @@ enum DEPTH {
 	ATTACK = 5,
 	ACTIVE = 10,
 	CHARACTER = 20,
+	LADDER = 50,
 	TERRAIN = 100,
 	BACKGROUND = 1000
+};
+
+
+enum LOCATION {
+	NORMAL = 0,
+	BELOW_CLIMBABLE = NORMAL + 1,
+	ON_CLIMBABLE = BELOW_CLIMBABLE + 1,
+	ABOVE_CLIMBABLE = ON_CLIMBABLE + 1
 };
 
 // All data relevant to the shape and motion of entities
@@ -135,6 +145,7 @@ struct Motion {
 	bool gravity_affected = false;
     float speed = 100;
 	int depth = DEPTH::CHARACTER;
+	int location = LOCATION::NORMAL;
 };
 
 // Stucture to store collision information
@@ -157,6 +168,11 @@ struct Overlay {
 
 // Backgrounds
 struct Background {
+
+};
+
+// Ladders
+struct Climbable {
 
 };
 

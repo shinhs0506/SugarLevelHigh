@@ -1,6 +1,7 @@
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
+#include "ability.hpp"
 
 Entity createDebugLine(vec2 position, vec2 scale)
 {
@@ -85,6 +86,12 @@ void removeEnergyBar()
 	registry.energyBars.remove(entity);
 }
 
+void resetEnergy(Entity entity)
+{
+	Energy& energy = registry.energies.get(entity);
+	energy.cur_energy = energy.max_energy;
+}
+
 Entity createHealthBar(vec2 pos, vec2 size)
 {
 	auto entity = Entity();
@@ -157,7 +164,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 
 	// stats
 	Health health{ 100, starting_health };
-	Energy energy{ 100, starting_energy };
+	Energy energy{ 100, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
 	registry.healths.insert(entity, health);
@@ -214,7 +221,8 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 
 	// stats
 	Health health{ 100, starting_health };
-	Energy energy{ 100, starting_energy };
+	Energy energy{ 100, starting_energy, starting_energy };
+	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
 
 	registry.healths.insert(entity, health);
@@ -290,18 +298,19 @@ void removeTerrain(Entity entity)
 Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos) {
 	auto entity = Entity();
 
-	vec2 attack_object_velocity = vec2(ability.range * (float)cos(angle), ability.range * (float)sin(angle));
-
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = angle;
-	motion.velocity = attack_object_velocity;
+	motion.velocity = vec2(ability.speed * (float)cos(angle), ability.speed * (float)sin(angle));
 	motion.scale = ability.size;
 	motion.depth = DEPTH::ATTACK;
 	motion.gravity_affected = ability.gravity_affected;
 
-	AttackObject obj{ ability.ttl_ms, ability.damage, attacker };
+	// ttl can be approximated by range/speed (gravity can increase speed)
+	// melee attack has a constant ttl
+	float ttl = ability.range == 0.f ? MELEE_ATTACK_TTL : ability.range / ability.speed * 1000;
+	AttackObject obj{ ttl, ability.damage, attacker };
 	registry.attackObjects.insert(entity, obj);
 
 	registry.renderRequests.insert(
@@ -369,7 +378,7 @@ void removeButton(Entity entity)
 	registry.motions.remove(entity);
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
-    registry.renderRequests.remove(entity);
+	registry.renderRequests.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)
@@ -421,4 +430,37 @@ void removeBackground(Entity entity)
     registry.motions.remove(entity);
 	registry.backgrounds.remove(entity);
     registry.renderRequests.remove(entity);
+}
+
+Entity createLadder(vec2 pos, vec2 size)
+{
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.depth = DEPTH::LADDER;
+
+
+	registry.climbables.emplace(entity);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(1.f, 1.f, 0.f));
+
+	return entity;
+}
+
+void removeLadder(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.climbables.remove(entity);
+	registry.renderRequests.remove(entity);
 }

@@ -117,6 +117,14 @@ void LevelManager::init_data(int level){
     }
 
     curr_order_ind = js["curr_order_ind"];
+
+    auto ladders_data = js["ladders"];
+    for (auto& ladder_data : ladders_data) {
+        vec2 ladder_pos = vec2(ladder_data["pos"]["x"], ladder_data["pos"]["y"]);
+        vec2 ladder_size = vec2(ladder_data["size"]["w"], ladder_data["size"]["h"]);
+        Entity ladder = createLadder(ladder_pos, ladder_size);
+        /* level_entity_vector.push_back(ladder); */
+    }
 }
 
 bool compare(Entity a, Entity b) {
@@ -349,15 +357,16 @@ bool LevelManager::step(float elapsed_ms)
             if (registry.playables.has(registry.activeTurns.entities[0])) {
                 std::cout << "player is current character" << std::endl;
                 // reset player controller
-                player_controller.reset(registry.activeTurns.entities[0]);
-                move_to_state(LevelState::PLAYER_TURN);
+                player_controller.start_turn(registry.activeTurns.entities[0]);
 
-                // reset energy
+                move_to_state(LevelState::PLAYER_TURN);
                 resetEnergyBar();
             }
             else {
                 std::cout << "enemy is current character" << std::endl;
-                move_to_state(LevelState::ENEMY_MOVE);
+                enemy_controller.start_turn(registry.activeTurns.entities[0]);
+
+                move_to_state(LevelState::ENEMY_TURN);
                 resetEnergyBar();
             }
         }
@@ -367,6 +376,15 @@ bool LevelManager::step(float elapsed_ms)
         // step player controller
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
+        {
+            move_to_state(LevelState::EVALUATION);
+        }
+        break;
+
+    case LevelState::ENEMY_TURN:
+        // step player controller
+        enemy_controller.step(elapsed_ms);
+        if (enemy_controller.should_end_enemy_turn())
         {
             move_to_state(LevelState::EVALUATION);
         }
@@ -494,12 +512,22 @@ void LevelManager::handle_collisions()
         if (registry.terrains.has(entity)) {
             Entity other_entity = registry.collisions.components[i].other;
             if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
-                Motion& position = registry.motions.get(other_entity);
-                position.position = position.prev_position;
-                Playable& playable = registry.playables.get(other_entity);
-                Entity healthBar = playable.healthBar;
-                Motion& healthBar_motion = registry.motions.get(healthBar);
-                healthBar_motion.position = healthBar_motion.prev_position;
+
+                // terrain collisions can't happen in the middle of climbing, so they now only matter if 
+                // the character is walking, or if they try to climb below the bottom of the ladder
+                if (registry.motions.get(other_entity).location == LOCATION::NORMAL
+                    || (registry.motions.get(other_entity).location == BELOW_CLIMBABLE 
+                        && registry.motions.get(other_entity).velocity.y > 0)) 
+                {
+                    Motion& position = registry.motions.get(other_entity);
+                    position.position = position.prev_position;
+                    Playable& playable = registry.playables.get(other_entity);
+                    Entity healthBar = playable.healthBar;
+                    Motion& healthBar_motion = registry.motions.get(healthBar);
+                    healthBar_motion.position = healthBar_motion.prev_position;
+                    Energy& energy = registry.energies.get(other_entity);
+                    energy.cur_energy = energy.prev_energy;
+                }
             }
         }
     }
@@ -643,17 +671,13 @@ void LevelManager::move_to_state(LevelState next_state) {
         std::cout << "moving to player's state" << std::endl;
         assert(this->current_level_state == LevelState::PREPARE); break;
 
-    case LevelState::ENEMY_MOVE:
+    case LevelState::ENEMY_TURN:
         std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
-        assert(this->current_level_state == LevelState::PREPARE || this->current_level_state == LevelState::ENEMY_ATTACK); break;
-
-    case LevelState::ENEMY_ATTACK:
-        std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
-        assert(this->current_level_state == LevelState::ENEMY_MOVE); break;
+        assert(this->current_level_state == LevelState::PREPARE); break;
 
     case LevelState::EVALUATION:
         std::cout << "moving to evaluation state, calculating damages..." << std::endl;
-        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_ATTACK); break;
+        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_TURN); break;
 
     case LevelState::TERMINATION:
         std::cout << "game is over!, press 'ESC' to exit" << std::endl;

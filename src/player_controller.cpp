@@ -9,21 +9,13 @@
 
 PlayerController::PlayerController()
 {
-
+	current_state = CharacterState::END;
+	next_state = CharacterState::END;
 }
 
-void PlayerController::reset(Entity player)
+void PlayerController::start_turn(Entity player)
 {
 	this->player = player;
-
-	AttackArsenal& active_arsenal = registry.attackArsenals.get(this->player);
-	// Reduce all cooldowns by 1 that are not already 0.
-	if (active_arsenal.basic_attack.current_cooldown > 0) {
-		active_arsenal.basic_attack.current_cooldown -= 1;
-	}
-	if (active_arsenal.advanced_attack.current_cooldown > 0) {
-		active_arsenal.advanced_attack.current_cooldown -= 1;
-	}
 
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
@@ -36,6 +28,7 @@ void PlayerController::step(float elapsed_ms)
 	if (current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
 		current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN) {
 		if (player_energy.cur_energy > 0.f) {
+			player_energy.prev_energy = player_energy.cur_energy;
 			player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
 		}
 	}
@@ -61,19 +54,32 @@ void PlayerController::on_key(int key, int, int action, int mod)
 				switch (key)
 				{
 				case GLFW_KEY_A:
-					player_motion.velocity = vec2(-player_motion.speed, 0);
-					move_to_state(CharacterState::MOVE_LEFT); break;
+					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
+						player_motion.velocity = vec2(-player_motion.speed, 0);
+						move_to_state(CharacterState::MOVE_LEFT);
+					}
+					break;
 				case GLFW_KEY_D:
-					player_motion.velocity = vec2(player_motion.speed, 0);
-					move_to_state(CharacterState::MOVE_RIGHT); break;
+					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
+						player_motion.velocity = vec2(player_motion.speed, 0);
+						move_to_state(CharacterState::MOVE_RIGHT);
+					}
+					break;
 				case GLFW_KEY_W:
-					// TODO: player not moving for up
-					player_motion.velocity = vec2(0);
-					move_to_state(CharacterState::MOVE_UP); break;
+					if (registry.motions.get(player).location == BELOW_CLIMBABLE 
+						|| registry.motions.get(player).location == ON_CLIMBABLE) {
+						player_motion.velocity = vec2(0, -player_motion.speed);
+						move_to_state(CharacterState::MOVE_UP);
+					}
+					break;
+					
 				case GLFW_KEY_S:
-					// TODO: player not moving for down
-					player_motion.velocity = vec2(0);
-					move_to_state(CharacterState::MOVE_DOWN); break;
+					if (registry.motions.get(player).location == ABOVE_CLIMBABLE
+						|| registry.motions.get(player).location == ON_CLIMBABLE) {
+						player_motion.velocity = vec2(0, player_motion.speed);
+						move_to_state(CharacterState::MOVE_DOWN);
+					}
+					break;
 				}
 			}
 			break;
@@ -191,9 +197,12 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 			destroy_preview_objects();
+			
+			// reset player's enegy
+			Energy& energy = registry.energies.get(player);
+			energy.cur_energy = energy.max_energy;
 
 			move_to_state(CharacterState::END);
-
 		}
 		break;
 

@@ -11,7 +11,7 @@ public:
 	PlayerController();
 
 	// reset the states to START
-	void reset(Entity player);
+	void start_turn(Entity player);
 
 	// callback functions by LevelManager that are only called during player's turn
 	void step(float elapsed_ms);

@@ -11,6 +11,7 @@ Entity createEnergyBar();
 void resetEnergyBar();
 void updateEnergyBar(Energy energy);
 void removeEnergyBar();
+void resetEnergy(Entity entity);
 
 Entity createHealthBar(vec2 pos, vec2 size);
 void updateHealthBar(Entity entity);
@@ -42,4 +43,7 @@ void removeHitEffect(Entity entity);
 
 Entity createBackground(vec2 size, int level);
 void removeBackground(Entity entity);
+
+Entity createLadder(vec2 pos, vec2 size);
+void removeLadder(Entity entity);
 

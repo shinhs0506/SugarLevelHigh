@@ -23,6 +23,7 @@ bool mock_advanced_attack_callback() {
 	printf("Advanced attack callback button was clicked!\n");
 	Entity active_character = registry.activeTurns.entities[0];
 	AttackArsenal& active_arsenal = registry.attackArsenals.get(active_character);
+    std::cout << active_arsenal.advanced_attack.current_cooldown << std::endl;
 	if (active_arsenal.advanced_attack.current_cooldown == 0) {
 		active_arsenal.advanced_attack.activated = true;
 		active_arsenal.basic_attack.activated = false;
@@ -53,6 +54,8 @@ void perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 direct
 	// Sets angle of attack
 	Motion& attack_object_motion = registry.motions.get(attack_object);
 	attack_object_motion.angle = angle;
+
+	advance_ability_cd(attacker);
 }
 
 vec2 offset_position(vec2 direction, vec2 player_pos, double angle) {
@@ -99,4 +102,23 @@ void destroy_preview_objects() {
 	registry.attackPreviews.remove(attack_preview);
 	registry.renderRequests.remove(attack_preview);
 	registry.colors.remove(attack_preview);
+}
+
+void advance_ability_cd(Entity entity) {
+	AttackArsenal& active_arsenal = registry.attackArsenals.get(entity);
+	if (active_arsenal.basic_attack.current_cooldown > 0) {
+		active_arsenal.basic_attack.current_cooldown -= 1;
+	}
+	if (active_arsenal.advanced_attack.current_cooldown > 0) {
+		active_arsenal.advanced_attack.current_cooldown -= 1;
+	}
+	printf("advanced ability cd\n");
+}
+
+bool advanced_attack_available(AttackArsenal arsenal) {
+	return arsenal.advanced_attack.current_cooldown == 0;
+}
+
+bool basic_attack_available(AttackArsenal arsenal) {
+	return arsenal.advanced_attack.current_cooldown == 0;
 }
