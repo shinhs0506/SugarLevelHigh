@@ -156,7 +156,7 @@ Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 
 	// stats
 	Health health{ 100, 100 };
-	Energy energy{ 100, 100 };
+	Energy energy{ 100, 100, 100 };
 	Initiative initiative{ 80 };
 
 	registry.healths.insert(entity, health);
@@ -210,7 +210,7 @@ Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 
 	// stats
 	Health health{ 100, 100 };
-	Energy energy{ 100, 100 };
+	Energy energy{ 500, 500, 500 };
 	Initiative initiative{ 50 };
 
 	registry.healths.insert(entity, health);
@@ -362,6 +362,7 @@ void removeButton(Entity entity)
 	registry.motions.remove(entity);
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
+	registry.renderRequests.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)
@@ -411,4 +412,38 @@ Entity createBackground(vec2 size, int level)
 void removeBackground(Entity entity)
 {
 	registry.backgrounds.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
+Entity createLadder(vec2 pos, vec2 size)
+{
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.depth = DEPTH::LADDER;
+
+
+	registry.climbables.emplace(entity);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(1.f, 1.f, 0.f));
+
+	return entity;
+}
+
+void removeLadder(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.climbables.remove(entity);
+	registry.renderRequests.remove(entity);
 }
