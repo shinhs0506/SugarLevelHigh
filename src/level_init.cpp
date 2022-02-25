@@ -98,7 +98,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
-	motion.gravity_affected = true;
+	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
 
 	registry.renderRequests.insert(
@@ -117,13 +117,17 @@ void updateHealthBar(Entity entity) {
 		Playable& playable = registry.playables.get(entity);
 		Entity healthBar = playable.healthBar;
 		Motion& healthBar_motion = registry.motions.get(healthBar);
-		healthBar_motion.velocity = registry.motions.get(entity).velocity;
+		Motion& entity_motion = registry.motions.get(entity);
+		healthBar_motion.position.x = entity_motion.position.x;
+		healthBar_motion.position.y = entity_motion.position.y - 60;
 	}
 	if (registry.enemies.has(entity)) {
 		Enemy& enemy = registry.enemies.get(entity);
 		Entity healthBar = enemy.healthBar;
 		Motion& healthBar_motion = registry.motions.get(healthBar);
-		healthBar_motion.velocity = registry.motions.get(entity).velocity;
+		Motion& entity_motion = registry.motions.get(entity);
+		healthBar_motion.position.x = entity_motion.position.x;
+		healthBar_motion.position.y = entity_motion.position.y - 60;
 	}
 }
 

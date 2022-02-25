@@ -22,5 +22,5 @@ public:
 	}
 
 private:
-	const float gravity = 10.0f; //set to 100.0f when terrain collision is implemented
+	const float gravity = 100.0f; //set to 100.0f when terrain collision is implemented
 };
