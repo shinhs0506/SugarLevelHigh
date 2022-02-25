@@ -3,6 +3,7 @@
 
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
+#include "enemy_controller.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -12,8 +13,7 @@ public:
 	enum class LevelState {
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
-		ENEMY_MOVE, // enemy move state
-		ENEMY_ATTACK, // enemy attack state
+		ENEMY_TURN, // handled by AI system
 		EVALUATION, // attack processing state
         TERMINATION, // game ending logic
 	};
@@ -73,6 +73,9 @@ private:
 
 	// OpenGL window handle
 	GLFWwindow* window;
+
+	// controller that handles enemy's behaviors
+	EnemyController enemy_controller;
 
 	// controller that handles player's input
 	PlayerController player_controller;

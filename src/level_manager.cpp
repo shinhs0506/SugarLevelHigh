@@ -224,18 +224,18 @@ bool LevelManager::step(float elapsed_ms)
         if (registry.playables.has(registry.activeTurns.entities[0])) {
             std::cout << "player is current character" << std::endl;
             // reset player controller
-            player_controller.reset(registry.activeTurns.entities[0]);
-            move_to_state(LevelState::PLAYER_TURN);
-
-            // reset energy
-            Energy& energy = registry.energies.get(registry.activeTurns.entities[0]);
-            energy.cur_energy = energy.max_energy;
+            player_controller.start_turn(registry.activeTurns.entities[0]);
+            
             resetEnergyBar();
+            move_to_state(LevelState::PLAYER_TURN);
         }
         else {
             std::cout << "enemy is current character" << std::endl;
-            move_to_state(LevelState::ENEMY_MOVE);
+            // reset ai system to prepare for enemy's turn
+            enemy_controller.start_turn(registry.activeTurns.entities[0]);
+            
             resetEnergyBar();
+            move_to_state(LevelState::ENEMY_TURN);
         }
         break;
 
@@ -243,6 +243,15 @@ bool LevelManager::step(float elapsed_ms)
         // step player controller
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
+        {
+            move_to_state(LevelState::EVALUATION);
+        }
+        break;
+
+    case LevelState::ENEMY_TURN:
+        // step player controller
+        enemy_controller.step(elapsed_ms);
+        if (enemy_controller.should_end_enemy_turn())
         {
             move_to_state(LevelState::EVALUATION);
         }
@@ -486,17 +495,13 @@ void LevelManager::move_to_state(LevelState next_state) {
         std::cout << "moving to player's state" << std::endl;
         assert(this->current_level_state == LevelState::PREPARE); break;
 
-    case LevelState::ENEMY_MOVE:
+    case LevelState::ENEMY_TURN:
         std::cout << "moving to enemy move state, AI is handling enemy movement" << std::endl;
-        assert(this->current_level_state == LevelState::PREPARE || this->current_level_state == LevelState::ENEMY_ATTACK); break;
-
-    case LevelState::ENEMY_ATTACK:
-        std::cout << "moving to enemy attack state, AI is handling enemy attack" << std::endl;
-        assert(this->current_level_state == LevelState::ENEMY_MOVE); break;
+        assert(this->current_level_state == LevelState::PREPARE); break;
 
     case LevelState::EVALUATION:
         std::cout << "moving to evaluation state, calculating damages..." << std::endl;
-        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_ATTACK); break;
+        assert(this->current_level_state == LevelState::PLAYER_TURN || this->current_level_state == LevelState::ENEMY_TURN); break;
 
     case LevelState::TERMINATION:
         std::cout << "game is over!, press 'ESC' to exit" << std::endl;

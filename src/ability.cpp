@@ -101,3 +101,22 @@ void destroy_preview_objects() {
 	registry.renderRequests.remove(attack_preview);
 	registry.colors.remove(attack_preview);
 }
+
+void advance_ability_cd(Entity entity) {
+	AttackArsenal& active_arsenal = registry.attackArsenals.get(entity);
+	if (active_arsenal.basic_attack.current_cooldown > 0) {
+		active_arsenal.basic_attack.current_cooldown -= 1;
+	}
+	if (active_arsenal.advanced_attack.current_cooldown > 0) {
+		active_arsenal.advanced_attack.current_cooldown -= 1;
+	}
+	printf("advanced ability cd\n");
+}
+
+bool advanced_attack_available(AttackArsenal arsenal) {
+	return arsenal.advanced_attack.current_cooldown == 0;
+}
+
+bool basic_attack_available(AttackArsenal arsenal) {
+	return arsenal.advanced_attack.current_cooldown == 0;
+}

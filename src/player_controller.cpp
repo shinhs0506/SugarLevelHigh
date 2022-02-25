@@ -9,21 +9,15 @@
 
 PlayerController::PlayerController()
 {
-
+	current_state = CharacterState::END;
+	next_state = CharacterState::END;
 }
 
-void PlayerController::reset(Entity player)
+void PlayerController::start_turn(Entity player)
 {
 	this->player = player;
 
-	AttackArsenal& active_arsenal = registry.attackArsenals.get(this->player);
-	// Reduce all cooldowns by 1 that are not already 0.
-	if (active_arsenal.basic_attack.current_cooldown > 0) {
-		active_arsenal.basic_attack.current_cooldown -= 1;
-	}
-	if (active_arsenal.advanced_attack.current_cooldown > 0) {
-		active_arsenal.advanced_attack.current_cooldown -= 1;
-	}
+	advance_ability_cd(player);
 
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
@@ -205,9 +199,12 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 			destroy_preview_objects();
+			
+			// reset player's enegy
+			Energy& energy = registry.energies.get(player);
+			energy.cur_energy = energy.max_energy;
 
 			move_to_state(CharacterState::END);
-
 		}
 		break;
 

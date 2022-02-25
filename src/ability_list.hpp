@@ -1,3 +1,4 @@
+#pragma once
 #include "components.hpp"
 
 /*
@@ -14,8 +15,8 @@ so if a cd is only 1, then on that char's next turn, it'll be 0 (available) anyw
 */
 AttackAbility gingerbread_basic_attack = {
     false, // Chosen attack
-    200, // TTL
-    50, // Damage
+    0, // speed
+    20, // Damage
     0, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 100), // Size
@@ -25,20 +26,20 @@ AttackAbility gingerbread_basic_attack = {
 };
 AttackAbility gingerbread_advanced_attack = {
     false, // Chosen attack
-    7000, // TTL
-    100, // Damage
-    300, // Range
+    500, // speed
+    50, // Damage
+    500, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 50), // Size
     true, // Gravit Affected
-    2, // Max cooldown
+    3, // Max cooldown
     0, // Current cooldown
 };
 
 // Gumball used for enemy, at the moment, enemy only uses melee attack (the basic attack active hardcoded to true)
 AttackAbility gumball_basic_attack = {
     true, // Chosen attack
-    200, // TTL
+    0, // speed
     20, // Damage
     0, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
@@ -49,12 +50,12 @@ AttackAbility gumball_basic_attack = {
 };
 AttackAbility gumball_advanced_attack = {
     false, // Chosen attack
-    2000, // TTL
-    100, // Damage
+    500, // speed
+    40, // Damage
     100, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 100), // Size
     false, // Gravit Affected
-    1, // Max cooldown
+    2, // Max cooldown
     0, // Current cooldown
 };

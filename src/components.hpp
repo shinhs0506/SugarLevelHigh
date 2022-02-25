@@ -68,7 +68,7 @@ struct AttackObject
 struct AttackAbility 
 {
 	bool activated;
-	float ttl_ms;
+	float speed; // ttl can be approvimated by range/speed
 	float damage;
 	float range;
 	int shape; // This is the GEOMETRY_BUFFER_ID

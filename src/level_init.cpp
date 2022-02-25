@@ -1,6 +1,7 @@
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
+#include "ability.hpp"
 
 Entity createDebugLine(vec2 position, vec2 scale)
 {
@@ -83,6 +84,12 @@ void removeEnergyBar()
 	registry.overlays.remove(entity);
 	registry.colors.remove(entity);
 	registry.energyBars.remove(entity);
+}
+
+void resetEnergy(Entity entity)
+{
+	Energy& energy = registry.energies.get(entity);
+	energy.cur_energy = energy.max_energy;
 }
 
 Entity createHealthBar(vec2 pos, vec2 size)
@@ -284,18 +291,19 @@ void removeTerrain(Entity entity)
 Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos) {
 	auto entity = Entity();
 
-	vec2 attack_object_velocity = vec2(ability.range * (float)cos(angle), ability.range * (float)sin(angle));
-
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = angle;
-	motion.velocity = attack_object_velocity;
+	motion.velocity = vec2(ability.speed * (float)cos(angle), ability.speed * (float)sin(angle));
 	motion.scale = ability.size;
 	motion.depth = DEPTH::ATTACK;
 	motion.gravity_affected = ability.gravity_affected;
 
-	AttackObject obj{ ability.ttl_ms, ability.damage, attacker };
+	// ttl can be approximated by range/speed (gravity can increase speed)
+	// melee attack has a constant ttl
+	float ttl = ability.range == 0.f ? MELEE_ATTACK_TTL : ability.range / ability.speed * 1000;
+	AttackObject obj{ ttl, ability.damage, attacker };
 	registry.attackObjects.insert(entity, obj);
 
 	registry.renderRequests.insert(
