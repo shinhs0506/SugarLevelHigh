@@ -359,19 +359,19 @@ void LevelManager::handle_collisions()
 
                 // terrain collisions can't happen in the middle of climbing, so they now only matter if 
                 // the character is walking, or if they try to climb below the bottom of the ladder
-                if (registry.motions.get(other_entity).location == LOCATION::NORMAL
-                    || (registry.motions.get(other_entity).location == BELOW_CLIMBABLE 
-                        && registry.motions.get(other_entity).velocity.y > 0)) 
-                {
-                    Motion& position = registry.motions.get(other_entity);
-                    position.position = position.prev_position;
-                    Playable& playable = registry.playables.get(other_entity);
-                    Entity healthBar = playable.healthBar;
-                    Motion& healthBar_motion = registry.motions.get(healthBar);
-                    healthBar_motion.position = healthBar_motion.prev_position;
-                    Energy& energy = registry.energies.get(other_entity);
-                    energy.cur_energy = energy.prev_energy;
-                }
+                //if (registry.motions.get(other_entity).location == LOCATION::NORMAL
+                //    || (registry.motions.get(other_entity).location == BELOW_CLIMBABLE 
+                //        && registry.motions.get(other_entity).velocity.y > 0)) 
+                //{
+                //    Motion& position = registry.motions.get(other_entity);
+                //    position.position = position.prev_position;
+                //    Playable& playable = registry.playables.get(other_entity);
+                //    Entity healthBar = playable.healthBar;
+                //    Motion& healthBar_motion = registry.motions.get(healthBar);
+                //    healthBar_motion.position = healthBar_motion.prev_position;
+                //    Energy& energy = registry.energies.get(other_entity);
+                //    energy.cur_energy = energy.prev_energy;
+                //}
             }
         }
     }

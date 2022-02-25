@@ -145,17 +145,21 @@ void update_location(Motion& motion) {
 		if (collides(motion, motion_registry.get(climbable))) {
 			if (is_below_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::BELOW_CLIMBABLE;
+				motion.gravity_affected = false;
 			}
 			else {
 				motion.location = LOCATION::ON_CLIMBABLE;
+				motion.gravity_affected = false;
 			}
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
+				motion.gravity_affected = false;
 			}
 			else {
 				motion.location = LOCATION::NORMAL;
+				motion.gravity_affected = true;
 			}
 		}
 	}
@@ -185,17 +189,8 @@ void PhysicsSystem::step(float elapsed_ms)
 		if (registry.playables.has(entity)) {
 			update_location(motion);
 
-			if ((motion.location == LOCATION::ON_CLIMBABLE && motion.velocity.x == 0) // not trying to walk while on climbable
-				|| motion.location == LOCATION::BELOW_CLIMBABLE && !(motion.velocity.y > 0) // not trying to climb down if nothing below
-				|| motion.location == LOCATION::ABOVE_CLIMBABLE && !(motion.velocity.y < 0) // not trying to climb up if nothing above
-				|| motion.location == LOCATION::NORMAL && motion.velocity.y == 0 // not trying to climb if no climbable
-				) {
-				motion.prev_position = motion.position;
-				motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
-			}
-			else {
-				motion.velocity = { 0.f, 0.f };
-			}
+			motion.prev_position = motion.position;
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
 
 			updateHealthBar(entity);
 		}
@@ -246,11 +241,12 @@ void PhysicsSystem::step(float elapsed_ms)
 				registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 				registry.collisions.emplace_with_duplicates(entity_j, entity_i);
 
+
 				// Collision Handler
 				// Make sure the entity is a playable or enemy that is affected by gravity
 				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
 					// Collision between bottom of the character and top of the terrain
-					if (collide_bottom(motion_i, motion_j)) {
+					if (collide_bottom(motion_i, motion_j) && motion_i.location != ABOVE_CLIMBABLE) {
 						motion_i.velocity.y = 0;
 						motion_i.position.y = motion_i.prev_position.y;
 						if (motion_i.is_falling == true) {
