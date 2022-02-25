@@ -4,6 +4,8 @@
 
 #include "tiny_ecs_registry.hpp"
 
+#include <iostream>
+
 struct {
 	bool operator()(Entity entity1, Entity entity2) const {
 		return registry.motions.get(entity1).depth > registry.motions.get(entity2).depth;
@@ -87,6 +89,20 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	{
 		assert(false && "Type of render request not supported");
 	}
+
+	// character uniform: check whether the entity is a character with a spritesheet
+	GLint is_character_uloc = glGetUniformLocation(program, "is_character");
+	glUniform1i(is_character_uloc, registry.playables.has(entity)); // TODO: so far, only the player gummy bear has a spritesheet
+	gl_has_errors();
+
+	// movement uniform
+	GLint movement_uloc = glGetUniformLocation(program, "movement");
+	int movement = 0; // idle
+	if (motion.velocity.x < 0) movement = 1; // left
+	if (motion.velocity.x > 0) movement = 2; // right
+	// TODO: only have left and right movements so far
+	glUniform1i(movement_uloc, movement);
+	gl_has_errors();
 
 	// hit by an attack uniform
 	GLint hit_effect_uloc = glGetUniformLocation(program, "hit_effect");
