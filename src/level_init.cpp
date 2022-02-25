@@ -69,7 +69,6 @@ void resetEnergyBar()
 	motion.scale = { 300, 20 };
 }
 
-#include <iostream>
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
@@ -193,7 +192,6 @@ void removeEnemy(Entity entity)
     registry.collisions.remove(entity);
 }
 
-#include <iostream>
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
         AttackArsenal attack_arsenal)
 {

@@ -69,7 +69,6 @@ private:
 	int num_characters;
 
 	std::vector<Entity> terrain_vector;
-    std::vector<Entity> level_entity_vector;
 
     nlohmann::json curr_level_data_json;
 

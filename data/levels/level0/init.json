@@ -7,12 +7,16 @@
         "upper_limit": {
             "x": 100,
             "y": 100
+        },
+        "pos": {
+            "x": 640,
+            "y": 360
         }
     },
     "background": {
-        "pos": {
-            "x": 1480,
-            "y": 920
+        "size": {
+            "w": 1480,
+            "h": 920
         }
     },
     "players": [
@@ -24,7 +28,9 @@
             "size": {
                 "w": 80,
                 "h": 100
-            }
+            },
+            "health": 100,
+            "energy": 100
         }
     ],
     "enemies": [
@@ -36,7 +42,9 @@
             "size": {
                 "w": 80,
                 "h": 100
-            }
+            },
+            "health": 100,
+            "energy": 100
         }
     ],
     "terrains": [
@@ -160,5 +168,7 @@
                 "h": 99.999
             }
         }
-    ]
+    ],
+    "curr_order_ind": -1,
+    "curr_level_state": 0
 }

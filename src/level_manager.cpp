@@ -76,12 +76,10 @@ void LevelManager::init_data(int level){
     vec2 camera_pos = vec2(js["camera"]["pos"]["x"], js["camera"]["pos"]["y"]);
     camera.lower_limit = motion.position + camera_lower_limit_delta;
     camera.higer_limit = motion.position + camera_upper_limit_delta;
-    /* motion.position = camera_pos; */
 
     vec2 background_pos = vec2(js["background"]["size"]["w"], 
             js["background"]["size"]["h"]);
     background = createBackground(background_pos, level);
-    level_entity_vector.push_back(background);
 
     auto players_data = js["players"];
     for (auto& player_data: players_data) {
@@ -93,7 +91,6 @@ void LevelManager::init_data(int level){
         Entity player = createPlayer(player_pos, player_size, player_health, 
                 player_energy, ginerbread_arsenal);
         update_healthbar_len_color(player);
-        level_entity_vector.push_back(player);
         order_vector.push_back(player);
     }
 
@@ -107,7 +104,6 @@ void LevelManager::init_data(int level){
         Entity enemy = createEnemy(enemy_pos, enemy_size, enemy_health, 
                 enemy_energy, gumball_arsenal);
         update_healthbar_len_color(enemy);
-        level_entity_vector.push_back(enemy);
         order_vector.push_back(enemy);
     }
 
@@ -116,7 +112,6 @@ void LevelManager::init_data(int level){
         vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
         vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
         Entity terrain = createTerrain(terrain_pos, terrain_size);
-        level_entity_vector.push_back(terrain);
     }
 
     curr_order_ind = js["curr_order_ind"];
@@ -140,15 +135,11 @@ void LevelManager::load_level(int level)
     // common to all levels
     
     back_button = createBackButton(vec2(100, 50), vec2(50,50), NULL); 
-    level_entity_vector.push_back(back_button);
 
     basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
-    level_entity_vector.push_back(basic_attack_button);
-    level_entity_vector.push_back(advanced_attack_button);
 
     energy_bar = createEnergyBar();
-    level_entity_vector.push_back(energy_bar);
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
@@ -196,17 +187,7 @@ void LevelManager::abandon_level()
     removeBackground(background);
 
     registry.activeTurns.clear();
-    /* registry.collisions.clear(); */
-    /* for (auto& entity : level_entity_vector) { */
-    /*     registry.remove_all_components_of(entity); */
-    /* } */
 
-    /* // have to manually clear healthbars */
-    /* for (auto& entity: registry.healthBars.entities) { */
-    /*     registry.remove_all_components_of(entity); */
-    /* } */
-
-    level_entity_vector.clear();
     terrain_vector.clear();
     order_vector.clear();
 }
@@ -327,6 +308,7 @@ bool LevelManager::step(float elapsed_ms)
     }
     
     // update the curr_level_data_json
+    // curr_level_data_json captures current level content and state
     update_curr_level_data_json();
 
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
