@@ -195,13 +195,14 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 
 		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
-			update_location(motion);
-
+			if (registry.playables.has(entity)) {
+				update_location(motion);
+			}
+			
 			motion.prev_position = motion.position;
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
 			updateHealthBar(entity);
-
 			if (registry.activeTurns.has(entity)) {
 				updateOrderIndicator(entity);
 			}
@@ -277,13 +278,16 @@ void PhysicsSystem::step(float elapsed_ms)
 				}
 				// Collision between right of the character and left of the terrain
 				if (collide_right(character_motion, terrain_motion)) {
-					character_motion.goal_velocity.x = 0;
-					character_motion.position.x = character_motion.prev_position.x;
+					if (character_motion.goal_velocity.x > 0) {
+						character_motion.position.x = character_motion.prev_position.x;
+					}
+					
 				}
 				// Collision between left of the character and right of the terrain
 				if (collide_left(character_motion, terrain_motion)) {
-					character_motion.goal_velocity.x = 0;
-					character_motion.position.x = character_motion.prev_position.x;
+					if (character_motion.goal_velocity.x < 0) {
+						character_motion.position.x = character_motion.prev_position.x;
+					}
 				}
 			}
 			else if (character_motion.location == LOCATION::NORMAL) {
