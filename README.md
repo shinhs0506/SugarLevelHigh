@@ -30,9 +30,17 @@ Created by Team 3
 
 ### Stability 
 
-- [missing]
+**Game runs without severe lag**
+Game runs smoothly
+
+**Game resolution and aspect ratio are consistent across different machines/displays**
+Game works on 12, 13, and 27 inch displays.
 
 ## Creative Components
 
-### [missing]
-- [missing]
+**Basic Physics**
+Implemented gravity on all characters and projectiles together with collisions (`PhysicsSystem::step::line294`)
+Additionally various bool set for if a object is gravity affected like (`update_location::line139`) and other places.
+
+**Reloadability**
+Reloadability is implemented with the help of nlohmann package (`LevelManager::update_curr_level_data_json::line 245`)
