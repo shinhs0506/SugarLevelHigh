@@ -205,6 +205,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.location = LOCATION::NORMAL;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };

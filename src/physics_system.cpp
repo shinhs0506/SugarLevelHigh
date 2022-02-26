@@ -195,12 +195,15 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 
 		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
-			update_location(motion);
-
+			if (registry.playables.has(entity)) {
+				update_location(motion);
+			}
+			
 			motion.prev_position = motion.position;
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
 			updateHealthBar(entity);
+
 		}
 
 		else {

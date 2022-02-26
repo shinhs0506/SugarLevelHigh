@@ -100,7 +100,7 @@ void EnemyController::make_decision() {
 	else {
 		// move distance is calculated only on x-axis
 		float x_dist = abs(target_motion.position.x - motion.position.x);
-		float dist = x_dist - cal_actual_attack_range(chosen_attack);
+		float dist = abs(x_dist - cal_actual_attack_range(chosen_attack));
 		// only move left/right now
 		move(motion, motion.position.x < target_motion.position.x ? 1 : -1, dist);
 	}
