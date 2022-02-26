@@ -196,7 +196,6 @@ void PhysicsSystem::step(float elapsed_ms)
 		if (motion.gravity_affected == true) {
 			//When collision with terrain is detected. Reset this velocity to 0
 			motion.goal_velocity.y += gravity * (elapsed_ms/1000.0f);
-			motion.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
 		}
 
 
@@ -216,8 +215,8 @@ void PhysicsSystem::step(float elapsed_ms)
 
 		else {
 			motion.prev_position = motion.position;
-			motion.goal_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
-			motion.goal_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
+			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
 
