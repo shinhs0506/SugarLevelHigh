@@ -158,6 +158,7 @@ void update_location(Motion& motion) {
 			else {
 				motion.location = LOCATION::NORMAL;
 				motion.gravity_affected = true;
+				motion.position.y = floor(motion.position.y);
 				//printf("normal\n");
 			}
 		}
