@@ -158,8 +158,12 @@ void update_location(Motion& motion) {
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
+				int prev_location = motion.location;
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
 				motion.gravity_affected = false;
+				if (prev_location == LOCATION::NORMAL) {
+					motion.velocity.y = 0;
+				}
 				//printf("above\n");
 				return;
 			}
