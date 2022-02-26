@@ -67,6 +67,7 @@ private:
 	int curr_order_ind;
 	bool should_initialize_active_turn;
 	int num_characters;
+    Entity order_indicator;
 
     nlohmann::json curr_level_data_json;
 

@@ -59,6 +59,50 @@ Entity createEnergyBar()
 	return entity;
 }
 
+Entity createOrderIndicator(){
+	auto entity = Entity();
+
+	registry.orderIndicators.emplace(entity);
+	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { pos };
+	motion.prev_position = { pos };
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = { 20, 20 };
+	motion.gravity_affected = false;
+	motion.depth = DEPTH::UI;
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
+
+	return entity;
+}
+
+void updateOrderIndicator(Entity entity) {
+
+        Motion& character_motion = registry.motions.get(entity);
+        Entity& indicator = registry.orderIndicators.entities[0];
+        Motion& indicator_motion = registry.motions.get(indicator);
+
+        vec2 delta = {0, -(character_motion.scale.y)};
+        indicator_motion.position = character_motion.position + delta;
+}
+
+void removeOrderIndicator(){
+	Entity entity = registry.orderIndicators.entities[0];
+	registry.motions.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.colors.remove(entity);
+    registry.orderIndicators.remove(entity);
+}
+
 void resetEnergyBar() 
 {
 	// As all characters share one energy bar, there should always be only 1 entity inside energyBars

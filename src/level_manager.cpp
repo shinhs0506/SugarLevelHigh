@@ -149,6 +149,7 @@ void LevelManager::load_level(int level)
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
 
     energy_bar = createEnergyBar();
+    order_indicator = createOrderIndicator();
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
@@ -197,6 +198,7 @@ void LevelManager::abandon_level()
     removeButton(advanced_attack_button);
 
     removeEnergyBar();
+    removeOrderIndicator();
     removeBackground(background);
 
     registry.activeTurns.clear();
@@ -433,6 +435,9 @@ bool LevelManager::step(float elapsed_ms)
         destroy_saved_level_data_file();
         break;
     }
+
+    // update order indicator's position
+    updateOrderIndicator(registry.activeTurns.entities[0]);
 
     return true;
 }
