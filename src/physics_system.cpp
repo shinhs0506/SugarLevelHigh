@@ -146,23 +146,27 @@ void update_location(Motion& motion) {
 			if (is_below_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::BELOW_CLIMBABLE;
 				motion.gravity_affected = false;
-        return;
+				//printf("below\n");
+				return;
 			}
 			else {
 				motion.location = LOCATION::ON_CLIMBABLE;
 				motion.gravity_affected = false;
-        return;
+				//printf("on\n");
+				return;
 			}
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
 				motion.gravity_affected = false;
-        return;
+				//printf("above\n");
+				return;
 			}
 			else {
 				motion.location = LOCATION::NORMAL;
 				motion.gravity_affected = true;
+				//printf("normal\n");
 			}
 		}
 	}
@@ -292,7 +296,7 @@ void PhysicsSystem::step(float elapsed_ms)
 			Entity terrain = terrains.entities[j];
 			Motion& terrain_motion = registry.motions.get(terrain);
 			if (collides(character_motion, terrain_motion)) {
-				if (collide_bottom(character_motion, terrain_motion) && character_motion.location != ABOVE_CLIMBABLE) {
+				if (collide_bottom(character_motion, terrain_motion) && character_motion.location != LOCATION::ABOVE_CLIMBABLE && character_motion.location != LOCATION::ON_CLIMBABLE) {
 					character_motion.velocity.y = 0;
 					character_motion.position.y = character_motion.prev_position.y;
 				}
@@ -309,7 +313,7 @@ void PhysicsSystem::step(float elapsed_ms)
 					//printf("COLLIDE LEFT \n");
 				}
 			}
-			else {
+			else if (character_motion.location == LOCATION::NORMAL) {
 				character_motion.velocity.y += gravity * (elapsed_ms / 1000.0f);
 				character_motion.is_falling = true;
 			}
