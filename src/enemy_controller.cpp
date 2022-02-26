@@ -41,7 +41,7 @@ void EnemyController::move(Motion& motion, int direction, float distance) {
 
 float EnemyController::cal_actual_attack_range(AttackAbility& ability) {
 	// add some small offset
-	return ability.range + min(ability.size.x, ability.size.y) / 2 + 50;
+	return ability.range + min(ability.size.x, ability.size.y) / 2 + 20;
 }
 
 bool EnemyController::within_attack_range(float dist, AttackAbility& ability) {
