@@ -9,6 +9,75 @@ vec2 get_bounding_box(const Motion& motion)
 	return { abs(motion.scale.x), abs(motion.scale.y) };
 }
 
+bool collide_bottom(const Motion& motion1, const Motion& motion2)
+{
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (t_collision < b_collision && t_collision < l_collision && t_collision < r_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
+bool collide_right(const Motion& motion1, const Motion& motion2)
+{
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (l_collision < r_collision && l_collision < t_collision && l_collision < b_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
+bool collide_left(const Motion& motion1, const Motion& motion2)
+{
+	const float player_bottom = motion1.position.y + abs(motion1.scale.y);
+	const float terrain_bottom = motion2.position.y + abs(motion2.scale.y);
+	const float player_right = motion1.position.x + abs(motion1.scale.x);
+	const float terrain_right = motion2.position.x + abs(motion2.scale.x);
+
+	const float b_collision = terrain_bottom - motion1.position.y;
+	const float t_collision = player_bottom - motion2.position.y;
+	const float l_collision = player_right - motion2.position.x;
+	const float r_collision = terrain_right - motion1.position.x;
+
+	if (r_collision < l_collision && r_collision < t_collision && r_collision < b_collision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}
+
+	return false;
+}
+
 // use AABB detection
 bool collides(const Motion& motion1, const Motion& motion2)
 {
@@ -16,7 +85,7 @@ bool collides(const Motion& motion1, const Motion& motion2)
 	const vec2 bb2 = get_bounding_box(motion2) / 2.f;
 	const vec2 pos1 = motion1.position;
 	const vec2 pos2 = motion2.position;
-	
+
 	if (// x axis collision check
 		(pos1[0] - bb1[0] <= pos2[0] + bb2[0] && pos1[0] + bb1[0] >= pos2[0] - bb2[0]) &&
 		// y axis collision check
@@ -76,17 +145,24 @@ void update_location(Motion& motion) {
 		if (collides(motion, motion_registry.get(climbable))) {
 			if (is_below_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::BELOW_CLIMBABLE;
+				motion.gravity_affected = false;
+        return;
 			}
 			else {
 				motion.location = LOCATION::ON_CLIMBABLE;
+				motion.gravity_affected = false;
+        return;
 			}
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
+				motion.gravity_affected = false;
+        return;
 			}
 			else {
 				motion.location = LOCATION::NORMAL;
+				motion.gravity_affected = true;
 			}
 		}
 	}
@@ -116,17 +192,8 @@ void PhysicsSystem::step(float elapsed_ms)
 		if (registry.playables.has(entity)) {
 			update_location(motion);
 
-			if ((motion.location == LOCATION::ON_CLIMBABLE && motion.velocity.x == 0) // not trying to walk while on climbable
-				|| motion.location == LOCATION::BELOW_CLIMBABLE && !(motion.velocity.y > 0) // not trying to climb down if nothing below
-				|| motion.location == LOCATION::ABOVE_CLIMBABLE && !(motion.velocity.y < 0) // not trying to climb up if nothing above
-				|| motion.location == LOCATION::NORMAL && motion.velocity.y == 0 // not trying to climb if no climbable
-				) {
-				motion.prev_position = motion.position;
-				motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
-			}
-			else {
-				motion.velocity = { 0.f, 0.f };
-			}
+			motion.prev_position = motion.position;
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
 
 			updateHealthBar(entity);
 		}
@@ -168,6 +235,7 @@ void PhysicsSystem::step(float elapsed_ms)
 		for(uint j = i+1; j<motion_container.components.size(); j++)
 		{
 			Motion& motion_j = motion_container.components[j];
+			
 			if (collides(motion_i, motion_j))
 			{
 				Entity entity_j = motion_container.entities[j];
@@ -175,6 +243,40 @@ void PhysicsSystem::step(float elapsed_ms)
 				// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
 				registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 				registry.collisions.emplace_with_duplicates(entity_j, entity_i);
+
+
+				// Collision Handler
+				// Make sure the entity is a playable or enemy that is affected by gravity
+				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
+					// Collision between bottom of the character and top of the terrain
+					if (collide_bottom(motion_i, motion_j) && motion_i.location != ABOVE_CLIMBABLE) {
+						motion_i.velocity.y = 0;
+						motion_i.position.y = motion_i.prev_position.y;
+						if (motion_i.is_falling == true) {
+							motion_i.is_falling = false;
+						}
+					}
+					// Collision between right of the character and left of the terrain
+					if (collide_right(motion_i, motion_j)) {
+						motion_i.velocity.x = 0;
+						motion_i.position.x = motion_i.prev_position.x;
+					}
+					// Collision between left of the character and right of the terrain
+					if (collide_left(motion_i, motion_j)) {
+						motion_i.velocity.x = 0;
+						motion_i.position.x = motion_i.prev_position.x;
+					}
+				}
+			}
+			// Gravity Implementation for entities that are affected by gravity and is not colliding with a terrain
+			else {
+				if (motion_i.gravity_affected == true) {
+					motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
+					motion_i.is_falling = true;
+				}
+				/*else if (motion_j.gravity_affected == true) {
+					motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
+				}*/
 			}
 		}
 	}

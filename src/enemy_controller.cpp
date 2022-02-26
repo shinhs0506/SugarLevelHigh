@@ -17,8 +17,6 @@ void EnemyController::start_turn(Entity enemy)
 	next_state = CharacterState::IDLE;
 	this->enemy = enemy;
 
-	resetEnergy(enemy);
-
 	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
 }
 

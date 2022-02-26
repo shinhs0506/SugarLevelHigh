@@ -55,13 +55,13 @@ void PlayerController::on_key(int key, int, int action, int mod)
 				{
 				case GLFW_KEY_A:
 					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
-						player_motion.velocity = vec2(-player_motion.speed, 0);
+						player_motion.velocity.x = -player_motion.speed;
 						move_to_state(CharacterState::MOVE_LEFT);
 					}
 					break;
 				case GLFW_KEY_D:
 					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
-						player_motion.velocity = vec2(player_motion.speed, 0);
+						player_motion.velocity.x = player_motion.speed;
 						move_to_state(CharacterState::MOVE_RIGHT);
 					}
 					break;
@@ -87,7 +87,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 		case CharacterState::MOVE_LEFT:
 			if (key == GLFW_KEY_A && action == GLFW_RELEASE)
 			{
-				player_motion.velocity = vec2(0);
+				player_motion.velocity.x = 0;
 				move_to_state(CharacterState::IDLE);
 			}
 			break;
@@ -95,7 +95,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 		case CharacterState::MOVE_RIGHT:
 			if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 			{
-				player_motion.velocity = vec2(0);
+				player_motion.velocity.x = 0;
 				move_to_state(CharacterState::IDLE);
 			}
 			break;
@@ -193,7 +193,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			vec2 direction = cursor_world_pos - player_pos;
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
 
-			perform_attack(player, player_pos, offset, direction, chosen_attack);
+		    perform_attack(player, player_pos, offset, direction, chosen_attack); 
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
 			destroy_preview_objects();
