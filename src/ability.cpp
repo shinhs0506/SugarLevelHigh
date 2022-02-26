@@ -86,11 +86,23 @@ void create_preview_object(vec2 player_pos) {
 
 	registry.attackPreviews.emplace(entity);
 
-	registry.renderRequests.insert(
-		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
+	AttackArsenal attack_arsenal = registry.attackArsenals.get(registry.activeTurns.entities[0]);
+	if (attack_arsenal.basic_attack.activated == true) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BASIC_ATTACK_PREVIEW,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::ADVANCED_ATTACK_PREVIEW, 
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+
+	
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 }
