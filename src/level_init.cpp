@@ -142,7 +142,8 @@ void removeHealthBar(Entity healthBar) {
 }
 
 
-Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
+Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
+        AttackArsenal attack_arsenal)
 {
 	auto entity = Entity();
 
@@ -162,8 +163,8 @@ Entity createEnemy(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, 100 };
-	Energy energy{ 100, 100, 100 };
+	Health health{ 100, starting_health };
+	Energy energy{ 100, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
 	registry.healths.insert(entity, health);
@@ -195,9 +196,12 @@ void removeEnemy(Entity entity)
 	registry.renderRequests.remove(entity);
 	registry.attackArsenals.remove(entity);
 	registry.AIs.remove(entity);
+    registry.attackArsenals.remove(entity);
+    registry.collisions.remove(entity);
 }
 
-Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
+Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
+        AttackArsenal attack_arsenal)
 {
 	auto entity = Entity();
 
@@ -217,8 +221,9 @@ Entity createPlayer(vec2 pos, vec2 size, AttackArsenal attack_arsenal)
 	registry.playables.insert(entity, player);
 
 	// stats
-	Health health{ 100, 100 };
-	Energy energy{ 500, 500, 500 };
+	Health health{ 100, starting_health };
+	Energy energy{ 100, starting_energy, starting_energy };
+	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
 
 	registry.healths.insert(entity, health);
@@ -248,6 +253,7 @@ void removePlayer(Entity entity)
 	registry.initiatives.remove(entity);
 	registry.renderRequests.remove(entity);
 	registry.attackArsenals.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createTerrain(vec2 pos, vec2 size)
@@ -287,6 +293,7 @@ void removeTerrain(Entity entity)
 	registry.terrains.remove(entity);
 	registry.healths.remove(entity);
 	registry.renderRequests.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos) {
@@ -325,6 +332,7 @@ void removeAttackObject(Entity entity)
 	registry.renderRequests.remove(entity);
 	registry.colors.remove(entity); // TODO: remove this line when we have a proper sprite
 	registry.projectiles.remove(entity);
+    registry.collisions.remove(entity);
 }
 
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
@@ -420,8 +428,9 @@ Entity createBackground(vec2 size, int level)
 
 void removeBackground(Entity entity)
 {
+    registry.motions.remove(entity);
 	registry.backgrounds.remove(entity);
-	registry.renderRequests.remove(entity);
+    registry.renderRequests.remove(entity);
 }
 
 Entity createLadder(vec2 pos, vec2 size)

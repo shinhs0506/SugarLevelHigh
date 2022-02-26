@@ -1,6 +1,7 @@
 #include "help_manager.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "menu_init.hpp"
+#include "game_init.hpp"
 #include "physics_system.hpp"
 #include "game_system.hpp"
 
@@ -16,8 +17,8 @@ void HelpManager::init(GLFWwindow *window, GameSystem *game_system) {
     this->window = window;
     this->game_system = game_system;
 
+    help_image = createHelpImage(vec2(640, 360), vec2(1280, 720));
     back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
-    help_image = createHelpImage(vec2(700, 400), vec2(500, 500));
 
     is_back_button_clicked = false;
 

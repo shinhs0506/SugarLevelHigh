@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "menu_init.hpp"
+#include "game_init.hpp"
 #include "menu_manager.hpp"
 #include "game_system.hpp"
 

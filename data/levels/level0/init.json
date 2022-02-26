@@ -1,94 +1,18 @@
 {
-  "camera": {
-    "lower_limit": {
-      "x": -100,
-      "y": -100
+    "camera": {
+        "lower_limit": {
+            "x": -100,
+            "y": -100
+        }, 
+        "upper_limit": {
+            "x": 100,
+            "y": 100
+        },
+        "pos": {
+            "x": 640,
+            "y": 360
+        }
     },
-    "upper_limit": {
-      "x": 100,
-      "y": 100
-    }
-  },
-  "background": {
-    "pos": {
-      "x": 1480,
-      "y": 920
-    }
-  },
-  "players": [
-    {
-      "pos": {
-        "x": 400,
-        "y": 600
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    },
-    {
-      "pos": {
-        "x": 200,
-        "y": 300
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    },
-    {
-      "pos": {
-        "x": 550,
-        "y": 0
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    }
-  ],
-  "enemies": [
-    {
-      "pos": {
-        "x": 750,
-        "y": 0
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    },
-    {
-      "pos": {
-        "x": 1100,
-        "y": 300
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    },
-    {
-      "pos": {
-        "x": 900,
-        "y": 600
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    },
-    {
-      "pos": {
-        "x": 1200,
-        "y": 600
-      },
-      "size": {
-        "w": 80,
-        "h": 100
-      }
-    }
-  ],
   "ladders": [
     {
       "pos": {
@@ -120,8 +44,141 @@
         "h": 299.999
       }
     }
+  ]
+    "background": {
+        "size": {
+            "w": 1480,
+            "h": 920
+        }
+    },
+    "players": [
+        {
+            "pos": {
+                "x": 400,
+                "y": 600
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        },
+        {
+            "pos": {
+                "x": 200,
+                "y": 300
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        },
+        {
+            "pos": {
+                "x": 550,
+                "y": 0
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        }
+    ],
+    "enemies": [
+        {
+            "pos": {
+                "x": 750,
+                "y": 0
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        },
+        {
+            "pos": {
+                "x": 1100,
+                "y": 300
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        },
+        {
+            "pos": {
+                "x": 900,
+                "y": 600
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        },
+        {
+            "pos": {
+                "x": 1200,
+                "y": 600
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 100,
+            "energy": 100,
+            "advanced_attack_cooldown": 0
+        }
+    ],
+    "ladders": [
+     {
+      "pos": {
+        "x": 300,
+        "y": 500
+      },
+      "size": {
+        "w": 49.999,
+        "h": 299.999
+      }
+    },
+    {
+      "pos": {
+        "x": 650,
+        "y": 350
+      },
+      "size": {
+        "w": 49.999,
+        "h": 599.999
+      }
+    },
+    {
+      "pos": {
+        "x": 1000,
+        "y": 500
+      },
+      "size": {
+        "w": 49.999,
+        "h": 299.999
+      }
+    }
   ],
-  "terrains": [
+    "terrains": [
     {
       "pos": {
         "x": 0,
@@ -392,5 +449,7 @@
         "h": 99.999
       }
     }
-  ]
+  ],
+    "curr_order_ind": -1,
+    "curr_level_state": 0
 }
