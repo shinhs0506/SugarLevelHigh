@@ -53,6 +53,7 @@ void perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 direct
 	// Sets angle of attack
 	Motion& attack_object_motion = registry.motions.get(attack_object);
 	attack_object_motion.angle = angle;
+
 	advance_ability_cd(attacker);
 }
 

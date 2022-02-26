@@ -3,6 +3,7 @@
 
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
+#include <nlohmann/json.hpp>
 #include "enemy_controller.hpp"
 
 // Wraps all level logis and entities
@@ -67,9 +68,7 @@ private:
 	bool should_initialize_active_turn;
 	int num_characters;
 
-	std::vector<Entity> terrain_vector;
-    std::vector<Entity> level_entity_vector;
-    std::vector<Entity> ladder_vector;
+    nlohmann::json curr_level_data_json;
 
 	// OpenGL window handle
 	GLFWwindow* window;
@@ -85,10 +84,26 @@ private:
 
     // game ending logic
     bool is_level_over;
+
+    //  button
+    Entity back_button;
+    Entity basic_attack_button;
+    Entity advanced_attack_button;
+
+    Entity energy_bar;
+
+    Entity background;
   
     // remove the character from order_vector
     void remove_character(Entity entity);
 
     // read and initialize level data
     void init_data(int level);
+
+    void save_level_data();
+    void destroy_saved_level_data_file();
+
+    void update_curr_level_data_json();
+
+    void update_healthbar_len_color(Entity entity);
 };
