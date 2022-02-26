@@ -292,6 +292,19 @@ void LevelManager::update_curr_level_data_json(){
     }
     curr_level_data_json["terrains"] = terrain_data;
 
+    // save ladders info
+    std::vector<nlohmann::json> ladder_data;
+    for (auto& ladder : registry.climbables.entities) {
+        Motion& ladder_motion = registry.motions.get(ladder);
+        nlohmann::json temp_json;
+        temp_json["pos"]["x"] = ladder_motion.position.x;
+        temp_json["pos"]["y"] = ladder_motion.position.y;
+        temp_json["size"]["w"] = ladder_motion.scale.x;
+        temp_json["size"]["h"] = ladder_motion.scale.y;
+        ladder_data.push_back(temp_json);
+    }
+    curr_level_data_json["ladders"] = ladder_data;
+
     // save index of curr order
     // minus 1 because we advance the order when the game begins
     curr_level_data_json["curr_order_ind"] = curr_order_ind - 1;
