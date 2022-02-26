@@ -205,6 +205,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.location = LOCATION::NORMAL;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };
@@ -212,7 +213,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 
 	// stats
 	Health health{ 100, starting_health };
-	Energy energy{ 100, starting_energy, starting_energy};
+	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
 	registry.healths.insert(entity, health);
@@ -270,7 +271,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 
 	// stats
 	Health health{ 100, starting_health };
-	Energy energy{ 100, starting_energy, starting_energy };
+	Energy energy{ 150, starting_energy, starting_energy };
 	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
 

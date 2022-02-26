@@ -29,7 +29,7 @@ bool EnemyController::should_end_enemy_turn()
 // direction: -1: left; 1: right
 void EnemyController::move(Motion& motion, int direction, float distance) {
 	move_counter = distance / motion.speed * 1000;
-	motion.goal_velocity = vec2(direction * motion.speed, 0);
+	motion.goal_velocity.x = direction * motion.speed;
 	if (direction == -1) {
 		move_to_state(CharacterState::MOVE_LEFT);
 	}
@@ -100,7 +100,7 @@ void EnemyController::make_decision() {
 	else {
 		// move distance is calculated only on x-axis
 		float x_dist = abs(target_motion.position.x - motion.position.x);
-		float dist = x_dist - cal_actual_attack_range(chosen_attack);
+		float dist = abs(x_dist - cal_actual_attack_range(chosen_attack));
 		// only move left/right now
 		move(motion, motion.position.x < target_motion.position.x ? 1 : -1, dist);
 	}
@@ -137,7 +137,7 @@ void EnemyController::step(float elapsed_ms)
 
 		if (move_counter < 0.f || energy.cur_energy == 0.f) {
 			move_counter = 0.f;
-			motion.goal_velocity = vec2(0);
+			motion.goal_velocity.x = 0;
 			move_to_state(CharacterState::IDLE);
 		}
 		break;

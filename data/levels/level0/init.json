@@ -30,7 +30,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -43,7 +43,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -56,7 +56,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         }
     ],
@@ -71,7 +71,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -84,7 +84,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -97,7 +97,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -110,7 +110,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         }
     ],
