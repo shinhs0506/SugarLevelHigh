@@ -143,6 +143,7 @@ struct Motion {
 	vec2 scale = { 10, 10 };
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
+	bool is_falling = false;
     float speed = 100;
 	int depth = DEPTH::CHARACTER;
 	int location = LOCATION::NORMAL;
