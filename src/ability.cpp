@@ -79,7 +79,7 @@ void create_preview_object(vec2 player_pos) {
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = attack_preview_pos;
 	motion.angle = angle;
-	motion.velocity = vec2(0, 0);
+	motion.goal_velocity = vec2(0, 0);
 	motion.scale = vec2(75, 20);
 	motion.depth = DEPTH::ATTACK;
 	motion.gravity_affected = false;

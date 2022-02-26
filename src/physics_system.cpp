@@ -168,6 +168,21 @@ void update_location(Motion& motion) {
 	}
 }
 
+float interpolation_acceleration(float goal_velocity, float current_velocity) {
+
+	float acceleration = 20.0f;
+	float velocity_difference = goal_velocity - current_velocity;
+
+	if (velocity_difference > acceleration) {
+		return current_velocity + acceleration; // increase in velocity
+	}
+	else if (velocity_difference < -acceleration) {
+		return current_velocity - acceleration; // decrease in velocity
+	}
+	return goal_velocity; // reached goal
+}
+
+
 void PhysicsSystem::step(float elapsed_ms)
 {
 	// Move entities with motion component with respect to their velocity
@@ -180,27 +195,29 @@ void PhysicsSystem::step(float elapsed_ms)
 		// Gravity
 		if (motion.gravity_affected == true) {
 			//When collision with terrain is detected. Reset this velocity to 0
-			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
+			motion.goal_velocity.y += gravity * (elapsed_ms/1000.0f);
 		}
 
 
 		// Adapt angle/rotation for projectile motion
 		if (registry.projectiles.has(entity)) {
-			motion.angle = atan2(motion.velocity.y, motion.velocity.x);
+			motion.angle = atan2(motion.goal_velocity.y, motion.goal_velocity.x);
 		}
 
 		if (registry.playables.has(entity)) {
 			update_location(motion);
 
 			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
 			updateHealthBar(entity);
 		}
 
 		else {
 			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
+			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
 
 		if (registry.cameras.has(entity))
@@ -250,7 +267,7 @@ void PhysicsSystem::step(float elapsed_ms)
 				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
 					// Collision between bottom of the character and top of the terrain
 					if (collide_bottom(motion_i, motion_j) && motion_i.location != ABOVE_CLIMBABLE) {
-						motion_i.velocity.y = 0;
+						motion_i.goal_velocity.y = 0;
 						motion_i.position.y = motion_i.prev_position.y;
 						if (motion_i.is_falling == true) {
 							motion_i.is_falling = false;
@@ -258,12 +275,12 @@ void PhysicsSystem::step(float elapsed_ms)
 					}
 					// Collision between right of the character and left of the terrain
 					if (collide_right(motion_i, motion_j)) {
-						motion_i.velocity.x = 0;
+						motion_i.goal_velocity.x = 0;
 						motion_i.position.x = motion_i.prev_position.x;
 					}
 					// Collision between left of the character and right of the terrain
 					if (collide_left(motion_i, motion_j)) {
-						motion_i.velocity.x = 0;
+						motion_i.goal_velocity.x = 0;
 						motion_i.position.x = motion_i.prev_position.x;
 					}
 				}
@@ -271,7 +288,7 @@ void PhysicsSystem::step(float elapsed_ms)
 			// Gravity Implementation for entities that are affected by gravity and is not colliding with a terrain
 			else {
 				if (motion_i.gravity_affected == true) {
-					motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
+					motion_i.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
 					motion_i.is_falling = true;
 				}
 				/*else if (motion_j.gravity_affected == true) {

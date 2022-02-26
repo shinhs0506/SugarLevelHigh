@@ -50,7 +50,7 @@ Entity createHelpImage(vec2 pos, vec2 size)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 
 
