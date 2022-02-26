@@ -201,6 +201,10 @@ void PhysicsSystem::step(float elapsed_ms)
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
 			updateHealthBar(entity);
+
+			if (registry.activeTurns.has(entity)) {
+				updateOrderIndicator(entity);
+			}
 		}
 
 		else {
