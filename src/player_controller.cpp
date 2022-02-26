@@ -29,7 +29,7 @@ void PlayerController::step(float elapsed_ms)
 		current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN) {
 		if (player_energy.cur_energy > 0.f) {
 			player_energy.prev_energy = player_energy.cur_energy;
-			//player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
+			player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
 		}
 	}
 	updateEnergyBar(player_energy);

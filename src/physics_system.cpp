@@ -158,6 +158,7 @@ void update_location(Motion& motion) {
 			else {
 				motion.location = LOCATION::NORMAL;
 				motion.gravity_affected = true;
+				motion.position.y = floor(motion.position.y);
 				//printf("normal\n");
 			}
 		}
@@ -193,7 +194,7 @@ void PhysicsSystem::step(float elapsed_ms)
 			motion.angle = atan2(motion.goal_velocity.y, motion.goal_velocity.x);
 		}
 
-		if (registry.playables.has(entity)) {
+		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
 			update_location(motion);
 
 			motion.prev_position = motion.position;
