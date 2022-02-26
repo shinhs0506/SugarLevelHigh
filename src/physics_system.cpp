@@ -177,11 +177,11 @@ void PhysicsSystem::step(float elapsed_ms)
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
 
-		// Gravity
-		if (motion.gravity_affected == true) {
-			//When collision with terrain is detected. Reset this velocity to 0
-			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
-		}
+		//// Gravity
+		//if (motion.gravity_affected == true) {
+		//	//When collision with terrain is detected. Reset this velocity to 0
+		//	motion.velocity.y += gravity * (elapsed_ms/1000.0f);
+		//}
 
 
 		// Adapt angle/rotation for projectile motion
@@ -235,48 +235,83 @@ void PhysicsSystem::step(float elapsed_ms)
 		for(uint j = i+1; j<motion_container.components.size(); j++)
 		{
 			Motion& motion_j = motion_container.components[j];
-			
+			Entity entity_j = motion_container.entities[j];
 			if (collides(motion_i, motion_j))
 			{
-				Entity entity_j = motion_container.entities[j];
 				// Create a collisions event
 				// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
 				registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 				registry.collisions.emplace_with_duplicates(entity_j, entity_i);
 
-
-				// Collision Handler
-				// Make sure the entity is a playable or enemy that is affected by gravity
-				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
+				//// Collision Handler
+				//// Make sure the entity is a playable or enemy that is affected by gravity
+				//if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
 					// Collision between bottom of the character and top of the terrain
-					if (collide_bottom(motion_i, motion_j) && motion_i.location != ABOVE_CLIMBABLE) {
-						motion_i.velocity.y = 0;
-						motion_i.position.y = motion_i.prev_position.y;
-						if (motion_i.is_falling == true) {
-							motion_i.is_falling = false;
-						}
-					}
-					// Collision between right of the character and left of the terrain
-					if (collide_right(motion_i, motion_j)) {
-						motion_i.velocity.x = 0;
-						motion_i.position.x = motion_i.prev_position.x;
-					}
-					// Collision between left of the character and right of the terrain
-					if (collide_left(motion_i, motion_j)) {
-						motion_i.velocity.x = 0;
-						motion_i.position.x = motion_i.prev_position.x;
-					}
+					//if (collide_bottom(motion_i, motion_j) && motion_i.location != ABOVE_CLIMBABLE) {
+					//	motion_i.velocity.y = 0;
+					//	motion_i.position.y = motion_i.prev_position.y;
+					//	if (motion_i.is_falling == true) {
+					//		motion_i.is_falling = false;
+					//	}
+					//}
+					//// Collision between right of the character and left of the terrain
+					//if (collide_right(motion_i, motion_j)) {
+					//	motion_i.velocity.x = 0;
+					//	motion_i.position.x = motion_i.prev_position.x;
+					//	//printf("COLLIDE RIGHT \n");
+					//}
+					//// Collision between left of the character and right of the terrain
+					//if (collide_left(motion_i, motion_j)) {
+					//	motion_i.velocity.x = 0;
+					//	motion_i.position.x = motion_i.prev_position.x;
+					//	//printf("COLLIDE LEFT \n");
+					//}
+
+				//}
+			}
+			//// gravity implementation for entities that are affected by gravity and is not colliding with a terrain
+			//else {
+			//	if (motion_i.gravity_affected == true) {
+			//		motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
+			//		motion_i.is_falling = true;
+			//	}
+			//	/*else if (motion_j.gravity_affected == true) {
+			//		motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
+			//	}*/
+			//}
+		}
+	}
+
+	// Check collision between players and terrains
+	auto& characters = registry.initiatives;
+	for (uint i = 0; i < characters.size(); i++) {
+		Entity character = characters.entities[i];
+		Motion& character_motion = registry.motions.get(character);
+		auto& terrains = registry.terrains;
+		for (uint j = 0; j < terrains.size(); j++) {
+			Entity terrain = terrains.entities[j];
+			Motion& terrain_motion = registry.motions.get(terrain);
+			if (collides(character_motion, terrain_motion)) {
+				if (collide_bottom(character_motion, terrain_motion) && character_motion.location != ABOVE_CLIMBABLE) {
+					character_motion.velocity.y = 0;
+					character_motion.position.y = character_motion.prev_position.y;
+				}
+				// Collision between right of the character and left of the terrain
+				if (collide_right(character_motion, terrain_motion)) {
+					character_motion.velocity.x = 0;
+					character_motion.position.x = character_motion.prev_position.x;
+					//printf("COLLIDE RIGHT \n");
+				}
+				// Collision between left of the character and right of the terrain
+				if (collide_left(character_motion, terrain_motion)) {
+					character_motion.velocity.x = 0;
+					character_motion.position.x = character_motion.prev_position.x;
+					//printf("COLLIDE LEFT \n");
 				}
 			}
-			// Gravity Implementation for entities that are affected by gravity and is not colliding with a terrain
 			else {
-				if (motion_i.gravity_affected == true) {
-					motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
-					motion_i.is_falling = true;
-				}
-				/*else if (motion_j.gravity_affected == true) {
-					motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
-				}*/
+				character_motion.velocity.y += gravity * (elapsed_ms / 1000.0f);
+				character_motion.is_falling = true;
 			}
 		}
 	}
