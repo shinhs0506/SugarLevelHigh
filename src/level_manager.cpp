@@ -206,7 +206,7 @@ void LevelManager::abandon_level()
 
 void LevelManager::remove_character(Entity entity)
 {
-    auto it = std::lower_bound(order_vector.begin(), order_vector.end(), entity, compare);
+    auto it = std::find(order_vector.begin(), order_vector.end(), entity);
     int pos = it - order_vector.begin();
     if (pos <= curr_order_ind) {
         curr_order_ind -= 1;
@@ -219,6 +219,7 @@ void LevelManager::remove_character(Entity entity)
         move_to_state(LevelState::EVALUATION);
     }
     order_vector.erase(it);
+
 }
 
 void LevelManager::update_curr_level_data_json(){

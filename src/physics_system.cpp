@@ -146,16 +146,19 @@ void update_location(Motion& motion) {
 			if (is_below_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::BELOW_CLIMBABLE;
 				motion.gravity_affected = false;
+        return;
 			}
 			else {
 				motion.location = LOCATION::ON_CLIMBABLE;
 				motion.gravity_affected = false;
+        return;
 			}
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
 				motion.gravity_affected = false;
+        return;
 			}
 			else {
 				motion.location = LOCATION::NORMAL;

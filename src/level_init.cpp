@@ -198,6 +198,7 @@ void removeEnemy(Entity entity)
 	registry.energies.remove(entity);
 	registry.initiatives.remove(entity);
 	registry.renderRequests.remove(entity);
+	registry.attackArsenals.remove(entity);
 	registry.AIs.remove(entity);
     registry.attackArsenals.remove(entity);
     registry.collisions.remove(entity);
