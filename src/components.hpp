@@ -29,6 +29,12 @@ struct HealthBar
 
 };
 
+// indicates the curr order
+struct OrderIndicator
+{
+
+};
+
 // Attached to all playables, enemies
 // Indicate how far the character can move
 struct Energy
