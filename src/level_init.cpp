@@ -10,7 +10,7 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	// Create motion
 	Motion& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 0, 0 };
+	motion.goal_velocity = { 0, 0 };
 	motion.position = position;
 	motion.prev_position = position;
 	motion.scale = scale;
@@ -40,7 +40,7 @@ Entity createEnergyBar()
 	motion.position = { pos };
 	motion.prev_position = { pos };
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 300, 20 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
@@ -66,7 +66,7 @@ void resetEnergyBar()
 	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
 	motion.position = { pos };
 	motion.prev_position = { pos };
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 300, 20 };
 }
 
@@ -103,7 +103,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.position = { pos.x, pos.y - size.y/2 - 10 };
 	motion.prev_position = { pos.x, pos.y - size.y / 2 - 10 };
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
@@ -157,7 +157,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
@@ -215,7 +215,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
@@ -270,7 +270,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::TERRAIN;
 
@@ -307,7 +307,7 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = angle;
-	motion.velocity = vec2(ability.speed * (float)cos(angle), ability.speed * (float)sin(angle));
+	motion.goal_velocity = vec2(ability.speed * (float)cos(angle), ability.speed * (float)sin(angle));
 	motion.scale = ability.size;
 	motion.depth = DEPTH::ATTACK;
 	motion.gravity_affected = ability.gravity_affected;
@@ -347,7 +347,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = {0.f, 0.f};
+	motion.goal_velocity = {0.f, 0.f};
 	motion.scale = {1.f, 1.f};
 	motion.depth = DEPTH::CAMERA;
 
@@ -406,7 +406,7 @@ Entity createBackground(vec2 size, int level)
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = { window_width_px / 2, window_height_px / 2 };
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::BACKGROUND;
 
@@ -445,7 +445,7 @@ Entity createLadder(vec2 pos, vec2 size)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::LADDER;
 

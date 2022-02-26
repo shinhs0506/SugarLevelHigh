@@ -139,7 +139,8 @@ enum LOCATION {
 struct Motion {
 	vec2 position = { 0, 0 };
 	float angle = 0;
-	vec2 velocity = { 0, 0 };
+	vec2 current_velocity = { 0, 0 };
+	vec2 goal_velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;

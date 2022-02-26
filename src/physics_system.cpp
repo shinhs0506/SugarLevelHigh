@@ -176,6 +176,21 @@ void update_location(Motion& motion) {
 	}
 }
 
+float interpolation_acceleration(float goal_velocity, float current_velocity) {
+
+	float acceleration = 20.0f;
+	float velocity_difference = goal_velocity - current_velocity;
+
+	if (velocity_difference > acceleration) {
+		return current_velocity + acceleration; // increase in velocity
+	}
+	else if (velocity_difference < -acceleration) {
+		return current_velocity - acceleration; // decrease in velocity
+	}
+	return goal_velocity; // reached goal
+}
+
+
 void PhysicsSystem::step(float elapsed_ms)
 {
 	// Move entities with motion component with respect to their velocity
@@ -194,21 +209,23 @@ void PhysicsSystem::step(float elapsed_ms)
 
 		// Adapt angle/rotation for projectile motion
 		if (registry.projectiles.has(entity)) {
-			motion.angle = atan2(motion.velocity.y, motion.velocity.x);
+			motion.angle = atan2(motion.goal_velocity.y, motion.goal_velocity.x);
 		}
 
 		if (registry.playables.has(entity)) {
 			update_location(motion);
 
 			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
 			updateHealthBar(entity);
 		}
 
 		else {
 			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
+			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
 
 		if (registry.cameras.has(entity))
