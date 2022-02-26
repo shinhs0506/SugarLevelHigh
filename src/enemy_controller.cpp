@@ -29,7 +29,7 @@ bool EnemyController::should_end_enemy_turn()
 // direction: -1: left; 1: right
 void EnemyController::move(Motion& motion, int direction, float distance) {
 	move_counter = distance / motion.speed * 1000;
-	motion.velocity = vec2(direction * motion.speed, 0);
+	motion.goal_velocity = vec2(direction * motion.speed, 0);
 	if (direction == -1) {
 		move_to_state(CharacterState::MOVE_LEFT);
 	}
@@ -137,7 +137,7 @@ void EnemyController::step(float elapsed_ms)
 
 		if (move_counter < 0.f || energy.cur_energy == 0.f) {
 			move_counter = 0.f;
-			motion.velocity = vec2(0);
+			motion.goal_velocity = vec2(0);
 			move_to_state(CharacterState::IDLE);
 		}
 		break;
