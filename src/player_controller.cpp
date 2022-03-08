@@ -58,10 +58,22 @@ void PlayerController::on_key(int key, int, int action, int mod)
 						player_motion.goal_velocity.x = -player_motion.speed;
 						move_to_state(CharacterState::MOVE_LEFT);
 					}
+					if (registry.motions.get(player).location == LOCATION::ON_CLIMBABLE) {
+						player_motion.goal_velocity.x = -player_motion.speed;
+						player_motion.location = LOCATION::NORMAL;
+						player_motion.is_falling = true;
+						move_to_state(CharacterState::MOVE_LEFT);
+					}
 					break;
 				case GLFW_KEY_D:
 					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
 						player_motion.goal_velocity.x = player_motion.speed;
+						move_to_state(CharacterState::MOVE_RIGHT);
+					}
+					if (registry.motions.get(player).location == LOCATION::ON_CLIMBABLE) {
+						player_motion.goal_velocity.x = player_motion.speed;
+						player_motion.location = LOCATION::NORMAL;
+						player_motion.is_falling = true;
 						move_to_state(CharacterState::MOVE_RIGHT);
 					}
 					break;
