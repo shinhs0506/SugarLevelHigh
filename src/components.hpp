@@ -119,6 +119,7 @@ struct HitEffect
 struct Terrain
 {
 	bool breakable = false;
+	vec4 edges = { 0, 0, 0, 0 }; // 0 = top, 1 = right, 2 = bottom, left (use indices to reference) 
 };
 
 // proximity to camera

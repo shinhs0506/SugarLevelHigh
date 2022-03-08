@@ -265,25 +265,25 @@ void PhysicsSystem::step(float elapsed_ms)
 		for (uint j = 0; j < terrains.size(); j++) {
 			Entity terrain = terrains.entities[j];
 			Motion& terrain_motion = registry.motions.get(terrain);
+			Terrain& terrain_component = registry.terrains.get(terrain);
 
 			// Collision Handler
 			if (collides(character_motion, terrain_motion)) {
-				// Collision between bottom of the character and top of the terrain
-				
 				// Collision between right of the character and left of the terrain
 				if (collide_right(character_motion, terrain_motion)) {
-					if (character_motion.goal_velocity.x > 0) {
+					if (terrain_component.edges[3] == 1 && character_motion.goal_velocity.x > 0) {
 						character_motion.position.x = character_motion.prev_position.x;
 					}
-					
 				}
 				// Collision between left of the character and right of the terrain
-				if (collide_left(character_motion, terrain_motion)) {
-					if (character_motion.goal_velocity.x < 0) {
+				else if (collide_left(character_motion, terrain_motion)) {
+					if (terrain_component.edges[1] == 1 && character_motion.goal_velocity.x < 0) {
 						character_motion.position.x = character_motion.prev_position.x;
 					}
 				}
-				if (collide_bottom(character_motion, terrain_motion)
+				// Collision between bottom of the character and top of the terrain
+				else if (collide_bottom(character_motion, terrain_motion)
+					&& terrain_component.edges[0] == 1
 					&& character_motion.location != LOCATION::ABOVE_CLIMBABLE
 					&& character_motion.location != LOCATION::ON_CLIMBABLE
 					&& character_motion.is_falling) {

@@ -113,8 +113,10 @@ void LevelManager::init_data(int level){
     for (auto& terrain_data: terrains_data) {
         vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
         vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
-        Entity terrain = createTerrain(terrain_pos, terrain_size);
+        vec4 terrain_edges = vec4(terrain_data["edges"][0], terrain_data["edges"][1], terrain_data["edges"][2], terrain_data["edges"][3]);
+        Entity terrain = createTerrain(terrain_pos, terrain_size, terrain_edges);
     }
+
 
     curr_order_ind = js["curr_order_ind"];
 
