@@ -42,16 +42,16 @@ void LevelManager::init_data(int level){
     Camera& camera = registry.cameras.get(main_camera);
     Motion& motion = registry.motions.get(main_camera);
 
-    data_manager.load(level);
+    reload_manager.load(level);
 
-    CameraData camera_data = data_manager.get_camera_data();
+    CameraData camera_data = reload_manager.get_camera_data();
     camera.lower_limit = motion.position + camera_data.lower_limit_delta;
     camera.higer_limit = motion.position + camera_data.upper_limit_delta;
 
-    BackgroundData background_data = data_manager.get_background_data();
+    BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
 
-    for (auto& player_data: data_manager.get_player_data()) {
+    for (auto& player_data: reload_manager.get_player_data()) {
         gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
@@ -60,7 +60,7 @@ void LevelManager::init_data(int level){
         order_vector.push_back(player);
     }
 
-    for (auto& enemy_data: data_manager.get_enemy_data()) {
+    for (auto& enemy_data: reload_manager.get_enemy_data()) {
         gumball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
@@ -69,13 +69,13 @@ void LevelManager::init_data(int level){
         order_vector.push_back(enemy);
     }
 
-    for (auto& terrain_data: data_manager.get_terrain_data()) {
+    for (auto& terrain_data: reload_manager.get_terrain_data()) {
         Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
     }
 
-    curr_order_ind = data_manager.get_curr_order_ind();
+    curr_order_ind = reload_manager.get_curr_order_ind();
 
-    for (auto& ladder_data : data_manager.get_ladder_data()) {
+    for (auto& ladder_data : reload_manager.get_ladder_data()) {
         Entity ladder = createLadder(ladder_data.pos, ladder_data.size);
     }
 }
@@ -115,7 +115,7 @@ void LevelManager::restart_level()
 }
 
 void LevelManager::save_level_data(){
-    data_manager.save(curr_level);
+    reload_manager.save(curr_level);
 }
 
 void LevelManager::abandon_level()
@@ -184,7 +184,7 @@ void LevelManager::update_curr_level_data(){
         camera.lower_limit - camera_motion.position,
         camera.higer_limit - camera_motion.position
     };
-    data_manager.update_camera_data(camera_data);
+    reload_manager.update_camera_data(camera_data);
     
 
     // save background info
@@ -193,7 +193,7 @@ void LevelManager::update_curr_level_data(){
     BackgroundData background_data {
         background_motion.scale,
     };
-    data_manager.update_background_data(background_data);
+    reload_manager.update_background_data(background_data);
 
     // save players info
     std::vector<PlayerData> player_data_vector;
@@ -211,7 +211,7 @@ void LevelManager::update_curr_level_data(){
         };
         player_data_vector.push_back(pd);
     }
-    data_manager.update_player_data(player_data_vector);
+    reload_manager.update_player_data(player_data_vector);
 
     // save enemies info
     std::vector<EnemyData> enemy_data_vector;
@@ -229,7 +229,7 @@ void LevelManager::update_curr_level_data(){
         };
         enemy_data_vector.push_back(ed);
     }
-    data_manager.update_enemy_data(enemy_data_vector);
+    reload_manager.update_enemy_data(enemy_data_vector);
 
     // save terrain info
     std::vector<TerrainData> terrain_data_vector;
@@ -241,7 +241,7 @@ void LevelManager::update_curr_level_data(){
         };
         terrain_data_vector.push_back(td);
     }
-    data_manager.update_terrain_data(terrain_data_vector);
+    reload_manager.update_terrain_data(terrain_data_vector);
 
     // save ladder info
     std::vector<LadderData> ladder_data_vector;
@@ -253,10 +253,10 @@ void LevelManager::update_curr_level_data(){
         };
         ladder_data_vector.push_back(ld);
     }
-    data_manager.update_ladder_data(ladder_data_vector);
+    reload_manager.update_ladder_data(ladder_data_vector);
 
     // save curr order ind
-    data_manager.update_curr_order_ind(curr_order_ind);
+    reload_manager.update_curr_order_ind(curr_order_ind);
 }
 
 bool LevelManager::step(float elapsed_ms)
@@ -285,9 +285,8 @@ bool LevelManager::step(float elapsed_ms)
             }
         }
     }
-    
-    // update the curr_level_data_json
-    // curr_level_data_json captures current level content and state
+
+    // store info of all entities in reload manager 
     update_curr_level_data();
 
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
@@ -392,7 +391,7 @@ bool LevelManager::step(float elapsed_ms)
         break;
 
     case LevelState::TERMINATION:
-        data_manager.destroy_saved_level_data_file(curr_level);
+        reload_manager.destroy_saved_level_data_file(curr_level);
         break;
     }
 

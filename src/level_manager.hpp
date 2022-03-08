@@ -5,7 +5,7 @@
 #include "player_controller.hpp"
 #include <nlohmann/json.hpp>
 #include "enemy_controller.hpp"
-#include "data_manager.hpp"
+#include "reload_manager.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -75,7 +75,7 @@ private:
 	GLFWwindow* window;
 
     // manages data load and save
-    DataManager data_manager;
+    ReloadManager reload_manager;
 
 	// controller that handles enemy's behaviors
 	EnemyController enemy_controller;
