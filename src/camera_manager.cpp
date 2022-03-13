@@ -29,19 +29,14 @@ void update_camera_pos(vec2 pos) {
     camera_motion.position = pos;
 }
 
-#include "iostream"
 void move_camera(vec2 velocity) {
     Motion& camera_motion = registry.motions.get(get_camera());
-    std::cout << "moving" << std::endl;
     camera_motion.goal_velocity += velocity;
-    std::cout << camera_motion.position.x << std::endl;
 }
 
 void update_camera_upper_limit(vec2 upper_limit) {
     Camera& camera = registry.cameras.get(get_camera());
     camera.higer_limit = upper_limit; 
-    std::cout << camera.higer_limit.x << std::endl;
-    std::cout << camera.higer_limit.y << std::endl;
 }
 
 void update_camera_lower_limit(vec2 lower_limit) {
