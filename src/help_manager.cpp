@@ -4,6 +4,7 @@
 #include "game_init.hpp"
 #include "physics_system.hpp"
 #include "game_system.hpp"
+#include "camera_manager.hpp"
 
 HelpManager::HelpManager() {
 
@@ -64,7 +65,7 @@ void HelpManager::on_mouse_button(int button, int action, int mod) {
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
 
-    Entity& camera = registry.cameras.entities[0];
+    Entity& camera = get_camera();
     vec2 camera_pos = registry.motions.get(camera).position;
     vec2 camera_offset = registry.cameras.get(camera).offset;
 

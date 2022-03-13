@@ -1,6 +1,7 @@
 // internal
 #include "physics_system.hpp"
 #include "level_init.hpp"
+#include "camera_manager.hpp"
 
 // Returns the local bounding coordinates scaled by the current size of the entity
 vec2 get_bounding_box(const Motion& motion)
@@ -224,7 +225,7 @@ void PhysicsSystem::step(float elapsed_ms)
 
 	// Update overlays relative to main camera
 	auto& overlays_registry = registry.overlays;
-	Entity camera = registry.cameras.entities[0];
+	Entity camera = get_camera();
 	Motion& camera_motion = motion_registry.get(camera);
 	Camera& camera_component = registry.cameras.get(camera);
 

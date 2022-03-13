@@ -13,6 +13,7 @@
 using Clock = std::chrono::high_resolution_clock;
 
 // Entry point
+#include "iostream"
 int main()
 {
 	// Global systems
@@ -30,6 +31,8 @@ int main()
 		getchar();
 		return EXIT_FAILURE;
 	}
+
+    std::cout << "hello " << std::endl;
 
 	// initialize the main systems
 	renderer.init(window);

@@ -15,7 +15,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "ability.hpp"
 #include "ability_list.hpp"
-
+#include "camera_manager.hpp"
 
 LevelManager::LevelManager()
 {
@@ -30,7 +30,7 @@ LevelManager::~LevelManager()
 void LevelManager::init(GLFWwindow* window)
 {
     this->window = window;
-    this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
+    this->main_camera = get_camera();
 
     is_level_over = false;
 
@@ -73,9 +73,9 @@ void LevelManager::init_data(int level){
             js["camera"]["lower_limit"]["y"]);
     vec2 camera_upper_limit_delta = vec2(js["camera"]["upper_limit"]["x"],
             js["camera"]["upper_limit"]["y"]);
-    vec2 camera_pos = vec2(js["camera"]["pos"]["x"], js["camera"]["pos"]["y"]);
-    camera.lower_limit = motion.position + camera_lower_limit_delta;
-    camera.higer_limit = motion.position + camera_upper_limit_delta;
+    update_camera_pos(vec2(js["camera"]["pos"]["x"], js["camera"]["pos"]["y"]));
+    update_camera_lower_limit(motion.position + camera_lower_limit_delta);
+    update_camera_upper_limit(motion.position + camera_upper_limit_delta);
 
     vec2 background_pos = vec2(js["background"]["size"]["w"], 
             js["background"]["size"]["h"]);
@@ -535,15 +535,6 @@ bool LevelManager::is_over() {
     return is_level_over;
 }
 
-void LevelManager::update_camera(vec2 velocity) {
-    auto& motion_registry = registry.motions;
-
-    // update camera position
-    Motion& camera_motion = motion_registry.get(main_camera);
-    camera_motion.goal_velocity += velocity;
-
-}
-
 void LevelManager::destroy_saved_level_data_file() {
     std::string saved_datafile_path = get_saved_level_data_file_path(curr_level);    
 
@@ -571,34 +562,33 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
     // actions to perform regardless of the state
     // camera control logic
-    Motion& camera_motion = registry.motions.get(main_camera);
     if (action == GLFW_PRESS)
     {
         switch (key)
         {
         case GLFW_KEY_LEFT:
-            update_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_RIGHT:
-            update_camera(vec2(CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_UP:
-            update_camera(vec2(0, -CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, -CAM_MOVE_SPEED)); break;
         case GLFW_KEY_DOWN:
-            update_camera(vec2(0, CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, CAM_MOVE_SPEED)); break;
         }
 
     }
-    else if (action == GLFW_RELEASE)
+    if (action == GLFW_RELEASE)
     {
         switch (key)
         {
         case GLFW_KEY_LEFT:
-            update_camera(vec2(CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_RIGHT:
-            update_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_UP:
-            update_camera(vec2(0, CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, CAM_MOVE_SPEED)); break;
         case GLFW_KEY_DOWN:
-            update_camera(vec2(0, -CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, -CAM_MOVE_SPEED)); break;
         }
     }
 
