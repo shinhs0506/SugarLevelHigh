@@ -9,48 +9,57 @@ abilities and attack from there. (boxes not shown/active during enemy turn)
 */
 
 AttackAbility gingerbread_basic_attack = {
-    false, // Chosen attack
-    0, // speed
-    20, // Damage
-    0, // Range
-    (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 100), // Size
-    false, // Gravit Affected
-    0, // Max cooldown
-    0, // Current cooldown 
+    .activated = false,
+    .speed = 0,
+    .damage = 20,
+    .range = 0,
+    .shape = (int)GEOMETRY_BUFFER_ID::SQUARE, 
+    .size = vec2(100, 100),
+    .gravity_affected = false,
+    .max_cooldown = 0,
+    .current_cooldown = 0
 };
+
 AttackAbility gingerbread_advanced_attack = {
-    false, // Chosen attack
-    500, // speed
-    50, // Damage
-    500, // Range
-    (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 50), // Size
-    true, // Gravit Affected
-    2, // Max cooldown
-    0, // Current cooldown
+    .activated = false,
+    .speed = 500,
+    .damage = 50,
+    .range = 500,
+    .shape = (int)GEOMETRY_BUFFER_ID::SQUARE, 
+    .size = vec2(100, 50),
+    .gravity_affected = true,
+    .max_cooldown = 2,
+    .current_cooldown = 0
+};
+
+BuffAbility gingerbread_heal_buff = {
+    .movement_speed_delta = 0,
+    .health_delta = 20,
+    .max_cooldown = 3,
+    .current_cooldown = 0
 };
 
 // Gumball used for enemy, at the moment, enemy only uses melee attack (the basic attack active hardcoded to true)
 AttackAbility gumball_basic_attack = {
-    true, // Chosen attack
-    0, // speed
-    20, // Damage
-    0, // Range
-    (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 100), // Size
-    false, // Gravit Affected
-    0, // Max cooldown
-    0, // Current cooldown 
+    .activated = false,
+    .speed = 0,
+    .damage = 20,
+    .range = 0,
+    .shape = (int)GEOMETRY_BUFFER_ID::SQUARE, 
+    .size = vec2(100, 100),
+    .gravity_affected = false,
+    .max_cooldown = 0,
+    .current_cooldown = 0
 };
+
 AttackAbility gumball_advanced_attack = {
-    false, // Chosen attack
-    500, // speed
-    40, // Damage
-    100, // Range
-    (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 100), // Size
-    false, // Gravit Affected
-    2, // Max cooldown
-    0, // Current cooldown
+    .activated = false,
+    .speed = 500,
+    .damage = 40,
+    .range = 100,
+    .shape = (int)GEOMETRY_BUFFER_ID::SQUARE, 
+    .size = vec2(100, 100),
+    .gravity_affected = false,
+    .max_cooldown = 2,
+    .current_cooldown = 0
 };

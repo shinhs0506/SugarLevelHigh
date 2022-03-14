@@ -157,7 +157,7 @@ void EnemyController::move_to_state(CharacterState next_state)
 		std::cout << "moving to IDLE state" << std::endl;
 		assert(current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
 			current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN ||
-			current_state == CharacterState::PERFORM_ABILITY);
+			current_state == CharacterState::PERFORM_ABILITY_MANUAL);
 		break;
 
 	case CharacterState::MOVE_LEFT:
@@ -180,7 +180,7 @@ void EnemyController::move_to_state(CharacterState next_state)
 		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case CharacterState::PERFORM_ABILITY:
+	case CharacterState::PERFORM_ABILITY_MANUAL:
 		std::cout << "moving to PERFORM_ABILITY state" << std::endl;
 		assert(current_state == CharacterState::IDLE);
 		break;

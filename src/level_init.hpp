@@ -25,7 +25,7 @@ Entity createEnemy(vec2 pos, vec2 size, float curr_health, float curr_energy,
 void removeEnemy(Entity entity);
 
 Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,
-        AttackArsenal attack_arsenal);
+        AttackArsenal attack_arsenal, BuffArsenal buff_arsenal);
 void removePlayer(Entity entity);
 
 Entity createTerrain(vec2 pos, vec2 size);
@@ -40,6 +40,8 @@ void removeCamera(Entity entity);
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)());
 void removeButton(Entity entity);
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)());
+void removeAbilityButton(Entity entity);
 
 // this does not create a new entity but only attach a hit effect on the existing object
 Entity createHitEffect(Entity entity, float ttl_ms);

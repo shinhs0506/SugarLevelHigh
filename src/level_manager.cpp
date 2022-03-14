@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#include "components.hpp"
 #include "level_manager.hpp"
 #include "level_init.hpp"
 #include "game_init.hpp"
@@ -88,9 +89,11 @@ void LevelManager::init_data(int level){
         float player_health = player_data["health"];
         float player_energy = player_data["energy"];
         gingerbread_advanced_attack.current_cooldown = player_data["advanced_attack_cooldown"];
-        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        gingerbread_heal_buff.current_cooldown = player_data["heal_cooldown"];
+        AttackArsenal ginerbread_attacks = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        BuffArsenal gingerbreak_buffs = { gingerbread_heal_buff };
         Entity player = createPlayer(player_pos, player_size, player_health, 
-                player_energy, ginerbread_arsenal);
+                player_energy, ginerbread_attacks, gingerbreak_buffs);
         update_healthbar_len_color(player);
         order_vector.push_back(player);
     }
@@ -147,6 +150,7 @@ void LevelManager::load_level(int level)
 
     basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
+    heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
 
     energy_bar = createEnergyBar();
     order_indicator = createOrderIndicator();
@@ -196,6 +200,7 @@ void LevelManager::abandon_level()
     removeButton(back_button);
     removeButton(basic_attack_button);
     removeButton(advanced_attack_button);
+    removeAbilityButton(heal_button);
 
     removeEnergyBar();
     removeOrderIndicator();
@@ -249,7 +254,8 @@ void LevelManager::update_curr_level_data_json(){
         Motion& player_motion = registry.motions.get(player);
         Health& player_health = registry.healths.get(player);
         Energy& player_energy = registry.energies.get(player);
-        AttackArsenal& player_arsenal = registry.attackArsenals.get(player);
+        AttackArsenal& attack_arsenal = registry.attackArsenals.get(player);
+        BuffArsenal& buff_arsenal = registry.buffArsenals.get(player);
         nlohmann::json temp_json;
         temp_json["pos"]["x"] = player_motion.position.x;
         temp_json["pos"]["y"] = player_motion.position.y;
@@ -257,7 +263,8 @@ void LevelManager::update_curr_level_data_json(){
         temp_json["size"]["h"] = player_motion.scale.y;
         temp_json["health"] = player_health.cur_health;
         temp_json["energy"] = player_energy.cur_energy;
-        temp_json["advanced_attack_cooldown"] = player_arsenal.advanced_attack.current_cooldown;
+        temp_json["advanced_attack_cooldown"] = attack_arsenal.advanced_attack.current_cooldown;
+        temp_json["heal_cooldown"] = buff_arsenal.heal.current_cooldown;
         player_data.push_back(temp_json);
     }
     curr_level_data_json["players"] = player_data;
@@ -338,7 +345,7 @@ bool LevelManager::step(float elapsed_ms)
             }
         }
     }
-    
+
     // update the curr_level_data_json
     // curr_level_data_json captures current level content and state
     update_curr_level_data_json();
@@ -348,6 +355,12 @@ bool LevelManager::step(float elapsed_ms)
     switch (current_level_state) {
     case LevelState::PREPARE:
         {
+            // update health bar for all characters
+            for (uint i = 0; i < registry.initiatives.size(); i++) {
+                Entity entity = registry.initiatives.entities[i];
+                update_healthbar_len_color(entity);
+            }
+
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
                 move_to_state(LevelState::TERMINATION);
@@ -452,6 +465,9 @@ bool LevelManager::step(float elapsed_ms)
     // update order indicator's position
     updateOrderIndicator(registry.activeTurns.entities[0]);
 
+    /* Health h = registry.healths.get(registry.playables.entities[0]); */
+    /* std::cout << h.cur_health << std::endl; */
+    
     return true;
 }
 
@@ -462,13 +478,17 @@ void LevelManager::update_healthbar_len_color(Entity entity) {
     if (registry.playables.has(entity)) {
         Playable& playable = registry.playables.get(entity);
         healthBar = playable.healthBar;
+        std::cout << "player" << std::endl;
     }
     if (registry.enemies.has(entity)) {
         Enemy& enemy = registry.enemies.get(entity);
         healthBar = enemy.healthBar;
+        std::cout << "enemies" << std::endl;
     }
     Motion& healthBar_motion = registry.motions.get(healthBar);
-    healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+    healthBar_motion.scale = { healthBar_motion.original_scale.x * (health.cur_health / health.max_health), 10 };
+    std::cout << health.cur_health << " " << health.max_health << std::endl;
+    std::cout << healthBar_motion.scale.x << std::endl;
 
     // change health bar color based on remaining health
     vec3& color = registry.colors.get(healthBar);
@@ -520,9 +540,6 @@ void LevelManager::handle_collisions()
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
-
-                // change health bar length
-                update_healthbar_len_color(other_entity);
 
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
           

@@ -32,6 +32,12 @@ void PlayerController::step(float elapsed_ms)
 			player_energy.cur_energy -= min(float(5 * elapsed_ms * 0.01), player_energy.cur_energy);
 		}
 	}
+
+    if (current_state == CharacterState::PERFORM_ABILITY_AUTO) {
+        perform_buff_ability(player);
+        move_to_state(CharacterState::END);
+    }
+
 	updateEnergyBar(player_energy);
 	updateHealthBar(player);
 
@@ -39,7 +45,6 @@ void PlayerController::step(float elapsed_ms)
 	current_state = next_state;
 
 }
-
 void PlayerController::on_key(int key, int, int action, int mod)
 {
 	Motion& player_motion = registry.motions.get(player);
@@ -127,7 +132,7 @@ void PlayerController::on_key(int key, int, int action, int mod)
 void PlayerController::on_mouse_move(vec2 cursor_pos) {
 	// Update attack preview to the correct angles/positions
 	// Note it's possible that the attack preview has been destroyed in PERFORM_ABILITY state
-	if (current_state == CharacterState::PERFORM_ABILITY && registry.attackPreviews.size() > 0) { 
+	if (current_state == CharacterState::PERFORM_ABILITY_MANUAL && registry.attackPreviews.size() > 0) { 
 		Entity attack_preview = registry.attackPreviews.entities[0];
 		Motion& attack_preview_motion = registry.motions.get(attack_preview);
 
@@ -159,21 +164,28 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 				Motion motion = registry.motions.get(entity);
 
 				if (collides(click_motion, motion)) {
+
 					bool ability_successfully_chosen = registry.clickables.get(entity).on_click();
 					if (ability_successfully_chosen) {
+                        if (registry.abilityButtons.has(entity)) {
+                            move_to_state(CharacterState::PERFORM_ABILITY_AUTO);    
+                            break;
+                        }
+
 						// Get player position at time of choosing an ability successfully
 						player_pos = registry.motions.get(player).position;
 						// Create preview object
 						create_preview_object(player_pos);
 
-						move_to_state(CharacterState::PERFORM_ABILITY);
+						move_to_state(CharacterState::PERFORM_ABILITY_MANUAL);
+                        break;
 					}
 				}
 			}
 		}
 		break;
 
-	case CharacterState::PERFORM_ABILITY:
+	case CharacterState::PERFORM_ABILITY_MANUAL:
 
 		// player can use right click to cancel attack preview
 		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
@@ -186,8 +198,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 		{
 			AttackArsenal& active_arsenal = registry.attackArsenals.get(player);
-			AttackAbility& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
-
+            AttackAbility& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
 		
 			// manually calculate a world position with some offsets
 			vec2 direction = cursor_world_pos - player_pos;
@@ -221,7 +232,7 @@ void PlayerController::move_to_state(CharacterState next_state)
 		std::cout << "moving to IDLE state" << std::endl;
 		assert(current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
 			current_state == CharacterState::MOVE_UP || current_state == CharacterState::MOVE_DOWN ||
-			current_state == CharacterState::PERFORM_ABILITY);
+			current_state == CharacterState::PERFORM_ABILITY_MANUAL);
 		break;
 
 	case CharacterState::MOVE_LEFT:
@@ -244,14 +255,20 @@ void PlayerController::move_to_state(CharacterState next_state)
 		assert(current_state == CharacterState::IDLE);
 		break;
 
-	case CharacterState::PERFORM_ABILITY:
-		std::cout << "moving to PERFORM_ABILITY state" << std::endl;
+    case CharacterState::PERFORM_ABILITY_AUTO:
+		std::cout << "moving to PERFORM_ABILITY_AUTO state" << std::endl;
+		assert(current_state == CharacterState::IDLE);
+		break;
+
+	case CharacterState::PERFORM_ABILITY_MANUAL:
+		std::cout << "moving to PERFORM_ABILITY_MANUAL state" << std::endl;
 		assert(current_state == CharacterState::IDLE);
 		break;
 
 	case CharacterState::END:
 		std::cout << "moving to END state" << std::endl;
-		assert(current_state == CharacterState::PERFORM_ABILITY);
+		assert(current_state == CharacterState::PERFORM_ABILITY_MANUAL || 
+                current_state == CharacterState::PERFORM_ABILITY_AUTO);
 		break;
 	}
 	this->next_state = next_state;
