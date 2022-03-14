@@ -8,7 +8,6 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "components.hpp"
 #include "level_manager.hpp"
 #include "level_init.hpp"
 #include "game_init.hpp"
@@ -91,9 +90,9 @@ void LevelManager::init_data(int level){
         gingerbread_advanced_attack.current_cooldown = player_data["advanced_attack_cooldown"];
         gingerbread_heal_buff.current_cooldown = player_data["heal_cooldown"];
         AttackArsenal ginerbread_attacks = { gingerbread_basic_attack, gingerbread_advanced_attack};
-        BuffArsenal gingerbreak_buffs = { gingerbread_heal_buff };
+        BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
         Entity player = createPlayer(player_pos, player_size, player_health, 
-                player_energy, ginerbread_attacks, gingerbreak_buffs);
+                player_energy, ginerbread_attacks, gingerbread_buffs);
         update_healthbar_len_color(player);
         order_vector.push_back(player);
     }
@@ -465,9 +464,6 @@ bool LevelManager::step(float elapsed_ms)
     // update order indicator's position
     updateOrderIndicator(registry.activeTurns.entities[0]);
 
-    /* Health h = registry.healths.get(registry.playables.entities[0]); */
-    /* std::cout << h.cur_health << std::endl; */
-    
     return true;
 }
 
@@ -478,17 +474,13 @@ void LevelManager::update_healthbar_len_color(Entity entity) {
     if (registry.playables.has(entity)) {
         Playable& playable = registry.playables.get(entity);
         healthBar = playable.healthBar;
-        std::cout << "player" << std::endl;
     }
     if (registry.enemies.has(entity)) {
         Enemy& enemy = registry.enemies.get(entity);
         healthBar = enemy.healthBar;
-        std::cout << "enemies" << std::endl;
     }
     Motion& healthBar_motion = registry.motions.get(healthBar);
     healthBar_motion.scale = { healthBar_motion.original_scale.x * (health.cur_health / health.max_health), 10 };
-    std::cout << health.cur_health << " " << health.max_health << std::endl;
-    std::cout << healthBar_motion.scale.x << std::endl;
 
     // change health bar color based on remaining health
     vec3& color = registry.colors.get(healthBar);

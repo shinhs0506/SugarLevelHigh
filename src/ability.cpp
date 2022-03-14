@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "ability.hpp"
-#include "components.hpp"
 #include "level_init.hpp"
 #include <iostream>
 
@@ -35,12 +34,12 @@ bool mock_advanced_attack_callback() {
 
 bool mock_heal_callback() {
     printf("Heal callback button was clicked!\n"); 
- 	Entity active_character = registry.activeTurns.entities[0]; 
+    Entity active_character = registry.activeTurns.entities[0]; 
     BuffArsenal& buff_arsenal = registry.buffArsenals.get(active_character);
     if (buff_arsenal.heal.current_cooldown == 0) {
         return true;
     }
- 	std::cout << "Heal on cool down" << std::endl; 
+    std::cout << "Heal on cool down" << std::endl; 
     return false;
 }
 
