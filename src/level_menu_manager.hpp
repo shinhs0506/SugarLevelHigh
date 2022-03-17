@@ -23,6 +23,8 @@ private:
 
     bool is_back_button_clicked;
 
+    std::vector<Entity> all_entities;
+
 public:
     LevelMenuManager();
 

@@ -2,7 +2,7 @@
 #include "components.hpp"
 #include "tiny_ecs_registry.hpp"
 
-Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)()){
+Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)(), bool disabled){
     Entity entity = Entity();
 
 	Motion& motion = registry.motions.emplace(entity);
@@ -12,7 +12,7 @@ Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)()){
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 
-	Clickable clickable{ on_click };
+	Clickable clickable{ on_click, disabled };
 	registry.clickables.insert(entity, clickable);
 
 	Overlay overlay{pos};

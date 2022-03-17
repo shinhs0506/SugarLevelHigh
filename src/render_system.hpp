@@ -39,6 +39,10 @@ class RenderSystem {
 		textures_path("basic_help.png"),
 		textures_path("advanced_attack_preview.png"),
 		textures_path("basic_attack_preview.png"),
+		textures_path("button_tutorial.png"),
+		textures_path("button_level_1.png"),
+		textures_path("button_level_2.png"),
+		textures_path("button_level_3.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

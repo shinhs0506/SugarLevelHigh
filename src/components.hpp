@@ -167,6 +167,7 @@ struct Collision
 // Components with callback on click
 struct Clickable {
 	bool (*on_click)();
+	bool disabled = false;
 };
 
 // Attached to components that are unaffected by camera
@@ -283,8 +284,12 @@ enum class TEXTURE_ASSET_ID {
 	HELP_IMAGE = BACK_BUTTON + 1,
 	ADVANCED_ATTACK_PREVIEW = HELP_IMAGE + 1,
 	BASIC_ATTACK_PREVIEW = ADVANCED_ATTACK_PREVIEW + 1,
-	TEXTURE_COUNT = BASIC_ATTACK_PREVIEW + 1
-    
+	TUTORIAL_BUTTON = BASIC_ATTACK_PREVIEW + 1,
+	LEVEL_1_BUTTON = TUTORIAL_BUTTON + 1,
+	LEVEL_2_BUTTON = LEVEL_1_BUTTON + 1,
+	LEVEL_3_BUTTON = LEVEL_2_BUTTON + 1,
+	TEXTURE_COUNT = LEVEL_3_BUTTON + 1,
+	
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

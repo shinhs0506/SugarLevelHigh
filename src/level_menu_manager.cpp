@@ -16,14 +16,19 @@ LevelMenuManager::~LevelMenuManager() {
 void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->window = window;
     this->game_system = game_system;
-
-    help_image = createHelpImage(vec2(640, 360), vec2(1280, 720));
     back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
+    tutorial_button = createTutorialButton(vec2(640, 125), vec2(200, 50), NULL);
+    level_1_button = createLevel1Button(vec2(640, 265), vec2(200, 50), NULL, !game_system->tutorial_completed);
+    level_2_button = createLevel2Button(vec2(640, 405), vec2(200, 50), NULL, !game_system->level_1_completed);
+    level_3_button = createLevel3Button(vec2(640, 545), vec2(200, 50), NULL, !game_system->level_2_completed);
 
     is_back_button_clicked = false;
 
     all_entities.push_back(back_button);
-    all_entities.push_back(help_image);
+    all_entities.push_back(tutorial_button);
+    all_entities.push_back(level_1_button);
+    all_entities.push_back(level_2_button);
+    all_entities.push_back(level_3_button);
 
     return;
 }
@@ -74,11 +79,14 @@ void LevelMenuManager::on_mouse_button(int button, int action, int mod) {
         click_motion.position = cursor_world_pos;
         click_motion.scale = { 1.f, 1.f };
 
-        Motion back_button_motion = registry.motions.get(back_button);
-
-        if (collides(click_motion, back_button_motion)) {
-            // move to IN_LEVEL state
+        if (collides(click_motion, registry.motions.get(back_button))) {
             is_back_button_clicked = true;
+        } 
+        else if (collides(click_motion, registry.motions.get(tutorial_button))) {
+            this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+        }
+        else if (collides(click_motion, registry.motions.get(level_1_button))) {
+            this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
         }
     }
     return;

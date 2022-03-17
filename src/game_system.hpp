@@ -10,6 +10,7 @@
 
 #include "render_system.hpp"
 #include "level_manager.hpp"
+#include "level_menu_manager.hpp"
 #include "menu_manager.hpp"
 #include "help_manager.hpp"
 
@@ -21,6 +22,7 @@ public:
     MenuManager menu_manager;
 	LevelManager level_manager;
     HelpManager help_manager;
+    LevelMenuManager level_menu_manager;
 
 	// different screen states
 	enum class GameState {
@@ -53,6 +55,12 @@ public:
     bool is_in_level();
 
     void move_to_state(GameState next_game_state);
+
+	// Flag for completed levels
+	bool tutorial_completed = false;
+	bool level_1_completed = false;
+	bool level_2_completed = false;
+	bool level_3_completed = false;
 
 private:
 	// Input callback functions
