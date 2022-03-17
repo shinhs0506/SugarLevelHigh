@@ -8,11 +8,6 @@ character or deactivated if enemy's turn. When box is clicked, it will retrieve 
 abilities and attack from there. (boxes not shown/active during enemy turn)
 */
 
-/*
-COOLDOWN
-cd has to be > 2 for an actual cooldown. B/c at the start of a players turn, ability cd is reduced by 1
-so if a cd is only 1, then on that char's next turn, it'll be 0 (available) anyways.
-*/
 AttackAbility gingerbread_basic_attack = {
     false, // Chosen attack
     0, // speed
@@ -32,7 +27,7 @@ AttackAbility gingerbread_advanced_attack = {
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 50), // Size
     true, // Gravit Affected
-    3, // Max cooldown
+    2, // Max cooldown
     0, // Current cooldown
 };
 

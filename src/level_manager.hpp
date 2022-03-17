@@ -45,8 +45,6 @@ public:
 	// Whether this level ended
     bool is_over();
 
-	void update_camera(vec2 velocity);
-
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 pos);
@@ -68,6 +66,7 @@ private:
 	int curr_order_ind;
 	bool should_initialize_active_turn;
 	int num_characters;
+    Entity order_indicator;
 
     nlohmann::json curr_level_data_json;
 

@@ -29,6 +29,12 @@ struct HealthBar
 
 };
 
+// indicates the curr order
+struct OrderIndicator
+{
+
+};
+
 // Attached to all playables, enemies
 // Indicate how far the character can move
 struct Energy
@@ -139,12 +145,13 @@ enum LOCATION {
 struct Motion {
 	vec2 position = { 0, 0 };
 	float angle = 0;
-	vec2 velocity = { 0, 0 };
+	vec2 current_velocity = { 0, 0 };
+	vec2 goal_velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
 	bool is_falling = false;
-    float speed = 100;
+    float speed = 200;
 	int depth = DEPTH::CHARACTER;
 	int location = LOCATION::NORMAL;
 };
@@ -269,12 +276,14 @@ enum class TEXTURE_ASSET_ID {
 	ENEMY = PLAYER + 1,
 	BACKGROUND1 = ENEMY + 1,
 	TERRAIN1 = BACKGROUND1 + 1,
-    START_BUTTON = TERRAIN1 + 1,
-    HELP_BUTTON = START_BUTTON + 1,
-    EXIT_BUTTON = HELP_BUTTON + 1,
-    BACK_BUTTON = EXIT_BUTTON + 1,
-    HELP_IMAGE = BACK_BUTTON + 1,
-	TEXTURE_COUNT = HELP_IMAGE + 1
+	START_BUTTON = TERRAIN1 + 1,
+	HELP_BUTTON = START_BUTTON + 1,
+	EXIT_BUTTON = HELP_BUTTON + 1,
+	BACK_BUTTON = EXIT_BUTTON + 1,
+	HELP_IMAGE = BACK_BUTTON + 1,
+	ADVANCED_ATTACK_PREVIEW = HELP_IMAGE + 1,
+	BASIC_ATTACK_PREVIEW = ADVANCED_ATTACK_PREVIEW + 1,
+	TEXTURE_COUNT = BASIC_ATTACK_PREVIEW + 1
     
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;

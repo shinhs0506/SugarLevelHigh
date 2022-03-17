@@ -26,11 +26,11 @@
                 "y": 600
             },
             "size": {
-                "w": 80,
+                "w": 64,
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -39,11 +39,11 @@
                 "y": 300
             },
             "size": {
-                "w": 80,
+                "w": 64,
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -52,11 +52,11 @@
                 "y": 0
             },
             "size": {
-                "w": 80,
+                "w": 64,
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         }
     ],
@@ -71,7 +71,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -84,7 +84,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -97,7 +97,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         },
         {
@@ -110,7 +110,7 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 100,
+            "energy": 150,
             "advanced_attack_cooldown": 0
         }
     ],
@@ -309,6 +309,16 @@
     },
     {
       "pos": {
+        "x": 0,
+        "y": 400
+      },
+      "size": {
+        "w": 99.999,
+        "h": 99.999
+      }
+    },
+    {
+      "pos": {
         "x": 1300,
         "y": 600
       },
@@ -321,6 +331,16 @@
       "pos": {
         "x": 1300,
         "y": 500
+      },
+      "size": {
+        "w": 99.999,
+        "h": 99.999
+      }
+    },
+    {
+      "pos": {
+        "x": 1300,
+        "y": 400
       },
       "size": {
         "w": 99.999,

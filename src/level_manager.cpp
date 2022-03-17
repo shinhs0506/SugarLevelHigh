@@ -15,7 +15,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "ability.hpp"
 #include "ability_list.hpp"
-
+#include "camera_manager.hpp"
 
 LevelManager::LevelManager()
 {
@@ -30,7 +30,7 @@ LevelManager::~LevelManager()
 void LevelManager::init(GLFWwindow* window)
 {
     this->window = window;
-    this->main_camera = registry.cameras.entities[0]; // currently we only have one camera
+    this->main_camera = get_camera();
 
     is_level_over = false;
 
@@ -103,6 +103,7 @@ void LevelManager::load_level(int level)
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
 
     energy_bar = createEnergyBar();
+    order_indicator = createOrderIndicator();
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
@@ -149,6 +150,7 @@ void LevelManager::abandon_level()
     removeButton(advanced_attack_button);
 
     removeEnergyBar();
+    removeOrderIndicator();
     removeBackground(background);
 
     registry.activeTurns.clear();
@@ -395,6 +397,9 @@ bool LevelManager::step(float elapsed_ms)
         break;
     }
 
+    // update order indicator's position
+    updateOrderIndicator(registry.activeTurns.entities[0]);
+
     return true;
 }
 
@@ -478,15 +483,6 @@ bool LevelManager::is_over() {
     return is_level_over;
 }
 
-void LevelManager::update_camera(vec2 velocity) {
-    auto& motion_registry = registry.motions;
-
-    // update camera position
-    Motion& camera_motion = motion_registry.get(main_camera);
-    camera_motion.velocity += velocity;
-
-}
-
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
     switch (current_level_state) {
@@ -505,34 +501,33 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
     // actions to perform regardless of the state
     // camera control logic
-    Motion& camera_motion = registry.motions.get(main_camera);
     if (action == GLFW_PRESS)
     {
         switch (key)
         {
         case GLFW_KEY_LEFT:
-            update_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_RIGHT:
-            update_camera(vec2(CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_UP:
-            update_camera(vec2(0, -CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, -CAM_MOVE_SPEED)); break;
         case GLFW_KEY_DOWN:
-            update_camera(vec2(0, CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, CAM_MOVE_SPEED)); break;
         }
 
     }
-    else if (action == GLFW_RELEASE)
+    if (action == GLFW_RELEASE)
     {
         switch (key)
         {
         case GLFW_KEY_LEFT:
-            update_camera(vec2(CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_RIGHT:
-            update_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
+            move_camera(vec2(-CAM_MOVE_SPEED, 0)); break;
         case GLFW_KEY_UP:
-            update_camera(vec2(0, CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, CAM_MOVE_SPEED)); break;
         case GLFW_KEY_DOWN:
-            update_camera(vec2(0, -CAM_MOVE_SPEED)); break;
+            move_camera(vec2(0, -CAM_MOVE_SPEED)); break;
         }
     }
 

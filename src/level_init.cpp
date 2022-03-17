@@ -10,7 +10,7 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	// Create motion
 	Motion& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 0, 0 };
+	motion.goal_velocity = { 0, 0 };
 	motion.position = position;
 	motion.prev_position = position;
 	motion.scale = scale;
@@ -40,7 +40,7 @@ Entity createEnergyBar()
 	motion.position = { pos };
 	motion.prev_position = { pos };
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 300, 20 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
@@ -59,6 +59,50 @@ Entity createEnergyBar()
 	return entity;
 }
 
+Entity createOrderIndicator(){
+	auto entity = Entity();
+
+	registry.orderIndicators.emplace(entity);
+	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { pos };
+	motion.prev_position = { pos };
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = { 20, 20 };
+	motion.gravity_affected = false;
+	motion.depth = DEPTH::UI;
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::COLOURED,
+			GEOMETRY_BUFFER_ID::SQUARE });
+
+	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
+
+	return entity;
+}
+
+void updateOrderIndicator(Entity entity) {
+
+        Motion& character_motion = registry.motions.get(entity);
+        Entity& indicator = registry.orderIndicators.entities[0];
+        Motion& indicator_motion = registry.motions.get(indicator);
+
+        vec2 delta = {0, -(character_motion.scale.y)};
+        indicator_motion.position = character_motion.position + delta;
+}
+
+void removeOrderIndicator(){
+	Entity entity = registry.orderIndicators.entities[0];
+	registry.motions.remove(entity);
+	registry.renderRequests.remove(entity);
+	registry.colors.remove(entity);
+    registry.orderIndicators.remove(entity);
+}
+
 void resetEnergyBar() 
 {
 	// As all characters share one energy bar, there should always be only 1 entity inside energyBars
@@ -66,7 +110,7 @@ void resetEnergyBar()
 	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
 	motion.position = { pos };
 	motion.prev_position = { pos };
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 300, 20 };
 }
 
@@ -103,7 +147,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.position = { pos.x, pos.y - size.y/2 - 10 };
 	motion.prev_position = { pos.x, pos.y - size.y / 2 - 10 };
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
@@ -157,10 +201,11 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.location = LOCATION::NORMAL;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };
@@ -168,7 +213,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 
 	// stats
 	Health health{ 100, starting_health };
-	Energy energy{ 100, starting_energy, starting_energy};
+	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
 	registry.healths.insert(entity, health);
@@ -215,7 +260,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
@@ -226,7 +271,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 
 	// stats
 	Health health{ 100, starting_health };
-	Energy energy{ 100, starting_energy, starting_energy };
+	Energy energy{ 150, starting_energy, starting_energy };
 	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
 
@@ -270,7 +315,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::TERRAIN;
 
@@ -307,7 +352,7 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = angle;
-	motion.velocity = vec2(ability.speed * (float)cos(angle), ability.speed * (float)sin(angle));
+	motion.goal_velocity = vec2(ability.speed * (float)cos(angle), ability.speed * (float)sin(angle));
 	motion.scale = ability.size;
 	motion.depth = DEPTH::ATTACK;
 	motion.gravity_affected = ability.gravity_affected;
@@ -347,7 +392,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = {0.f, 0.f};
+	motion.goal_velocity = {0.f, 0.f};
 	motion.scale = {1.f, 1.f};
 	motion.depth = DEPTH::CAMERA;
 
@@ -406,7 +451,7 @@ Entity createBackground(vec2 size, int level)
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = { window_width_px / 2, window_height_px / 2 };
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::BACKGROUND;
 
@@ -445,7 +490,7 @@ Entity createLadder(vec2 pos, vec2 size)
 	motion.position = pos;
 	motion.prev_position = pos;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::LADDER;
 

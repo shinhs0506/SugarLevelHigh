@@ -1,6 +1,7 @@
 // internal
 #include "physics_system.hpp"
 #include "level_init.hpp"
+#include "camera_manager.hpp"
 
 // Returns the local bounding coordinates scaled by the current size of the entity
 vec2 get_bounding_box(const Motion& motion)
@@ -25,9 +26,6 @@ bool collide_bottom(const Motion& motion1, const Motion& motion2)
 	{
 		return true;
 	}
-	else {
-		return false;
-	}
 
 	return false;
 }
@@ -48,9 +46,6 @@ bool collide_right(const Motion& motion1, const Motion& motion2)
 	{
 		return true;
 	}
-	else {
-		return false;
-	}
 
 	return false;
 }
@@ -70,9 +65,6 @@ bool collide_left(const Motion& motion1, const Motion& motion2)
 	if (r_collision < l_collision && r_collision < t_collision && r_collision < b_collision)
 	{
 		return true;
-	}
-	else {
-		return false;
 	}
 
 	return false;
@@ -146,27 +138,48 @@ void update_location(Motion& motion) {
 			if (is_below_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::BELOW_CLIMBABLE;
 				motion.gravity_affected = false;
-        return;
+				return;
 			}
 			else {
 				motion.location = LOCATION::ON_CLIMBABLE;
 				motion.gravity_affected = false;
-        return;
+				return;
 			}
 		}
 		else {
 			if (is_above_climbable(motion, climbable_motion)) {
 				motion.location = LOCATION::ABOVE_CLIMBABLE;
 				motion.gravity_affected = false;
-        return;
+				if (motion.is_falling) {
+					motion.goal_velocity.y = 0;
+					motion.is_falling = false;
+				}
+				return;
 			}
 			else {
 				motion.location = LOCATION::NORMAL;
 				motion.gravity_affected = true;
+				motion.position.y = floor(motion.position.y);
+				//printf("normal\n");
 			}
 		}
 	}
 }
+
+float interpolation_acceleration(float goal_velocity, float current_velocity) {
+
+	float acceleration = 20.0f;
+	float velocity_difference = goal_velocity - current_velocity;
+
+	if (velocity_difference > acceleration) {
+		return current_velocity + acceleration; // increase in velocity
+	}
+	else if (velocity_difference < -acceleration) {
+		return current_velocity - acceleration; // decrease in velocity
+	}
+	return goal_velocity; // reached goal
+}
+
 
 void PhysicsSystem::step(float elapsed_ms)
 {
@@ -177,30 +190,30 @@ void PhysicsSystem::step(float elapsed_ms)
 		Motion& motion = motion_registry.components[i];
 		Entity entity = motion_registry.entities[i];
 
-		// Gravity
-		if (motion.gravity_affected == true) {
-			//When collision with terrain is detected. Reset this velocity to 0
-			motion.velocity.y += gravity * (elapsed_ms/1000.0f);
-		}
-
-
 		// Adapt angle/rotation for projectile motion
 		if (registry.projectiles.has(entity)) {
-			motion.angle = atan2(motion.velocity.y, motion.velocity.x);
+			motion.angle = atan2(motion.goal_velocity.y, motion.goal_velocity.x);
 		}
 
-		if (registry.playables.has(entity)) {
-			update_location(motion);
-
+		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
+			if (registry.playables.has(entity)) {
+				update_location(motion);
+			}
+			
 			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
 			updateHealthBar(entity);
+			if (registry.activeTurns.has(entity)) {
+				updateOrderIndicator(entity);
+			}
 		}
 
 		else {
 			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.velocity;
+			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
+			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
 
 		if (registry.cameras.has(entity))
@@ -212,7 +225,7 @@ void PhysicsSystem::step(float elapsed_ms)
 
 	// Update overlays relative to main camera
 	auto& overlays_registry = registry.overlays;
-	Entity camera = registry.cameras.entities[0];
+	Entity camera = get_camera();
 	Motion& camera_motion = motion_registry.get(camera);
 	Camera& camera_component = registry.cameras.get(camera);
 
@@ -235,48 +248,52 @@ void PhysicsSystem::step(float elapsed_ms)
 		for(uint j = i+1; j<motion_container.components.size(); j++)
 		{
 			Motion& motion_j = motion_container.components[j];
-			
+			Entity entity_j = motion_container.entities[j];
 			if (collides(motion_i, motion_j))
 			{
-				Entity entity_j = motion_container.entities[j];
 				// Create a collisions event
 				// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
 				registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 				registry.collisions.emplace_with_duplicates(entity_j, entity_i);
+			}
+		}
+	}
 
+	// Check collision between players and terrains
+	auto& characters = registry.initiatives;
+	for (uint i = 0; i < characters.size(); i++) {
+		Entity character = characters.entities[i];
+		Motion& character_motion = registry.motions.get(character);
 
-				// Collision Handler
-				// Make sure the entity is a playable or enemy that is affected by gravity
-				if (motion_i.gravity_affected == true && (registry.playables.has(entity_i) || registry.enemies.has(entity_i)) && registry.terrains.has(entity_j)) {
-					// Collision between bottom of the character and top of the terrain
-					if (collide_bottom(motion_i, motion_j) && motion_i.location != ABOVE_CLIMBABLE) {
-						motion_i.velocity.y = 0;
-						motion_i.position.y = motion_i.prev_position.y;
-						if (motion_i.is_falling == true) {
-							motion_i.is_falling = false;
-						}
+		auto& terrains = registry.terrains;
+		for (uint j = 0; j < terrains.size(); j++) {
+			Entity terrain = terrains.entities[j];
+			Motion& terrain_motion = registry.motions.get(terrain);
+
+			// Collision Handler
+			if (collides(character_motion, terrain_motion)) {
+				// Collision between bottom of the character and top of the terrain
+				if (collide_bottom(character_motion, terrain_motion) && character_motion.location != LOCATION::ABOVE_CLIMBABLE && character_motion.location != LOCATION::ON_CLIMBABLE) {
+					character_motion.goal_velocity.y = 0;
+					character_motion.position.y = character_motion.prev_position.y;
+				}
+				// Collision between right of the character and left of the terrain
+				if (collide_right(character_motion, terrain_motion)) {
+					if (character_motion.goal_velocity.x > 0) {
+						character_motion.position.x = character_motion.prev_position.x;
 					}
-					// Collision between right of the character and left of the terrain
-					if (collide_right(motion_i, motion_j)) {
-						motion_i.velocity.x = 0;
-						motion_i.position.x = motion_i.prev_position.x;
-					}
-					// Collision between left of the character and right of the terrain
-					if (collide_left(motion_i, motion_j)) {
-						motion_i.velocity.x = 0;
-						motion_i.position.x = motion_i.prev_position.x;
+					
+				}
+				// Collision between left of the character and right of the terrain
+				if (collide_left(character_motion, terrain_motion)) {
+					if (character_motion.goal_velocity.x < 0) {
+						character_motion.position.x = character_motion.prev_position.x;
 					}
 				}
 			}
-			// Gravity Implementation for entities that are affected by gravity and is not colliding with a terrain
-			else {
-				if (motion_i.gravity_affected == true) {
-					motion_i.velocity.y += gravity * (elapsed_ms / 1000.0f);
-					motion_i.is_falling = true;
-				}
-				/*else if (motion_j.gravity_affected == true) {
-					motion_j.velocity.y += gravity * (elapsed_ms / 1000.0f);
-				}*/
+			else if (character_motion.location == LOCATION::NORMAL) {
+				character_motion.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
+				character_motion.is_falling = true;
 			}
 		}
 	}
@@ -302,7 +319,6 @@ void PhysicsSystem::step(float elapsed_ms)
 			vec2 position = motion_i.position;
 			Entity line1 = createDebugLine(motion_i.position, line_scale1);
 			Entity line2 = createDebugLine(motion_i.position, line_scale2);
-
 		}
 	}
 }

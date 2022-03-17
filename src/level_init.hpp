@@ -16,6 +16,10 @@ void resetEnergy(Entity entity);
 Entity createHealthBar(vec2 pos, vec2 size);
 void updateHealthBar(Entity entity);
 
+Entity createOrderIndicator();
+void updateOrderIndicator(Entity entity);
+void removeOrderIndicator();
+
 Entity createEnemy(vec2 pos, vec2 size, float curr_health, float curr_energy, 
         AttackArsenal attack_arsenal);
 void removeEnemy(Entity entity);
