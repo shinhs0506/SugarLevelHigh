@@ -13,7 +13,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
-        ENEMY_ZOOM,
+        ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
 		ENEMY_TURN, // handled by AI system
