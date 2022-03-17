@@ -33,10 +33,6 @@ void LevelManager::init(GLFWwindow* window)
     this->main_camera = get_camera();
 
     is_level_over = false;
-
-    /* this->current_level_state = LevelState::ENEMY_ZOOM; */
-    /* this->next_level_state = LevelState::ENEMY_ZOOM; */
-
 }
 
 void LevelManager::init_data(int level){
@@ -87,8 +83,6 @@ void LevelManager::init_data(int level){
     if (this->current_level_state == LevelState::ENEMY_BLINK) {
         createTimer(1000);
     }
-
-    std::cout << "curr " << (int) current_level_state << std::endl;
 }
 
 bool compare(Entity a, Entity b) {
@@ -322,7 +316,6 @@ bool LevelManager::step(float elapsed_ms)
 
     case LevelState::PREPARE:
         {
-            std::cout << "PREPAREPSDPSERPES" << std::endl;
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
                 move_to_state(LevelState::TERMINATION);

@@ -62,10 +62,6 @@ private:
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 100;
 
-    // camera movement logic
-    int enemy_index;
-    std::vector<vec2> camera_movement_targets;
-    
 	// for turn order logic
 	std::vector<Entity> order_vector;
 	int curr_order_ind;
