@@ -37,9 +37,6 @@ void removeAttackObject(Entity entity);
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit);
 void removeCamera(Entity entity);
 
-Entity createCameraMoveCommand(std::vector<vec2> targets);
-void removeCameraMoveCommand(Entity entity);
-
 Entity createTimer(float timer);
 void removeTimer(Entity entity);
 

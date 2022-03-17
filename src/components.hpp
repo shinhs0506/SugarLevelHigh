@@ -110,12 +110,6 @@ struct Camera
 	vec2 higer_limit;
 };
 
-struct CameraMoveCommand 
-{
-    std::vector<vec2> targets;
-    int curr_ind;
-};
-
 struct Timer
 {
     float timer;

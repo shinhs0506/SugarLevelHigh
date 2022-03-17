@@ -181,27 +181,8 @@ float interpolation_acceleration(float goal_velocity, float current_velocity) {
 }
 
 
-#include <iostream>
 void PhysicsSystem::step(float elapsed_ms)
 {
-    /* // Move cameras with move commands */
-    /* auto& camera_move_command_registry = registry.cameraMoveCommands; */
-    /* for (uint i = 0; i < camera_move_command_registry.size(); i++) { */
-    /*     CameraMoveCommand& camera_move_command = camera_move_command_registry.components[i]; */
-    /*     Entity& entity = camera_move_command_registry.entities[i]; */
-        
-    /*     Motion& motion = registry.motions.get(get_camera()); */
-
-    /*    float d = 50; */ 
-    /*    move_camera_to(camera_move_command.target_pos); */
-    /*      if (camera_move_command.pause_timer < 0) { */
-    /*         removeCameraMoveCommand(entity); */
-    /*     } else { */
-    /*         camera_move_command.pause_timer -= elapsed_ms; */
-    /*     } */
-    /* } */
-     
-
 	// Move entities with motion component with respect to their velocity
 	auto& motion_registry = registry.motions;
 	for (uint i = 0; i < motion_registry.size(); i++)

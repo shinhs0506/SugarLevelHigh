@@ -402,17 +402,10 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	return entity;
 }
 
-Entity createCameraMoveCommand(std::vector<vec2> targets) {
-    auto entity = Entity();
-
-    CameraMoveCommand cameraMoveCommand { targets, 0};
-    registry.cameraMoveCommands.insert(entity, cameraMoveCommand);
-
-    return entity;
-}
-
-void removeCameraMoveCommand(Entity entity){
-    registry.cameraMoveCommands.remove(entity);
+void removeCamera(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.cameras.remove(entity);
 }
 
 Entity createTimer(float ms) {
@@ -428,11 +421,6 @@ void removeTimer(Entity entity) {
     registry.timers.remove(entity);
 }
 
-void removeCamera(Entity entity)
-{
-	registry.motions.remove(entity);
-	registry.cameras.remove(entity);
-}
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
 {

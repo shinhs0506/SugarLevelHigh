@@ -72,12 +72,6 @@ void LevelManager::init_data(int level){
         order_vector.push_back(enemy);
     }
 
-    for (auto& enemy : registry.enemies.entities) {
-        Motion& motion = registry.motions.get(enemy);
-        camera_movement_targets.push_back(motion.position);
-    }
-    enemy_index = 0;
-
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
         Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
     }
