@@ -24,6 +24,8 @@ std::string get_saved_level_data_file_path(int level) {
 }
 
 void ReloadManager::load(int level) {
+    clear();
+
     std::string init_datafile_path = get_init_level_data_file_path(level);
     std::string saved_datafile_path = get_saved_level_data_file_path(level);    
 

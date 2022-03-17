@@ -45,6 +45,7 @@ void LevelManager::init_data(int level){
     reload_manager.load(level);
 
     CameraData camera_data = reload_manager.get_camera_data();
+    motion.position = camera_data.pos;
     camera.lower_limit = motion.position + camera_data.lower_limit_delta;
     camera.higer_limit = motion.position + camera_data.upper_limit_delta;
 
@@ -73,11 +74,11 @@ void LevelManager::init_data(int level){
         Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
     }
 
-    curr_order_ind = reload_manager.get_curr_order_ind();
-
     for (auto& ladder_data : reload_manager.get_ladder_data()) {
         Entity ladder = createLadder(ladder_data.pos, ladder_data.size);
     }
+
+    curr_order_ind = reload_manager.get_curr_order_ind();
 }
 
 bool compare(Entity a, Entity b) {
@@ -566,8 +567,9 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
             if (curr_level != (int) LevelState::TERMINATION) {
                 save_level_data();
             }
-        is_level_over = true; 
-        return;
+
+            is_level_over = true; 
+            return;
         }
     }
 
