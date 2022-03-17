@@ -5,6 +5,7 @@
 #include "player_controller.hpp"
 #include <nlohmann/json.hpp>
 #include "enemy_controller.hpp"
+#include "reload_manager.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -45,8 +46,6 @@ public:
 	// Whether this level ended
     bool is_over();
 
-	void update_camera(vec2 velocity);
-
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 pos);
@@ -74,6 +73,9 @@ private:
 
 	// OpenGL window handle
 	GLFWwindow* window;
+
+    // manages data load and save
+    ReloadManager reload_manager;
 
 	// controller that handles enemy's behaviors
 	EnemyController enemy_controller;
@@ -105,7 +107,7 @@ private:
     void save_level_data();
     void destroy_saved_level_data_file();
 
-    void update_curr_level_data_json();
+    void update_curr_level_data();
 
     void update_healthbar_len_color(Entity entity);
 };
