@@ -449,9 +449,6 @@ bool LevelManager::step(float elapsed_ms)
         break;
     }
 
-    // update order indicator's position
-    updateOrderIndicator(registry.activeTurns.entities[0]);
-
     return true;
 }
 
