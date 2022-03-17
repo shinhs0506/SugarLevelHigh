@@ -194,7 +194,7 @@ void ReloadManager::save(int level) {
         temp_json["advanced_attack_cooldown"] = player_data.advanced_attack_cooldown;
         player_json.push_back(temp_json);
     }
-    curr_level_data_json["player"] = player_json;
+    curr_level_data_json["players"] = player_json;
 
     std::vector<nlohmann::json> enemy_json;
     for (auto& enemy_data: enemy_data_vector) {
@@ -208,7 +208,7 @@ void ReloadManager::save(int level) {
         temp_json["advanced_attack_cooldown"] = enemy_data.advanced_attack_cooldown;
         enemy_json.push_back(temp_json);
     }
-    curr_level_data_json["enemy"] = enemy_json;
+    curr_level_data_json["enemies"] = enemy_json;
 
     std::vector<nlohmann::json> terrain_json;
     for (auto& terrain_data: terrain_data_vector) {
@@ -219,7 +219,7 @@ void ReloadManager::save(int level) {
         temp_json["size"]["h"] = terrain_data.size.y;
         terrain_json.push_back(temp_json);
     }
-    curr_level_data_json["terrain"] = terrain_json;
+    curr_level_data_json["terrains"] = terrain_json;
 
     std::vector<nlohmann::json> ladder_json;
     for (auto& ladder_data: ladder_data_vector) {
@@ -230,7 +230,7 @@ void ReloadManager::save(int level) {
         temp_json["size"]["h"] = ladder_data.size.y;
         ladder_json.push_back(temp_json);
     }
-    curr_level_data_json["ladder"] = ladder_json;
+    curr_level_data_json["ladders"] = ladder_json;
 
     // -1 because we advance order at the start of the game
     curr_level_data_json["curr_order_ind"] = curr_order_ind - 1;
