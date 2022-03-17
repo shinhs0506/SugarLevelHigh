@@ -312,9 +312,9 @@ void GameSystem::move_to_state(GameState next_game_state) {
             help_manager.init(window, this);
             break;
         case GameState::IN_LEVEL:
-            assert(current_game_state == GameState::MAIN_MENU);
+            assert(current_game_state == GameState::LEVEL_SELECTION);
             level_manager.init(window);
-            level_manager.load_level(0);
+            level_manager.load_level(this->level_menu_manager.selected_level);
             break;
     }
         

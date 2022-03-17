@@ -26,6 +26,8 @@ private:
     std::vector<Entity> all_entities;
 
 public:
+    int selected_level = NULL;
+
     LevelMenuManager();
 
     ~LevelMenuManager();

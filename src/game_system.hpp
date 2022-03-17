@@ -56,12 +56,6 @@ public:
 
     void move_to_state(GameState next_game_state);
 
-	// Flag for completed levels
-	bool tutorial_completed = false;
-	bool level_1_completed = false;
-	bool level_2_completed = false;
-	bool level_3_completed = false;
-
 private:
 	// Input callback functions
 	void on_key(int key, int, int action, int mod);

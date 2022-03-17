@@ -462,6 +462,7 @@ Entity createBackground(vec2 size, int level)
 	switch (level)
 	{
 	case 0:
+	case 1:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND1,

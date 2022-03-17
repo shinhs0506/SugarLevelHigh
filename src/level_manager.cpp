@@ -95,6 +95,9 @@ void LevelManager::load_level(int level)
     if (level == 0) {
         this->init_data(level);
     }
+    else if (level == 1) {
+        this->init_data(level);
+    }
 
     // common to all levels
     
@@ -299,6 +302,10 @@ bool LevelManager::step(float elapsed_ms)
         {
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
+                // allow progression to next level via menu if current level completed
+                if (only_player_left) {
+                    this->levels_completed[curr_level] = true;
+                }
                 move_to_state(LevelState::TERMINATION);
                 break;
             }
