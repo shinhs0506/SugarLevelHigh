@@ -114,6 +114,14 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	gl_has_errors();
 
+	GLint is_enemy_uloc = glGetUniformLocation(program, "is_enemy");
+	glUniform1i(is_enemy_uloc, registry.enemies.has(entity));
+	gl_has_errors();
+
+    GLint timer_uloc = glGetUniformLocation(program, "blink");
+    glUniform1f(timer_uloc, registry.timers.size() > 0 ? registry.timers.components[0].timer : 0);
+    gl_has_errors();
+
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(program, "fcolor");
 	const vec3 color = registry.colors.has(entity) ? registry.colors.get(entity) : vec3(1);

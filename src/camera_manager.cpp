@@ -1,6 +1,7 @@
 #include "camera_manager.hpp"
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
+#include <glm/common.hpp>
 
 
 Entity init_camera() {
@@ -32,6 +33,15 @@ void update_camera_pos(vec2 pos) {
 void move_camera(vec2 velocity) {
     Motion& camera_motion = registry.motions.get(get_camera());
     camera_motion.goal_velocity += velocity;
+}
+
+void move_camera_to(vec2 pos) {
+    Motion& camera_motion = registry.motions.get(get_camera());
+    Camera& camera = registry.cameras.get(get_camera());
+    vec2 target_pos = vec2(clamp(camera_motion.position.x + pos.x, 0.f , camera.higer_limit.x),
+            clamp(camera_motion.position.y + pos.y, camera.lower_limit.y, camera.higer_limit.y));
+
+    camera_motion.position = target_pos;
 }
 
 void update_camera_upper_limit(vec2 upper_limit) {

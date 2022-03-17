@@ -112,8 +112,13 @@ struct Camera
 
 struct CameraMoveCommand 
 {
-    vec2 target_pos;
-    float pause_timer;
+    std::vector<vec2> targets;
+    int curr_ind;
+};
+
+struct Timer
+{
+    float timer;
 };
 
 // Hit effect object will be created on entity that is hit by an attack

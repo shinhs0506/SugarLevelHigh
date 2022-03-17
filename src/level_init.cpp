@@ -63,7 +63,7 @@ Entity createOrderIndicator(){
 	auto entity = Entity();
 
 	registry.orderIndicators.emplace(entity);
-	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	vec2 pos = vec2(100000, 100000); // subject to change when adjusting UI positions, out of screen when started
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = { pos };
@@ -402,10 +402,10 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	return entity;
 }
 
-Entity createCameraMoveCommand(vec2 pos, float pause_timer) {
+Entity createCameraMoveCommand(std::vector<vec2> targets) {
     auto entity = Entity();
 
-    CameraMoveCommand cameraMoveCommand { pos, pause_timer };
+    CameraMoveCommand cameraMoveCommand { targets, 0};
     registry.cameraMoveCommands.insert(entity, cameraMoveCommand);
 
     return entity;
@@ -413,6 +413,19 @@ Entity createCameraMoveCommand(vec2 pos, float pause_timer) {
 
 void removeCameraMoveCommand(Entity entity){
     registry.cameraMoveCommands.remove(entity);
+}
+
+Entity createTimer(float ms) {
+    auto entity = Entity();
+
+    Timer timer { ms };
+    registry.timers.insert(entity, timer);
+    
+    return entity;
+}
+
+void removeTimer(Entity entity) {
+    registry.timers.remove(entity);
 }
 
 void removeCamera(Entity entity)

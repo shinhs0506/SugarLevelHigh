@@ -34,8 +34,10 @@ void LevelManager::init(GLFWwindow* window)
 
     is_level_over = false;
 
-    this->current_level_state = LevelState::PREPARE;
-    this->next_level_state = LevelState::PREPARE;
+    /* this->current_level_state = LevelState::ENEMY_ZOOM; */
+    /* this->next_level_state = LevelState::ENEMY_ZOOM; */
+
+    createTimer(2000);
 }
 
 void LevelManager::init_data(int level){
@@ -70,6 +72,12 @@ void LevelManager::init_data(int level){
         order_vector.push_back(enemy);
     }
 
+    for (auto& enemy : registry.enemies.entities) {
+        Motion& motion = registry.motions.get(enemy);
+        camera_movement_targets.push_back(motion.position);
+    }
+    enemy_index = 0;
+
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
         Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
     }
@@ -79,6 +87,9 @@ void LevelManager::init_data(int level){
     }
 
     curr_order_ind = reload_manager.get_curr_order_ind();
+
+    this->current_level_state = (LevelState) reload_manager.get_curr_level_state();
+    this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 }
 
 bool compare(Entity a, Entity b) {
@@ -295,17 +306,20 @@ bool LevelManager::step(float elapsed_ms)
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
 
-    int enemy_index = 0;
     switch (current_level_state) {
     case LevelState::ENEMY_ZOOM:
-        if (enemy_index < registry.enemies.size() && registry.cameraMoveCommands.size() == 0) {
-            Entity& curr_enemy = registry.enemies.entities[enemy_index];
-            Motion& enemy_motion = registry.motions.get(curr_enemy);
-            createCameraMoveCommand(enemy_motion.position, 1000);
-            enemy_index++;
-        } else if (enemy_index >= registry.enemies.size()) {
+        if (registry.timers.size() > 0) {
+            Entity& entity = registry.timers.entities[0];
+            Timer& timer = registry.timers.components[0];
+            if (timer.timer > 0) {
+                timer.timer -= elapsed_ms;
+            } else {
+                registry.timers.remove(entity);
+            }
+        } else {
             move_to_state(LevelState::PREPARE);
         }
+        break;
 
     case LevelState::PREPARE:
         {
@@ -411,7 +425,9 @@ bool LevelManager::step(float elapsed_ms)
     }
 
     // update order indicator's position
-    updateOrderIndicator(registry.activeTurns.entities[0]);
+    if (registry.activeTurns.size() > 0) {
+        updateOrderIndicator(registry.activeTurns.entities[0]);
+    }
 
     return true;
 }
@@ -603,6 +619,7 @@ void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
     switch (next_state) {
     case LevelState::ENEMY_ZOOM:
+        std::cout << "moving to enemy zoom state" << std::endl;
         assert(this->current_level_state == LevelState::ENEMY_ZOOM); break;
 
     case LevelState::PREPARE:
