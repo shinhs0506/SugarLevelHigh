@@ -110,6 +110,12 @@ struct Camera
 	vec2 higer_limit;
 };
 
+struct CameraMoveCommand 
+{
+    vec2 target_pos;
+    float pause_timer;
+};
+
 // Hit effect object will be created on entity that is hit by an attack
 struct HitEffect
 {

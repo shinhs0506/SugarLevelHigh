@@ -37,6 +37,8 @@ void removeAttackObject(Entity entity);
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit);
 void removeCamera(Entity entity);
 
+Entity createCameraMoveCommand(vec2 pos, float pause_timer);
+void removeCameraMoveCommand(Entity entity);
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)());
 void removeButton(Entity entity);

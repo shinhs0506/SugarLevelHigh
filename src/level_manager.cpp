@@ -345,7 +345,19 @@ bool LevelManager::step(float elapsed_ms)
 
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
+
+    int enemy_index = 0;
     switch (current_level_state) {
+    case LevelState::ENEMY_ZOOM:
+        if (enemy_index < registry.enemies.size() && registry.cameraMoveCommands.size() == 0) {
+            Entity& curr_enemy = registry.enemies.entities[enemy_index];
+            Motion& enemy_motion = registry.motions.get(curr_enemy);
+            createCameraMoveCommand(enemy_motion.position, 1000);
+            enemy_index++;
+        } else if (enemy_index >= registry.enemies.size()) {
+            move_to_state(LevelState::PREPARE);
+        }
+
     case LevelState::PREPARE:
         {
             // check whether level completed/failed
@@ -659,9 +671,12 @@ LevelManager::LevelState LevelManager::current_state()
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
     switch (next_state) {
+    case LevelState::ENEMY_ZOOM:
+        assert(this->current_level_state == LevelState::ENEMY_ZOOM); break;
+
     case LevelState::PREPARE:
         std::cout << "moving to prepare state" << std::endl;
-        assert(this->current_level_state == LevelState::EVALUATION); break;
+        assert(this->current_level_state == LevelState::EVALUATION || this->current_level_state == LevelState::ENEMY_ZOOM); break;
 
     case LevelState::PLAYER_TURN:
         std::cout << "moving to player's state" << std::endl;

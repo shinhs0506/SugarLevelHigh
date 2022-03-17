@@ -402,6 +402,19 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	return entity;
 }
 
+Entity createCameraMoveCommand(vec2 pos, float pause_timer) {
+    auto entity = Entity();
+
+    CameraMoveCommand cameraMoveCommand { pos, pause_timer };
+    registry.cameraMoveCommands.insert(entity, cameraMoveCommand);
+
+    return entity;
+}
+
+void removeCameraMoveCommand(Entity entity){
+    registry.cameraMoveCommands.remove(entity);
+}
+
 void removeCamera(Entity entity)
 {
 	registry.motions.remove(entity);
