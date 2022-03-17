@@ -24,6 +24,8 @@ public:
 
 	bool should_end_player_turn();
 
+	bool has_player_moved_right();
+
 private:
 	Entity player;
 	CharacterState current_state;

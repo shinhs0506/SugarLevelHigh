@@ -16,6 +16,7 @@
 #include "ability.hpp"
 #include "ability_list.hpp"
 #include "camera_manager.hpp"
+#include "tutorial_controller.hpp"
 
 LevelManager::LevelManager()
 {
@@ -25,6 +26,18 @@ LevelManager::LevelManager()
 LevelManager::~LevelManager()
 {
 
+}
+
+std::string get_init_level_data_file_path(int level) {
+    return data_path() + "/levels" +
+        "/level" + std::to_string(level) +
+        "/init.json";
+}
+
+std::string get_saved_level_data_file_path(int level) {
+    return data_path() + "/levels" +
+        "/level" + std::to_string(level) +
+        "/saved.json";
 }
 
 void LevelManager::init(GLFWwindow* window)
@@ -38,7 +51,19 @@ void LevelManager::init(GLFWwindow* window)
     this->next_level_state = LevelState::PREPARE;
 }
 
-void LevelManager::init_data(int level){
+
+// determine which levels can be accessed based on saved progress
+void LevelManager::get_progress() {
+    for (uint i = 1; i < 4; i++) {
+        std::string saved_datafile_path = get_saved_level_data_file_path(i);
+        std::ifstream sifs(saved_datafile_path);
+        if (sifs.good()) {
+            levels_completed[i - 1] = true;
+        } 
+    }
+}
+
+void LevelManager::init_data(int level) {
     Camera& camera = registry.cameras.get(main_camera);
     Motion& motion = registry.motions.get(main_camera);
 
@@ -93,6 +118,7 @@ void LevelManager::load_level(int level)
 
     // level specific logic
     if (level == 0) {
+        this->tutorial_controller.init(this);
         this->init_data(level);
     }
     else if (level == 1) {
@@ -160,6 +186,10 @@ void LevelManager::abandon_level()
     registry.activeTurns.clear();
 
     order_vector.clear();
+
+    if (curr_level == 0) {
+        tutorial_controller.destroy();
+    }
 }
 
 void LevelManager::remove_character(Entity entity)
@@ -270,6 +300,11 @@ bool LevelManager::step(float elapsed_ms)
     // advance state
     this->current_level_state = this->next_level_state;
 
+    // manage tutorial state
+    if (curr_level == 0) {
+        this->tutorial_controller.step(elapsed_ms);
+    }
+  
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
         Entity entity = registry.healths.entities[i];
@@ -304,6 +339,9 @@ bool LevelManager::step(float elapsed_ms)
             if (only_player_left || only_enemy_left) {
                 // allow progression to next level via menu if current level completed
                 if (only_player_left) {
+                    if (curr_level == 0) {
+                        tutorial_controller.should_advance = true;
+                    }
                     this->levels_completed[curr_level] = true;
                 }
                 move_to_state(LevelState::TERMINATION);
@@ -351,10 +389,18 @@ bool LevelManager::step(float elapsed_ms)
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
         {
+            if (curr_level == 0 && (tutorial_controller.curr_step == 1 || tutorial_controller.curr_step == 2) && !tutorial_controller.should_advance) {
+                tutorial_controller.should_advance = true;
+            }
             move_to_state(LevelState::EVALUATION);
         }
-        break;
 
+        if (curr_level == 0 && tutorial_controller.curr_step == 0 && !tutorial_controller.should_advance && player_controller.has_player_moved_right()) {
+            tutorial_controller.should_advance = true;
+        }
+        
+        break;
+        
     case LevelState::ENEMY_TURN:
         // step player controller
         enemy_controller.step(elapsed_ms);
@@ -362,6 +408,7 @@ bool LevelManager::step(float elapsed_ms)
         {
             move_to_state(LevelState::EVALUATION);
         }
+
         break;
 
     case LevelState::EVALUATION:
@@ -395,7 +442,6 @@ bool LevelManager::step(float elapsed_ms)
         if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
             move_to_state(LevelState::PREPARE);
         }
-
 
     }
         break;
@@ -566,12 +612,13 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         Motion back_button_motion = registry.motions.get(back_button);
 
         if (collides(click_motion, back_button_motion)) {
-            // move to IN_LEVEL state
 
             if (curr_level != (int) LevelState::TERMINATION) {
                 save_level_data();
             }
-
+            if (curr_level == 0) {
+                tutorial_controller.destroy();
+            }
             is_level_over = true; 
             return;
         }

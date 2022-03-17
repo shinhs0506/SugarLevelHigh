@@ -124,8 +124,7 @@ bool GameSystem::is_over() {
         {
             bool is_level_over = level_manager.is_over();
             if (is_level_over) {
-                // TODO: move to the main menu state
-                move_to_state(GameState::MAIN_MENU);
+                move_to_state(GameState::LEVEL_SELECTION);
             }
         }
         break;
@@ -304,7 +303,7 @@ void GameSystem::move_to_state(GameState next_game_state) {
             menu_manager.init(window, this);
             break;
 		case GameState::LEVEL_SELECTION:
-			assert(current_game_state == GameState::MAIN_MENU);
+			assert(current_game_state == GameState::MAIN_MENU || current_game_state == GameState::IN_LEVEL);
 			level_menu_manager.init(window, this);
 			break;
         case GameState::HELP:
