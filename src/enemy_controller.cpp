@@ -5,6 +5,8 @@
 #include "level_init.hpp"
 #include "ability.hpp"
 
+
+
 EnemyController::EnemyController()
 {
 	current_state = CharacterState::END;
@@ -26,22 +28,30 @@ bool EnemyController::should_end_enemy_turn()
 }
 
 // don't have vertical movement for now
-// direction: -1: left; 1: right
-void EnemyController::move(Motion& motion, int direction, float distance) {
+void EnemyController::move(Motion& motion, DIRECTION direction, float distance) {
 	move_counter = distance / motion.speed * 1000;
-	motion.goal_velocity.x = direction * motion.speed;
-	if (direction == -1) {
-		move_to_state(CharacterState::MOVE_LEFT);
-	}
-	else {
-		move_to_state(CharacterState::MOVE_RIGHT);
-	}
 
+	if (direction == DIRECTION_LEFT) {
+		move_to_state(CharacterState::MOVE_LEFT);
+		motion.goal_velocity.x = -1 * motion.speed;
+	} 
+	else if (direction == DIRECTION_RIGHT) {
+		move_to_state(CharacterState::MOVE_RIGHT);
+		motion.goal_velocity.x = 1 * motion.speed;
+	}
+	else if (direction == DIRECTION_UP) {
+		move_to_state(CharacterState::MOVE_UP);
+		motion.goal_velocity.y = -1 * motion.speed;
+	}
+	else if (direction == DIRECTION_DOWN) {
+		move_to_state(CharacterState::MOVE_DOWN);
+		motion.goal_velocity.y = 1 * motion.speed;
+	}
 }
 
 float EnemyController::cal_actual_attack_range(AttackAbility& ability) {
 	// add some small offset
-	return ability.range + min(ability.size.x, ability.size.y) / 2 + 20;
+	return ability.range + min(ability.size.x, ability.size.y) / 2 + 10;
 }
 
 bool EnemyController::within_attack_range(float dist, AttackAbility& ability) {
@@ -79,12 +89,12 @@ void EnemyController::make_decision() {
 	if (health.cur_health < 40.f && min_dist < cal_actual_attack_range(chosen_attack) - 10 && energy.cur_energy > 0.f) {
 		float dist = cal_actual_attack_range(chosen_attack) - 10 - min_dist;
 		// only move left/right now
-		move(motion, motion.position.x < target_motion.position.x ? -1 : 1, dist);
+		move(motion, motion.position.x < target_motion.position.x ? DIRECTION_RIGHT : DIRECTION_LEFT, dist);
 		return;
 	}
 
 	// add a small amount of offset because attacks are generated with offset
-	if (within_attack_range(min_dist, chosen_attack)) {
+	if (within_attack_range(min_dist, chosen_attack) && motion.location != ON_CLIMBABLE) {
 		vec2 direction = target_motion.position - motion.position;// Attacks left for now
 		vec2 offset{ 75.f, 0.f }; // a bit before the character
 
@@ -97,12 +107,25 @@ void EnemyController::make_decision() {
 	else if (energy.cur_energy == 0.f) {
 		move_to_state(CharacterState::END);
 	}
+	// try to climb ladder when possible and the target is not at the same level
+	// target above enemy
+	else if (motion.position.y - target_motion.position.y > 0 &&
+		(motion.location == BELOW_CLIMBABLE || motion.location == ON_CLIMBABLE)) {
+		move(motion, DIRECTION_UP, 5); // some arbitrary distance
+	}
+	// target below enemy
+	// disable climing down for possible visual bugs
+	//else if (target_motion.position.y - motion.position.y > 0 &&
+	//	(motion.location == ABOVE_CLIMBABLE || motion.location == ON_CLIMBABLE)) {
+	//	move(motion, DIRECTION_DOWN, 5); // some arbitrary distance
+	//} 
+	// move horizontally
 	else {
 		// move distance is calculated only on x-axis
 		float x_dist = abs(target_motion.position.x - motion.position.x);
 		float dist = abs(x_dist - cal_actual_attack_range(chosen_attack));
 		// only move left/right now
-		move(motion, motion.position.x < target_motion.position.x ? 1 : -1, dist);
+		move(motion, motion.position.x < target_motion.position.x ? DIRECTION_RIGHT : DIRECTION_LEFT, dist);
 	}
 }
 
@@ -138,6 +161,7 @@ void EnemyController::step(float elapsed_ms)
 		if (move_counter < 0.f || energy.cur_energy == 0.f) {
 			move_counter = 0.f;
 			motion.goal_velocity.x = 0;
+			motion.goal_velocity.y = 0;
 			move_to_state(CharacterState::IDLE);
 		}
 		break;

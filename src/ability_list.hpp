@@ -11,7 +11,7 @@ abilities and attack from there. (boxes not shown/active during enemy turn)
 AttackAbility gingerbread_basic_attack = {
     false, // Chosen attack
     0, // speed
-    20, // Damage
+    30, // Damage
     0, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 100), // Size
@@ -35,7 +35,7 @@ AttackAbility gingerbread_advanced_attack = {
 AttackAbility gumball_basic_attack = {
     true, // Chosen attack
     0, // speed
-    20, // Damage
+    10, // Damage
     0, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 100), // Size
@@ -46,7 +46,7 @@ AttackAbility gumball_basic_attack = {
 AttackAbility gumball_advanced_attack = {
     false, // Chosen attack
     500, // speed
-    40, // Damage
+    20, // Damage
     100, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 100), // Size

@@ -180,6 +180,34 @@ float interpolation_acceleration(float goal_velocity, float current_velocity) {
 	return goal_velocity; // reached goal
 }
 
+void handle_character_collisions(Motion& character_motion, Motion& terrain_motion, float gravity, float elapsed_ms) {
+	// Collision Handler
+	if (collides(character_motion, terrain_motion)) {
+		// Collision between bottom of the character and top of the terrain
+		if (collide_bottom(character_motion, terrain_motion) && character_motion.location != LOCATION::ABOVE_CLIMBABLE && character_motion.location != LOCATION::ON_CLIMBABLE) {
+			character_motion.goal_velocity.y = 0;
+			character_motion.position.y = character_motion.prev_position.y;
+		}
+		// Collision between right of the character and left of the terrain
+		if (collide_right(character_motion, terrain_motion)) {
+			if (character_motion.goal_velocity.x > 0) {
+				character_motion.position.x = character_motion.prev_position.x;
+			}
+
+		}
+		// Collision between left of the character and right of the terrain
+		if (collide_left(character_motion, terrain_motion)) {
+			if (character_motion.goal_velocity.x < 0) {
+				character_motion.position.x = character_motion.prev_position.x;
+			}
+		}
+	}
+	else if (character_motion.location == LOCATION::NORMAL) {
+		character_motion.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
+		character_motion.is_falling = true;
+	}
+}
+
 
 void PhysicsSystem::step(float elapsed_ms)
 {
@@ -196,9 +224,8 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 
 		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
-			if (registry.playables.has(entity)) {
-				update_location(motion);
-			}
+			// update location for players and enemies
+			update_location(motion);
 			
 			motion.prev_position = motion.position;
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
@@ -259,7 +286,7 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 	}
 
-	// Check collision between players and terrains
+	// Check collision between players and terrainss
 	auto& characters = registry.initiatives;
 	for (uint i = 0; i < characters.size(); i++) {
 		Entity character = characters.entities[i];
@@ -270,31 +297,21 @@ void PhysicsSystem::step(float elapsed_ms)
 			Entity terrain = terrains.entities[j];
 			Motion& terrain_motion = registry.motions.get(terrain);
 
-			// Collision Handler
-			if (collides(character_motion, terrain_motion)) {
-				// Collision between bottom of the character and top of the terrain
-				if (collide_bottom(character_motion, terrain_motion) && character_motion.location != LOCATION::ABOVE_CLIMBABLE && character_motion.location != LOCATION::ON_CLIMBABLE) {
-					character_motion.goal_velocity.y = 0;
-					character_motion.position.y = character_motion.prev_position.y;
-				}
-				// Collision between right of the character and left of the terrain
-				if (collide_right(character_motion, terrain_motion)) {
-					if (character_motion.goal_velocity.x > 0) {
-						character_motion.position.x = character_motion.prev_position.x;
-					}
-					
-				}
-				// Collision between left of the character and right of the terrain
-				if (collide_left(character_motion, terrain_motion)) {
-					if (character_motion.goal_velocity.x < 0) {
-						character_motion.position.x = character_motion.prev_position.x;
-					}
-				}
-			}
-			else if (character_motion.location == LOCATION::NORMAL) {
-				character_motion.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
-				character_motion.is_falling = true;
-			}
+			handle_character_collisions(character_motion, terrain_motion, gravity, elapsed_ms);
+		}
+	}
+
+	auto& enemies = registry.enemies;
+	for (uint i = 0; i < enemies.size(); i++) {
+		Entity enemy = enemies.entities[i];
+		Motion& enemy_motion = registry.motions.get(enemy);
+
+		auto& terrains = registry.terrains;
+		for (uint j = 0; j < terrains.size(); j++) {
+			Entity terrain = terrains.entities[j];
+			Motion& terrain_motion = registry.motions.get(terrain);
+
+			handle_character_collisions(enemy_motion, terrain_motion, gravity, elapsed_ms);
 		}
 	}
 

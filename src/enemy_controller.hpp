@@ -31,7 +31,7 @@ private:
 	void move_to_state(CharacterState next_state);
 
 	void make_decision();
-	void move(Motion& motion, int direction, float distance);
+	void move(Motion& motion, DIRECTION direction, float distance);
 	float cal_actual_attack_range(AttackAbility& ability);
 	bool within_attack_range(float dist, AttackAbility& ability);
 };
