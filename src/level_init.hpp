@@ -51,3 +51,6 @@ void removeBackground(Entity entity);
 Entity createLadder(vec2 pos, vec2 size);
 void removeLadder(Entity entity);
 
+Entity createPrompt(vec2 pos, vec2 size, int step);
+void removePrompt(Entity entity);
+

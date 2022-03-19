@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 #include "enemy_controller.hpp"
 #include "reload_manager.hpp"
+#include "tutorial_controller.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -20,11 +21,16 @@ public:
         TERMINATION, // game ending logic
 	};
 
+	// flag for completed levels
+	vec4 levels_completed = { false, false, false, false };
+
 	LevelManager();
 
 	~LevelManager();
 
 	void init(GLFWwindow* window);
+
+	void get_progress();
 
 	// Load all needed entities for the level
 	void load_level(int level);
@@ -81,6 +87,9 @@ private:
 
 	// controller that handles player's input
 	PlayerController player_controller;
+
+	// controller that handles tutorial prompts
+	TutorialController tutorial_controller;
 	
 	LevelState current_level_state;
 	LevelState next_level_state;

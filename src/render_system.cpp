@@ -109,6 +109,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	glUniform1i(hit_effect_uloc, registry.hitEffects.has(entity));
 	gl_has_errors();
 
+	// disabled button uniform
+	GLint disabled_uloc = glGetUniformLocation(program, "disabled");
+	glUniform1i(disabled_uloc, (registry.clickables.has(entity) && registry.clickables.get(entity).disabled));
+	gl_has_errors();
+
 	// pass a time uniform
 	GLint time_uloc = glGetUniformLocation(program, "time");
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));

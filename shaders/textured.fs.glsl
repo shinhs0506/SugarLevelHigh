@@ -10,6 +10,9 @@ uniform vec3 fcolor;
 // hit effect
 uniform bool hit_effect;
 
+// color disabled UI elements 
+uniform bool disabled;
+
 // spritesheet
 uniform bool is_character;
 uniform int movement;
@@ -48,5 +51,11 @@ void main()
 	if (hit_effect) {
 		// add some red component
 		color = vec4(normalize(color.xyz + vec3(0.3, 0, 0)), color.w);
+	}
+	
+	if (disabled) {
+		// make the button greyscale
+		vec3 greyscale = vec3(dot( color.xyz, vec3(0.3, 0.3, 0.3)));
+		color = vec4(greyscale.x, greyscale.y, greyscale.z, color.w);
 	}
 }

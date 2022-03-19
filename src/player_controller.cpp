@@ -219,6 +219,11 @@ bool PlayerController::should_end_player_turn()
 	return current_state == CharacterState::END;
 }
 
+bool PlayerController::has_player_moved_right()
+{
+	return current_state == CharacterState::MOVE_RIGHT;
+}
+
 void PlayerController::move_to_state(CharacterState next_state)
 {
 	switch (next_state) {
