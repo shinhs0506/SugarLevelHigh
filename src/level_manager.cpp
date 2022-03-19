@@ -28,18 +28,6 @@ LevelManager::~LevelManager()
 
 }
 
-std::string get_init_level_data_file_path(int level) {
-    return data_path() + "/levels" +
-        "/level" + std::to_string(level) +
-        "/init.json";
-}
-
-std::string get_saved_level_data_file_path(int level) {
-    return data_path() + "/levels" +
-        "/level" + std::to_string(level) +
-        "/saved.json";
-}
-
 void LevelManager::init(GLFWwindow* window)
 {
     this->window = window;

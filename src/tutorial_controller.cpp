@@ -41,7 +41,7 @@ void TutorialController::step(float elapsed_ms) {
 
 void TutorialController::remove_prompts() {
     for (Entity& e : all_entities) {
-        registry.remove_all_components_of(e);
+        removePrompt(e);
     }
 }
 
