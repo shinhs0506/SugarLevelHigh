@@ -216,11 +216,13 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		    perform_attack(player, player_pos, offset, direction, chosen_attack); 
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
 
-			// Melee Audio
+			
 			if (active_arsenal.basic_attack.activated == true) {
+				// Melee/basic Audio
 				Mix_PlayChannel(-1, melee_attack_sound, 0);
 			}
 			else {
+				// Projectile/advanced Audio
 				Mix_PlayChannel(-1, advanced_attack_sound, 0);
 			}
 

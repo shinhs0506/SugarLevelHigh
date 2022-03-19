@@ -104,9 +104,11 @@ void EnemyController::make_decision() {
 
 		// Melee audio
 		if (!advanced_attack_available(arsenal)) {
+			// Melee/basic Audio
 			Mix_PlayChannel(-1, melee_attack_sound, 0);
 		}
 		else {
+			// Projectile/advanced Audio
 			Mix_PlayChannel(-1, advanced_attack_sound, 0);
 		}
 

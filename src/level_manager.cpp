@@ -469,7 +469,7 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
 
-                // Hit audio
+                // Hit/hurt audio
                 Mix_PlayChannel(-1, hurt_sound, 0);
 
                 // change health bar length
