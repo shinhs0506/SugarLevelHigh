@@ -82,6 +82,7 @@ struct AttackAbility
 	bool gravity_affected;
 	int max_cooldown;
 	int current_cooldown;
+	int texture_ID;
 };
 struct AttackArsenal
 {
@@ -283,7 +284,10 @@ enum class TEXTURE_ASSET_ID {
 	HELP_IMAGE = BACK_BUTTON + 1,
 	ADVANCED_ATTACK_PREVIEW = HELP_IMAGE + 1,
 	BASIC_ATTACK_PREVIEW = ADVANCED_ATTACK_PREVIEW + 1,
-	TEXTURE_COUNT = BASIC_ATTACK_PREVIEW + 1
+	MELEE_ATTACK = BASIC_ATTACK_PREVIEW + 1,
+	BEAR_ADVANCED_ATTACK = MELEE_ATTACK + 1,
+	CHOCOLATE_ADVANCED_ATTACK = BEAR_ADVANCED_ATTACK + 1,
+	TEXTURE_COUNT = CHOCOLATE_ADVANCED_ATTACK + 1
     
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
