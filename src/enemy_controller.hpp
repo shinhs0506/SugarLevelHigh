@@ -1,5 +1,8 @@
 #pragma once
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
 #include "components.hpp"
 
 // include all logic of enemy behaviors
@@ -8,6 +11,7 @@ class EnemyController
 {
 public:
 	EnemyController();
+	~EnemyController();
 
 	void step(float elapsed_ms);
 
@@ -34,4 +38,7 @@ private:
 	void move(Motion& motion, int direction, float distance);
 	float cal_actual_attack_range(AttackAbility& ability);
 	bool within_attack_range(float dist, AttackAbility& ability);
+
+	Mix_Chunk* melee_attack_sound;
+	Mix_Chunk* advanced_attack_sound;
 };

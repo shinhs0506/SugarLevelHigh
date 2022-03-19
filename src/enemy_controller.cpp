@@ -9,6 +9,20 @@ EnemyController::EnemyController()
 {
 	current_state = CharacterState::END;
 	next_state = CharacterState::END;
+
+	SDL_Init(SDL_INIT_AUDIO);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+	melee_attack_sound = Mix_LoadWAV(audio_path("melee_attack.wav").c_str());
+	advanced_attack_sound = Mix_LoadWAV(audio_path("advanced_attack.wav").c_str());
+}
+
+EnemyController::~EnemyController()
+{
+	if (melee_attack_sound != nullptr)
+		Mix_FreeChunk(melee_attack_sound);
+	if (advanced_attack_sound != nullptr)
+		Mix_FreeChunk(advanced_attack_sound);
+	Mix_CloseAudio();
 }
 
 void EnemyController::start_turn(Entity enemy)
@@ -87,6 +101,14 @@ void EnemyController::make_decision() {
 	if (within_attack_range(min_dist, chosen_attack)) {
 		vec2 direction = target_motion.position - motion.position;// Attacks left for now
 		vec2 offset{ 75.f, 0.f }; // a bit before the character
+
+		// Melee audio
+		if (!advanced_attack_available(arsenal)) {
+			Mix_PlayChannel(-1, melee_attack_sound, 0);
+		}
+		else {
+			Mix_PlayChannel(-1, advanced_attack_sound, 0);
+		}
 
 		perform_attack(enemy, motion.position, offset, direction, chosen_attack);
 		chosen_attack.current_cooldown = chosen_attack.max_cooldown;

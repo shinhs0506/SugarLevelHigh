@@ -72,4 +72,5 @@ private:
 	 
 	// music references
 	Mix_Music* background_music;
+
 };

@@ -1,6 +1,10 @@
 #pragma once
 #include <vector>
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
 #include <nlohmann/json.hpp>
@@ -109,4 +113,6 @@ private:
     void update_curr_level_data();
 
     void update_healthbar_len_color(Entity entity);
+
+	Mix_Chunk* hurt_sound;
 };
