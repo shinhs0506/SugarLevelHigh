@@ -365,9 +365,9 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
-			EFFECT_ASSET_ID::COLOURED,
-			(GEOMETRY_BUFFER_ID)ability.shape });
+		{ (TEXTURE_ASSET_ID)ability.texture_ID, // TEXTURE_COUNT indicates that no txture is needed
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 

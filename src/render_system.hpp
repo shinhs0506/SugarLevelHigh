@@ -39,6 +39,9 @@ class RenderSystem {
 		textures_path("basic_help.png"),
 		textures_path("advanced_attack_preview.png"),
 		textures_path("basic_attack_preview.png"),
+		textures_path("melee_slash.png"), // Credit for this image goes to Matheus Carvalho
+		textures_path("bear_advanced_attack.png"),
+		textures_path("chocolate_advanced_attack.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

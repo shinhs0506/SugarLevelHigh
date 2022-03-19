@@ -53,8 +53,8 @@ void LevelManager::init_data(int level){
     background = createBackground(background_data.size, level);
 
     for (auto& player_data: reload_manager.get_player_data()) {
-        gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
-        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
+        AttackArsenal ginerbread_arsenal = { gummybear_basic_attack, gummybear_advanced_attack};
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
                 player_data.energy, ginerbread_arsenal);
         update_healthbar_len_color(player);
@@ -62,8 +62,8 @@ void LevelManager::init_data(int level){
     }
 
     for (auto& enemy_data: reload_manager.get_enemy_data()) {
-        gumball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
-        AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
+        chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
+        AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
                 enemy_data.energy, gumball_arsenal);
         update_healthbar_len_color(enemy);
