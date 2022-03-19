@@ -89,6 +89,10 @@ bool collides(const Motion& motion1, const Motion& motion2)
 	return false;
 }
 
+float round_to_nearest_hundred(float num) {
+	return 100 * round(num / 100.0);
+}
+
 bool is_above_climbable(Motion& motion, Motion& climbable) {
 	
 	const vec2 climbable_bb = get_bounding_box(climbable) / 2.f;
@@ -140,7 +144,7 @@ void update_location(Motion& motion) {
 				motion.gravity_affected = false;
 				return;
 			}
-			else {
+			else if (!motion.is_falling) {
 				motion.location = LOCATION::ON_CLIMBABLE;
 				motion.gravity_affected = false;
 				return;
@@ -156,14 +160,11 @@ void update_location(Motion& motion) {
 				}
 				return;
 			}
-			else {
-				motion.location = LOCATION::NORMAL;
-				motion.gravity_affected = true;
-				motion.position.y = floor(motion.position.y);
-				//printf("normal\n");
-			}
 		}
 	}
+	motion.location = LOCATION::NORMAL;
+	motion.gravity_affected = true;
+	motion.position.y = round(motion.position.y);
 }
 
 float interpolation_acceleration(float goal_velocity, float current_velocity) {
@@ -179,35 +180,6 @@ float interpolation_acceleration(float goal_velocity, float current_velocity) {
 	}
 	return goal_velocity; // reached goal
 }
-
-void handle_character_collisions(Motion& character_motion, Motion& terrain_motion, float gravity, float elapsed_ms) {
-	// Collision Handler
-	if (collides(character_motion, terrain_motion)) {
-		// Collision between bottom of the character and top of the terrain
-		if (collide_bottom(character_motion, terrain_motion) && character_motion.location != LOCATION::ABOVE_CLIMBABLE && character_motion.location != LOCATION::ON_CLIMBABLE) {
-			character_motion.goal_velocity.y = 0;
-			character_motion.position.y = character_motion.prev_position.y;
-		}
-		// Collision between right of the character and left of the terrain
-		if (collide_right(character_motion, terrain_motion)) {
-			if (character_motion.goal_velocity.x > 0) {
-				character_motion.position.x = character_motion.prev_position.x;
-			}
-
-		}
-		// Collision between left of the character and right of the terrain
-		if (collide_left(character_motion, terrain_motion)) {
-			if (character_motion.goal_velocity.x < 0) {
-				character_motion.position.x = character_motion.prev_position.x;
-			}
-		}
-	}
-	else if (character_motion.location == LOCATION::NORMAL) {
-		character_motion.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
-		character_motion.is_falling = true;
-	}
-}
-
 
 void PhysicsSystem::step(float elapsed_ms)
 {
@@ -230,10 +202,6 @@ void PhysicsSystem::step(float elapsed_ms)
 			motion.prev_position = motion.position;
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
-			updateHealthBar(entity);
-			if (registry.activeTurns.has(entity)) {
-				updateOrderIndicator(entity);
-			}
 		}
 
 		else {
@@ -297,45 +265,40 @@ void PhysicsSystem::step(float elapsed_ms)
 			Entity terrain = terrains.entities[j];
 			Motion& terrain_motion = registry.motions.get(terrain);
 
-			handle_character_collisions(character_motion, terrain_motion, gravity, elapsed_ms);
+			// Collision Handler
+			if (collides(character_motion, terrain_motion)) {
+				// Collision between bottom of the character and top of the terrain
+				
+				// Collision between right of the character and left of the terrain
+				if (collide_right(character_motion, terrain_motion)) {
+					if (character_motion.goal_velocity.x > 0) {
+						character_motion.position.x = character_motion.prev_position.x;
+					}
+					
+				}
+				// Collision between left of the character and right of the terrain
+				if (collide_left(character_motion, terrain_motion)) {
+					if (character_motion.goal_velocity.x < 0) {
+						character_motion.position.x = character_motion.prev_position.x;
+					}
+				}
+				if (collide_bottom(character_motion, terrain_motion)
+					&& character_motion.location != LOCATION::ABOVE_CLIMBABLE
+					&& character_motion.location != LOCATION::ON_CLIMBABLE
+					&& character_motion.is_falling) {
+					character_motion.goal_velocity.y = 0;
+					character_motion.position.y = round_to_nearest_hundred(character_motion.prev_position.y);
+					character_motion.is_falling = false;
+				}
+			}
+			else if (character_motion.location == LOCATION::NORMAL) {
+				character_motion.goal_velocity.y += gravity * (elapsed_ms / 1000.0f);
+				character_motion.is_falling = true;
+			}
 		}
-	}
-
-	auto& enemies = registry.enemies;
-	for (uint i = 0; i < enemies.size(); i++) {
-		Entity enemy = enemies.entities[i];
-		Motion& enemy_motion = registry.motions.get(enemy);
-
-		auto& terrains = registry.terrains;
-		for (uint j = 0; j < terrains.size(); j++) {
-			Entity terrain = terrains.entities[j];
-			Motion& terrain_motion = registry.motions.get(terrain);
-
-			handle_character_collisions(enemy_motion, terrain_motion, gravity, elapsed_ms);
-		}
-	}
-
-	// debugging of bounding boxes
-	if (debugging.in_debug_mode)
-	{
-		uint size_before_adding_new = (uint)motion_container.components.size();
-		for (uint i = 0; i < size_before_adding_new; i++)
-		{
-			Motion& motion_i = motion_container.components[i];
-			Entity entity_i = motion_container.entities[i];
-
-			// don't draw debugging visuals around debug lines
-			if (registry.debugComponents.has(entity_i))
-				continue;
-
-			// visualize the radius with two axis-aligned lines
-			const vec2 bonding_box = get_bounding_box(motion_i);
-			float radius = sqrt(dot(bonding_box/2.f, bonding_box/2.f));
-			vec2 line_scale1 = { motion_i.scale.x / 10, 2*radius };
-			vec2 line_scale2 = { 2*radius, motion_i.scale.x / 10};
-			vec2 position = motion_i.position;
-			Entity line1 = createDebugLine(motion_i.position, line_scale1);
-			Entity line2 = createDebugLine(motion_i.position, line_scale2);
+		updateHealthBar(character);
+		if (registry.activeTurns.has(character)) {
+			updateOrderIndicator(character);
 		}
 	}
 }

@@ -51,7 +51,7 @@ void EnemyController::move(Motion& motion, DIRECTION direction, float distance) 
 
 float EnemyController::cal_actual_attack_range(AttackAbility& ability) {
 	// add some small offset
-	return ability.range + min(ability.size.x, ability.size.y) / 2 + 10;
+	return ability.range + max(ability.size.x, ability.size.y);
 }
 
 bool EnemyController::within_attack_range(float dist, AttackAbility& ability) {
@@ -87,9 +87,9 @@ void EnemyController::make_decision() {
 	// if the enemy is low health, try to move away from character and keep distance of ranged attack
 	// the magic 10 is to ensure the enemy can attack within range
 	if (health.cur_health < 40.f && min_dist < cal_actual_attack_range(chosen_attack) - 10 && energy.cur_energy > 0.f) {
-		float dist = cal_actual_attack_range(chosen_attack) - 10 - min_dist;
+		float dist = max(cal_actual_attack_range(chosen_attack) - min_dist - 10, 0.f);
 		// only move left/right now
-		move(motion, motion.position.x < target_motion.position.x ? DIRECTION_RIGHT : DIRECTION_LEFT, dist);
+		move(motion, motion.position.x < target_motion.position.x ? DIRECTION_LEFT : DIRECTION_RIGHT, dist);
 		return;
 	}
 
@@ -111,13 +111,13 @@ void EnemyController::make_decision() {
 	// target above enemy
 	else if (motion.position.y - target_motion.position.y > 0 &&
 		(motion.location == BELOW_CLIMBABLE || motion.location == ON_CLIMBABLE)) {
-		move(motion, DIRECTION_UP, 5); // some arbitrary distance
+		move(motion, DIRECTION_UP, 10); // some arbitrary distance
 	}
 	// target below enemy
 	// disable climing down for possible visual bugs
 	//else if (target_motion.position.y - motion.position.y > 0 &&
 	//	(motion.location == ABOVE_CLIMBABLE || motion.location == ON_CLIMBABLE)) {
-	//	move(motion, DIRECTION_DOWN, 5); // some arbitrary distance
+	//	move(motion, DIRECTION_DOWN, 10); // some arbitrary distance
 	//} 
 	// move horizontally
 	else {
@@ -161,7 +161,7 @@ void EnemyController::step(float elapsed_ms)
 		if (move_counter < 0.f || energy.cur_energy == 0.f) {
 			move_counter = 0.f;
 			motion.goal_velocity.x = 0;
-			motion.goal_velocity.y = 0;
+			//motion.goal_velocity.y = 0;
 			move_to_state(CharacterState::IDLE);
 		}
 		break;

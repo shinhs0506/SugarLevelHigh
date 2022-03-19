@@ -8,7 +8,7 @@ character or deactivated if enemy's turn. When box is clicked, it will retrieve 
 abilities and attack from there. (boxes not shown/active during enemy turn)
 */
 
-AttackAbility gingerbread_basic_attack = {
+AttackAbility gummybear_basic_attack = {
     false, // Chosen attack
     0, // speed
     30, // Damage
@@ -17,22 +17,24 @@ AttackAbility gingerbread_basic_attack = {
     vec2(100, 100), // Size
     false, // Gravit Affected
     0, // Max cooldown
-    0, // Current cooldown 
+    0, // Current cooldown
+    (int)TEXTURE_ASSET_ID::MELEE_ATTACK,
 };
-AttackAbility gingerbread_advanced_attack = {
+AttackAbility gummybear_advanced_attack = {
     false, // Chosen attack
     500, // speed
     50, // Damage
     500, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 50), // Size
+    vec2(60, 40), // Size
     true, // Gravit Affected
     2, // Max cooldown
     0, // Current cooldown
+    (int)TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK,
 };
 
-// Gumball used for enemy, at the moment, enemy only uses melee attack (the basic attack active hardcoded to true)
-AttackAbility gumball_basic_attack = {
+// Chocolate Ball used for enemy
+AttackAbility chocolateball_basic_attack = {
     true, // Chosen attack
     0, // speed
     10, // Damage
@@ -42,15 +44,17 @@ AttackAbility gumball_basic_attack = {
     false, // Gravit Affected
     0, // Max cooldown
     0, // Current cooldown 
+    (int)TEXTURE_ASSET_ID::MELEE_ATTACK,
 };
-AttackAbility gumball_advanced_attack = {
+AttackAbility chocolateball_advanced_attack = {
     false, // Chosen attack
     500, // speed
     20, // Damage
     100, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 100), // Size
+    vec2(70, 50), // Size
     false, // Gravit Affected
     2, // Max cooldown
     0, // Current cooldown
+    (int)TEXTURE_ASSET_ID::CHOCOLATE_ADVANCED_ATTACK,
 };
