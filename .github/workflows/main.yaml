@@ -1,0 +1,50 @@
+# CD
+
+name: CD
+
+# run on push and pullrequests on the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    # running on the lastest ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # download cmake
+      - name: download cmake
+        working-directory: ./
+        run: |
+              sudo apt-get install build-essential libssl-dev
+              cd /tmp
+              wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz
+              tar -zxvf cmake-3.20.0.tar.gz
+              cd cmake-3.20.0
+              ./bootstrap
+              make
+              sudo make install
+
+      # download external libs required
+      - name: download libs
+        working-directory: ./
+        run: |
+              sudo apt-get update
+              sudo apt-get install libglfw3-dev libsdl2-dev libsdl2-mixer-dev nlohmann-json3-dev -y
+              # package name on ubuntu is slightly different
+              sed -i 's/pkg_search_module(SDL2 REQUIRED sdl)/pkg_search_module(SDL2 REQUIRED sdl2)/' ./CMakeLists.txt
+              sed -i 's/pkg_search_module(SDL2MIXER REQUIRED SDL_mixer)/pkg_search_module(SDL2MIXER REQUIRED SDL2_mixer)/' ./CMakeLists.txt
+
+      # run cmake and make
+      - name: build
+        working-directory: ./
+        run: |
+              mkdir build
+              cd build
+              cmake ../
+              make

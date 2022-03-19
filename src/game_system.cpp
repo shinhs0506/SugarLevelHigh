@@ -7,6 +7,7 @@
 
 #include "physics_system.hpp"
 #include "level_init.hpp"
+#include "camera_manager.hpp"
 
 const char* GAME_TITLE = "Sugar Level: High";
 
@@ -109,13 +110,7 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	// set the title of the game
 	glfwSetWindowTitle(window, GAME_TITLE);
 
-	//// init a camera that is shared across all scenes
-	//// camera offsets are the same as the window size
-    vec2 offset = vec2(window_width_px / 2, window_height_px / 2);
-	//// init position at center of the window, which is the same as offset
-	//// also set x, y limit to the same as offset so the camera is not really movable
-	//// need to modify limits in each level to match the map
-    createCamera(offset, offset, offset, offset);
+    init_camera();
 	
     // start with main menu
     this->current_game_state = GameState::MAIN_MENU;
