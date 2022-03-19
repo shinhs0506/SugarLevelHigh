@@ -32,10 +32,18 @@ void EnemyController::move(Motion& motion, DIRECTION direction, float distance) 
 	move_counter = distance / motion.speed * 1000;
 
 	if (direction == DIRECTION_LEFT) {
+		if (motion.location == LOCATION::ON_CLIMBABLE) {
+			motion.location = LOCATION::NORMAL;
+			motion.is_falling = true;
+		}
 		move_to_state(CharacterState::MOVE_LEFT);
 		motion.goal_velocity.x = -1 * motion.speed;
 	} 
 	else if (direction == DIRECTION_RIGHT) {
+		if (motion.location == LOCATION::ON_CLIMBABLE) {
+			motion.location = LOCATION::NORMAL;
+			motion.is_falling = true;
+		}
 		move_to_state(CharacterState::MOVE_RIGHT);
 		motion.goal_velocity.x = 1 * motion.speed;
 	}
@@ -124,6 +132,11 @@ void EnemyController::make_decision() {
 		// move distance is calculated only on x-axis
 		float x_dist = abs(target_motion.position.x - motion.position.x);
 		float dist = abs(x_dist - cal_actual_attack_range(chosen_attack));
+
+		// add some extra distance when they are at different platforms
+		if (abs(motion.position.y - target_motion.position.y) > 50) {
+			dist += 50;
+		}
 		// only move left/right now
 		move(motion, motion.position.x < target_motion.position.x ? DIRECTION_RIGHT : DIRECTION_LEFT, dist);
 	}
