@@ -21,6 +21,7 @@ struct Health
 {
 	float max_health = 100.f;
 	float cur_health = 100.f;
+	bool damage_per_turn = false;
 	bool dead = false; // set this to true to remove the entity to all registries
 };
 

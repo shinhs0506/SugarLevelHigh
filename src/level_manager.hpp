@@ -22,7 +22,7 @@ public:
 	};
 
 	// flag for completed levels
-	vec4 levels_completed = { false, false, false, false };
+	vec4 levels_completed = { true, true, true, true };
 
 	LevelManager();
 
@@ -61,11 +61,13 @@ public:
 
 	LevelState current_state();
 
+	static void update_healthbar_len_color(Entity entity);
+
 private:
 	int curr_level;
 
 	Entity main_camera;
-	const float CAM_MOVE_SPEED = 100;
+	const float CAM_MOVE_SPEED = 200;
     
 	// for turn order logic
 	std::vector<Entity> order_vector;
@@ -116,6 +118,4 @@ private:
     void destroy_saved_level_data_file();
 
     void update_curr_level_data();
-
-    void update_healthbar_len_color(Entity entity);
 };

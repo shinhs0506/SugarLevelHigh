@@ -191,7 +191,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal, bool slippery)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
 {
 	auto entity = Entity();
 
@@ -213,7 +213,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
@@ -251,7 +251,7 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal, bool slippery)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
 {
 	auto entity = Entity();
 
@@ -272,7 +272,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	registry.playables.insert(entity, player);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy };
 	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };

@@ -4,6 +4,7 @@
 #include "enemy_controller.hpp"
 #include "level_init.hpp"
 #include "ability.hpp"
+#include "level_manager.hpp"
 
 EnemyController::EnemyController()
 {
@@ -13,9 +14,21 @@ EnemyController::EnemyController()
 
 void EnemyController::start_turn(Entity enemy)
 {
+	this->enemy = enemy;
+
+	Health& player_health = registry.healths.get(enemy);
+	std::cout << "over turn " << player_health.damage_per_turn << std::endl;
+	if (player_health.damage_per_turn == true) {
+		player_health.cur_health -= 45;
+		LevelManager::update_healthbar_len_color(enemy);
+		createHitEffect(enemy, 200);
+		if (player_health.cur_health < 0) {
+			player_health.cur_health = 0;
+		}
+	}
+
 	current_state = CharacterState::IDLE;
 	next_state = CharacterState::IDLE;
-	this->enemy = enemy;
 
 	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
 }
@@ -110,6 +123,22 @@ void EnemyController::step(float elapsed_ms)
 {
 	// update state
 	current_state = next_state;
+
+	// For Level 3 damage over time hit effect
+	for (uint i = 0; i < registry.hitEffects.size(); i++) {
+		Entity entity = registry.hitEffects.entities[i];
+		HitEffect& effect = registry.hitEffects.components[i];
+		effect.ttl_ms -= elapsed_ms;
+		if (effect.ttl_ms < 0) {
+			removeHitEffect(entity);
+
+			// only set dead after hit effect played 
+			if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
+				registry.healths.get(entity).dead = true;
+				move_to_state(CharacterState::END);
+			}
+		}
+	}
 
 	// Enemy fell off the map (ie died on its turn)
 	if (current_state == CharacterState::END) {
