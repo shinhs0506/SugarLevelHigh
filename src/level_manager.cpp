@@ -508,11 +508,11 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
 
-                // change health bar length
-                update_healthbar_len_color(other_entity);
-
-                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
-          
+                // change health bar length for players or enemies
+                if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
+                    update_healthbar_len_color(other_entity);
+                }
+                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl 
             }
         }
     }

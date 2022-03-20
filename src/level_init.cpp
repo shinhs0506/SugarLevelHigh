@@ -320,7 +320,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.depth = DEPTH::TERRAIN;
 
 	// TODO: terrains might have more components
-	Terrain terrain{ false }; 
+	Terrain terrain{ true }; 
 	registry.terrains.insert(entity, terrain);
 	
 	// Break when the terrain is breakable and health < 0
