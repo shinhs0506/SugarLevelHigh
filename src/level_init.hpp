@@ -28,7 +28,7 @@ Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,
         AttackArsenal attack_arsenal);
 void removePlayer(Entity entity);
 
-Entity createTerrain(vec2 pos, vec2 size);
+Entity createTerrain(vec2 pos, vec2 size, bool breakable);
 void removeTerrain(Entity entity);
 
 Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos);

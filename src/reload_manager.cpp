@@ -93,9 +93,11 @@ void ReloadManager::load(int level) {
     for (auto& terrain_data: terrains_data) {
         vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
         vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
+        bool terrain_breakable = terrain_data["breakable"];
         TerrainData td {
             terrain_pos,
-            terrain_size
+            terrain_size,
+            terrain_breakable
         };
         terrain_data_vector.push_back(td);
     }

@@ -305,7 +305,7 @@ void removePlayer(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createTerrain(vec2 pos, vec2 size)
+Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 {
 	auto entity = Entity();
 
@@ -320,7 +320,7 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.depth = DEPTH::TERRAIN;
 
 	// TODO: terrains might have more components
-	Terrain terrain{ true }; 
+	Terrain terrain{ breakable };
 	registry.terrains.insert(entity, terrain);
 	
 	// Break when the terrain is breakable and health < 0
