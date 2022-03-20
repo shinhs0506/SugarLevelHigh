@@ -63,7 +63,7 @@ Entity createOrderIndicator(){
 	auto entity = Entity();
 
 	registry.orderIndicators.emplace(entity);
-	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	vec2 pos = vec2(100000, 100000); // subject to change when adjusting UI positions, out of screen when started
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = { pos };
@@ -407,6 +407,20 @@ void removeCamera(Entity entity)
 	registry.motions.remove(entity);
 	registry.cameras.remove(entity);
 }
+
+Entity createTimer(float ms) {
+    auto entity = Entity();
+
+    Timer timer { ms };
+    registry.timers.insert(entity, timer);
+    
+    return entity;
+}
+
+void removeTimer(Entity entity) {
+    registry.timers.remove(entity);
+}
+
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
 {

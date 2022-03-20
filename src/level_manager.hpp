@@ -14,6 +14,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
+        ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
 		ENEMY_TURN, // handled by AI system
@@ -66,7 +67,7 @@ private:
 
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 100;
-    
+
 	// for turn order logic
 	std::vector<Entity> order_vector;
 	int curr_order_ind;
