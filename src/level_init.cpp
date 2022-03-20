@@ -327,11 +327,22 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 	Health health{ 20, 20 };
 	registry.healths.insert(entity, health);
 
-	registry.renderRequests.insert(
-		entity,
-		{ TEXTURE_ASSET_ID::TERRAIN1,
-			EFFECT_ASSET_ID::TEXTURED,
-			GEOMETRY_BUFFER_ID::SPRITE });
+	if (!breakable) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+
+	
 
 	return entity;
 }

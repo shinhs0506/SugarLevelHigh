@@ -32,6 +32,7 @@ class RenderSystem {
 		textures_path("enemy.png"),
 		textures_path("background1.png"),
 		textures_path("terrain.png"),
+		textures_path("terrain_breakable.png"),
 		textures_path("button_start.png"),
         textures_path("button_help.png"),
 		textures_path("button_exit.png"),
