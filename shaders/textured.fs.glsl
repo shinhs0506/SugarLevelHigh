@@ -15,8 +15,11 @@ uniform bool disabled;
 
 // spritesheet
 uniform bool is_character;
+uniform bool is_enemy;
 uniform int movement;
 uniform float time;
+
+uniform float blink;
 
 // Output color
 layout(location = 0) out  vec4 color;
@@ -47,6 +50,10 @@ void main()
 	else {
 		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
 	}
+
+    if (is_enemy) {
+        color = vec4(color.xyz + (((sin((0.01 * blink + 3) * (3.14/2))+1)/2) * (vec3(1, 0, 0))), color.w);
+    }
 
 	if (hit_effect) {
 		// add some red component

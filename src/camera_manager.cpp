@@ -2,7 +2,6 @@
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
 
-
 Entity init_camera() {
 	//// init a camera that is shared across all scenes
 	//// camera offsets are the same as the window size

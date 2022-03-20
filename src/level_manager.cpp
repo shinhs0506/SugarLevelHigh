@@ -34,9 +34,6 @@ void LevelManager::init(GLFWwindow* window)
     this->main_camera = get_camera();
 
     is_level_over = false;
-
-    this->current_level_state = LevelState::PREPARE;
-    this->next_level_state = LevelState::PREPARE;
 }
 
 
@@ -92,6 +89,13 @@ void LevelManager::init_data(int level) {
     }
 
     curr_order_ind = reload_manager.get_curr_order_ind();
+
+    this->current_level_state = (LevelState) reload_manager.get_curr_level_state();
+    this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
+
+    if (this->current_level_state == LevelState::ENEMY_BLINK) {
+        createTimer(1000);
+    }
 }
 
 bool compare(Entity a, Entity b) {
@@ -314,7 +318,22 @@ bool LevelManager::step(float elapsed_ms)
 
     bool only_player_left = registry.playables.size() == registry.initiatives.size();
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
+
     switch (current_level_state) {
+    case LevelState::ENEMY_BLINK:
+        if (registry.timers.size() > 0) {
+            Entity& entity = registry.timers.entities[0];
+            Timer& timer = registry.timers.components[0];
+            if (timer.timer > 0) {
+                timer.timer -= elapsed_ms;
+            } else {
+                registry.timers.remove(entity);
+            }
+        } else {
+            move_to_state(LevelState::PREPARE);
+        }
+        break;
+
     case LevelState::PREPARE:
         {
             // check whether level completed/failed
@@ -433,6 +452,11 @@ bool LevelManager::step(float elapsed_ms)
         break;
     }
 
+    // update order indicator's position
+    if (registry.activeTurns.size() > 0) {
+        updateOrderIndicator(registry.activeTurns.entities[0]);
+    }
+
     return true;
 }
 
@@ -518,6 +542,10 @@ bool LevelManager::is_over() {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
+    if (current_level_state == LevelState::ENEMY_BLINK) {
+        return;
+    }
+
     switch (current_level_state) {
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
@@ -577,6 +605,10 @@ void LevelManager::on_mouse_move(vec2 pos)
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
 {
+    if (current_level_state == LevelState::ENEMY_BLINK) {
+        return;
+    }
+
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
@@ -623,9 +655,13 @@ LevelManager::LevelState LevelManager::current_state()
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
     switch (next_state) {
+    case LevelState::ENEMY_BLINK:
+        std::cout << "moving to enemy blink state" << std::endl;
+        assert(this->current_level_state == LevelState::ENEMY_BLINK); break;
+
     case LevelState::PREPARE:
         std::cout << "moving to prepare state" << std::endl;
-        assert(this->current_level_state == LevelState::EVALUATION); break;
+        assert(this->current_level_state == LevelState::EVALUATION || this->current_level_state == LevelState::ENEMY_BLINK); break;
 
     case LevelState::PLAYER_TURN:
         std::cout << "moving to player's state" << std::endl;

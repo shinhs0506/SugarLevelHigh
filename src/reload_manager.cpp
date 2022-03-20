@@ -113,6 +113,7 @@ void ReloadManager::load(int level) {
     }
 
     curr_order_ind = js["curr_order_ind"];
+    curr_level_state = js["curr_level_state"];
 }
 
 CameraData ReloadManager::get_camera_data() {
@@ -141,6 +142,10 @@ std::vector<LadderData> ReloadManager::get_ladder_data() {
 
 int ReloadManager::get_curr_order_ind() {
     return curr_order_ind;
+}
+
+int ReloadManager::get_curr_level_state() {
+    return curr_level_state;
 }
 
 void ReloadManager::update_camera_data(CameraData camera_data) {
@@ -236,6 +241,9 @@ void ReloadManager::save(int level) {
 
     // -1 because we advance order at the start of the game
     curr_level_data_json["curr_order_ind"] = curr_order_ind - 1;
+    
+    // always goto prepare state on resume
+    curr_level_data_json["curr_level_state"] = 1;
 
     std::string datafile_path = get_saved_level_data_file_path(level);
     std::ofstream ofs(datafile_path);
