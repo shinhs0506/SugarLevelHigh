@@ -330,14 +330,14 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 	if (!breakable) {
 		registry.renderRequests.insert(
 			entity,
-			{ TEXTURE_ASSET_ID::TERRAIN1,
+			{ TEXTURE_ASSET_ID::TERRAIN_UNBREAKABLE,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 	}
 	else {
 		registry.renderRequests.insert(
 			entity,
-			{ TEXTURE_ASSET_ID::TERRAIN2,
+			{ TEXTURE_ASSET_ID::TERRAIN_BREAKABLE,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 	}
