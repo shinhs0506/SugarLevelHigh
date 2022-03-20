@@ -22,7 +22,7 @@ public:
 	};
 
 	// flag for completed levels
-	vec4 levels_completed = { true, true, true, true };
+	vec4 levels_completed = { false, false, false, false };
 
 	LevelManager();
 

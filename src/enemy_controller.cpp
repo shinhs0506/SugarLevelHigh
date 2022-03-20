@@ -19,7 +19,7 @@ void EnemyController::start_turn(Entity enemy)
 	Health& player_health = registry.healths.get(enemy);
 	std::cout << "over turn " << player_health.damage_per_turn << std::endl;
 	if (player_health.damage_per_turn == true) {
-		player_health.cur_health -= 45;
+		player_health.cur_health -= 5;
 		LevelManager::update_healthbar_len_color(enemy);
 		createHitEffect(enemy, 200);
 		if (player_health.cur_health < 0) {
