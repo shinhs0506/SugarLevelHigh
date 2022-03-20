@@ -39,6 +39,8 @@ struct LadderData {
     vec2 size;
 };
 
+std::string get_saved_level_data_file_path(int level);
+
 class ReloadManager {
     
     private:

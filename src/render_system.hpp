@@ -39,6 +39,18 @@ class RenderSystem {
 		textures_path("basic_help.png"),
 		textures_path("advanced_attack_preview.png"),
 		textures_path("basic_attack_preview.png"),
+		textures_path("button_tutorial.png"),
+		textures_path("button_level_1.png"),
+		textures_path("button_level_2.png"),
+		textures_path("button_level_3.png"),
+		textures_path("tutorial_move.png"),
+		textures_path("tutorial_attack_basic.png"),
+		textures_path("tutorial_attack_advanced.png"),
+		textures_path("tutorial_cooldown.png"),
+		textures_path("tutorial_complete.png"),
+		textures_path("melee_slash.png"), // Credit for this image goes to Matheus Carvalho
+		textures_path("bear_advanced_attack.png"),
+		textures_path("chocolate_advanced_attack.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

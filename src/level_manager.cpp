@@ -16,6 +16,7 @@
 #include "ability.hpp"
 #include "ability_list.hpp"
 #include "camera_manager.hpp"
+#include "tutorial_controller.hpp"
 
 LevelManager::LevelManager()
 {
@@ -35,7 +36,19 @@ void LevelManager::init(GLFWwindow* window)
     is_level_over = false;
 }
 
-void LevelManager::init_data(int level){
+
+// determine which levels can be accessed based on saved progress
+void LevelManager::get_progress() {
+    for (uint i = 1; i < 4; i++) {
+        std::string saved_datafile_path = get_saved_level_data_file_path(i);
+        std::ifstream sifs(saved_datafile_path);
+        if (sifs.good()) {
+            levels_completed[i - 1] = true;
+        } 
+    }
+}
+
+void LevelManager::init_data(int level) {
     Camera& camera = registry.cameras.get(main_camera);
     Motion& motion = registry.motions.get(main_camera);
 
@@ -50,8 +63,8 @@ void LevelManager::init_data(int level){
     background = createBackground(background_data.size, level);
 
     for (auto& player_data: reload_manager.get_player_data()) {
-        gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
-        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
+        AttackArsenal ginerbread_arsenal = { gummybear_basic_attack, gummybear_advanced_attack};
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
                 player_data.energy, ginerbread_arsenal);
         update_healthbar_len_color(player);
@@ -59,8 +72,8 @@ void LevelManager::init_data(int level){
     }
 
     for (auto& enemy_data: reload_manager.get_enemy_data()) {
-        gumball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
-        AttackArsenal gumball_arsenal = { gumball_basic_attack, gumball_advanced_attack };
+        chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
+        AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
                 enemy_data.energy, gumball_arsenal);
         update_healthbar_len_color(enemy);
@@ -97,6 +110,10 @@ void LevelManager::load_level(int level)
 
     // level specific logic
     if (level == 0) {
+        this->tutorial_controller.init(this);
+        this->init_data(level);
+    }
+    else if (level == 1) {
         this->init_data(level);
     }
 
@@ -161,6 +178,10 @@ void LevelManager::abandon_level()
     registry.activeTurns.clear();
 
     order_vector.clear();
+
+    if (curr_level == 0) {
+        tutorial_controller.destroy();
+    }
 }
 
 void LevelManager::remove_character(Entity entity)
@@ -271,6 +292,11 @@ bool LevelManager::step(float elapsed_ms)
     // advance state
     this->current_level_state = this->next_level_state;
 
+    // manage tutorial state
+    if (curr_level == 0) {
+        this->tutorial_controller.step(elapsed_ms);
+    }
+  
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
         Entity entity = registry.healths.entities[i];
@@ -318,6 +344,13 @@ bool LevelManager::step(float elapsed_ms)
         {
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
+                // allow progression to next level via menu if current level completed
+                if (only_player_left) {
+                    if (curr_level == 0) {
+                        tutorial_controller.should_advance = true;
+                    }
+                    this->levels_completed[curr_level] = true;
+                }
                 move_to_state(LevelState::TERMINATION);
                 break;
             }
@@ -363,10 +396,18 @@ bool LevelManager::step(float elapsed_ms)
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
         {
+            if (curr_level == 0 && (tutorial_controller.curr_step == 1 || tutorial_controller.curr_step == 2) && !tutorial_controller.should_advance) {
+                tutorial_controller.should_advance = true;
+            }
             move_to_state(LevelState::EVALUATION);
         }
-        break;
 
+        if (curr_level == 0 && tutorial_controller.curr_step == 0 && !tutorial_controller.should_advance && player_controller.has_player_moved_right()) {
+            tutorial_controller.should_advance = true;
+        }
+        
+        break;
+        
     case LevelState::ENEMY_TURN:
         // step player controller
         enemy_controller.step(elapsed_ms);
@@ -374,6 +415,7 @@ bool LevelManager::step(float elapsed_ms)
         {
             move_to_state(LevelState::EVALUATION);
         }
+
         break;
 
     case LevelState::EVALUATION:
@@ -407,7 +449,6 @@ bool LevelManager::step(float elapsed_ms)
         if (registry.attackObjects.size() == 0 && registry.hitEffects.size() == 0) {
             move_to_state(LevelState::PREPARE);
         }
-
 
     }
         break;
@@ -591,12 +632,13 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         Motion back_button_motion = registry.motions.get(back_button);
 
         if (collides(click_motion, back_button_motion)) {
-            // move to IN_LEVEL state
 
             if (curr_level != (int) LevelState::TERMINATION) {
                 save_level_data();
             }
-
+            if (curr_level == 0) {
+                tutorial_controller.destroy();
+            }
             is_level_over = true; 
             return;
         }
