@@ -69,7 +69,7 @@ void LevelManager::init_data(int level) {
         gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
         AttackArsenal ginerbread_arsenal = { gummybear_basic_attack, gummybear_advanced_attack};
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
-                player_data.energy, ginerbread_arsenal);
+                player_data.energy, ginerbread_arsenal, (level == 2)? true : false);
         update_healthbar_len_color(player);
         order_vector.push_back(player);
     }
@@ -78,7 +78,7 @@ void LevelManager::init_data(int level) {
         chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
-                enemy_data.energy, gumball_arsenal);
+                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
     }
@@ -107,11 +107,8 @@ void LevelManager::load_level(int level)
     // level specific logic
     if (level == 0) {
         this->tutorial_controller.init(this);
-        this->init_data(level);
     }
-    else if (level == 1) {
-        this->init_data(level);
-    }
+    this->init_data(level);
 
     // common to all levels
     
@@ -190,10 +187,7 @@ void LevelManager::remove_character(Entity entity)
 
     // directly move to evaluation state only if current active character died
     // this is to ensure turn correctly ends the current active chracter died in movement state
-    if (order_vector[pos] == registry.activeTurns.entities[0])
-    {
-        move_to_state(LevelState::EVALUATION);
-    }
+    
     order_vector.erase(it);
 
 }

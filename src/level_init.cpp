@@ -191,7 +191,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery)
 {
 	auto entity = Entity();
 
@@ -206,6 +206,7 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 	motion.location = LOCATION::NORMAL;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };
@@ -250,7 +251,7 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery)
 {
 	auto entity = Entity();
 
@@ -264,6 +265,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Playable player{ healthBar };

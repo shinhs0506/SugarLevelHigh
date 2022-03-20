@@ -152,9 +152,10 @@ struct Motion {
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
 	bool is_falling = false;
-    float speed = 200;
+    float speed = 150;
 	int depth = DEPTH::CHARACTER;
 	int location = LOCATION::NORMAL;
+	int slippery = false;
 };
 
 // Stucture to store collision information

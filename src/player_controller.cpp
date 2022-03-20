@@ -35,6 +35,12 @@ void PlayerController::step(float elapsed_ms)
 	updateEnergyBar(player_energy);
 	updateHealthBar(player);
 
+	if (player_motion.position.y > 900) {
+		Health& player_health = registry.healths.get(player);
+		player_health.dead = true;
+		move_to_state(CharacterState::END);
+	}
+	
 	// update states
 	current_state = next_state;
 
@@ -261,7 +267,8 @@ void PlayerController::move_to_state(CharacterState next_state)
 
 	case CharacterState::END:
 		std::cout << "moving to END state" << std::endl;
-		assert(current_state == CharacterState::PERFORM_ABILITY);
+		assert(current_state == CharacterState::PERFORM_ABILITY || current_state == CharacterState::IDLE || 
+		current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT);
 		break;
 	}
 	this->next_state = next_state;

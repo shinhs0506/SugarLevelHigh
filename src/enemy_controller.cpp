@@ -111,8 +111,20 @@ void EnemyController::step(float elapsed_ms)
 	// update state
 	current_state = next_state;
 
+	// Enemy fell off the map (ie died on its turn)
+	if (current_state == CharacterState::END) {
+		return;
+	}
+
 	Energy& energy = registry.energies.get(enemy);
 	Motion& motion = registry.motions.get(enemy);
+	Health& health = registry.healths.get(enemy);
+
+	// Check if enemy fell off the map
+	if (motion.position.y > 900) {
+		health.dead = true;
+		move_to_state(CharacterState::END);
+	}
 
 	switch (current_state) {
 	case CharacterState::IDLE:
@@ -146,8 +158,10 @@ void EnemyController::step(float elapsed_ms)
 		break;
 	}
 
-	updateEnergyBar(energy);
-	updateHealthBar(enemy);
+	if (health.dead == false) {
+		updateEnergyBar(energy);
+		updateHealthBar(enemy);
+	}
 }
 
 void EnemyController::move_to_state(CharacterState next_state)

@@ -21,11 +21,11 @@ void updateOrderIndicator(Entity entity);
 void removeOrderIndicator();
 
 Entity createEnemy(vec2 pos, vec2 size, float curr_health, float curr_energy, 
-        AttackArsenal attack_arsenal);
+        AttackArsenal attack_arsenal, bool slippery);
 void removeEnemy(Entity entity);
 
 Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,
-        AttackArsenal attack_arsenal);
+        AttackArsenal attack_arsenal, bool slippery);
 void removePlayer(Entity entity);
 
 Entity createTerrain(vec2 pos, vec2 size);
