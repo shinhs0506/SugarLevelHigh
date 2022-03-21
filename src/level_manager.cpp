@@ -197,7 +197,6 @@ void LevelManager::remove_character(Entity entity)
 }
 
 void LevelManager::update_curr_level_data(){
-
     // save camera info
     Camera& camera = registry.cameras.get(main_camera);
     Motion& camera_motion = registry.motions.get(main_camera);
@@ -298,6 +297,7 @@ bool LevelManager::step(float elapsed_ms)
         assert(health.cur_health >= 0.f); // health shouldn't below 0
 
         if (health.dead) {
+            std::cout << "health dead" << std::endl;
             // check playables
             if (registry.playables.has(entity)) {
                 remove_character(entity);
@@ -336,6 +336,7 @@ bool LevelManager::step(float elapsed_ms)
 
     case LevelState::PREPARE:
         {
+        std::cout << "In Prepare State" << std::endl;
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
                 // allow progression to next level via menu if current level completed
@@ -450,11 +451,6 @@ bool LevelManager::step(float elapsed_ms)
     case LevelState::TERMINATION:
         reload_manager.destroy_saved_level_data_file(curr_level);
         break;
-    }
-
-    // update order indicator's position
-    if (registry.activeTurns.size() > 0) {
-        updateOrderIndicator(registry.activeTurns.entities[0]);
     }
 
     return true;
