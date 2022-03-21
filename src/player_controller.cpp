@@ -11,6 +11,21 @@ PlayerController::PlayerController()
 {
 	current_state = CharacterState::END;
 	next_state = CharacterState::END;
+
+
+	SDL_Init(SDL_INIT_AUDIO);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+	melee_attack_sound = Mix_LoadWAV(audio_path("melee_attack.wav").c_str());
+	advanced_attack_sound = Mix_LoadWAV(audio_path("advanced_attack.wav").c_str());
+}
+
+PlayerController::~PlayerController()
+{
+	if (melee_attack_sound != nullptr)
+		Mix_FreeChunk(melee_attack_sound);
+	if (advanced_attack_sound != nullptr)
+		Mix_FreeChunk(advanced_attack_sound);
+	Mix_CloseAudio();
 }
 
 void PlayerController::start_turn(Entity player)
@@ -200,6 +215,16 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 
 		    perform_attack(player, player_pos, offset, direction, chosen_attack); 
 			chosen_attack.current_cooldown = chosen_attack.max_cooldown;
+
+			
+			if (active_arsenal.basic_attack.activated == true) {
+				// Melee/basic Audio
+				Mix_PlayChannel(-1, melee_attack_sound, 0);
+			}
+			else {
+				// Projectile/advanced Audio
+				Mix_PlayChannel(-1, advanced_attack_sound, 0);
+			}
 
 			destroy_preview_objects();
 			

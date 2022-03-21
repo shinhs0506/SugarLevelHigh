@@ -20,12 +20,14 @@
 
 LevelManager::LevelManager()
 {
-
+    hurt_sound = Mix_LoadWAV(audio_path("hurt.wav").c_str());
 }
 
 LevelManager::~LevelManager()
 {
-
+    if (hurt_sound != nullptr)
+        Mix_FreeChunk(hurt_sound);
+    Mix_CloseAudio();
 }
 
 void LevelManager::init(GLFWwindow* window)
@@ -531,6 +533,9 @@ void LevelManager::handle_collisions()
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
+
+                // Hit/hurt audio
+                Mix_PlayChannel(-1, hurt_sound, 0);
 
                 // change health bar length
                 update_healthbar_len_color(other_entity);
