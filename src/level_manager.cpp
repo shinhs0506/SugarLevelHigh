@@ -120,20 +120,9 @@ void LevelManager::load_level(int level)
 {
     this->curr_level = level;
 
-    // level specific logic
-    if (level == 0) {
-        this->tutorial_controller.init(this);
-        this->init_data(level);
-    }
-    else if (level == 1) {
-        this->init_data(level);
-        // for now since we do not have heal on tutorial level
-        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
-    }
-
     // common to all levels
-    
-    back_button = createBackButton(vec2(100, 50), vec2(50,50), NULL); 
+
+    back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
 
     basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
@@ -143,7 +132,18 @@ void LevelManager::load_level(int level)
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
-    // update energy bar
+    // level specific logic
+    if (level == 0) {
+        this->tutorial_controller.init(this);
+        this->init_data(level);
+    }
+    else {
+        this->init_data(level);
+        // for now since we do not have heal on tutorial level
+        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
+    }
+
+
 }
 
 void LevelManager::restart_level()

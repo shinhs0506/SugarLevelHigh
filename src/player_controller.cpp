@@ -36,7 +36,7 @@ void PlayerController::start_turn(Entity player)
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 
-	Entity advanced_attack_clickable = registry.clickables.entities[3];
+	Entity advanced_attack_clickable = registry.clickables.entities[2];
 	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
 		registry.clickables.get(advanced_attack_clickable).on_cooldown = true;
 	}
@@ -44,13 +44,16 @@ void PlayerController::start_turn(Entity player)
 		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
 	}
 
-	Entity healing_clickable = registry.clickables.entities[0];
-	if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
-		registry.clickables.get(healing_clickable).on_cooldown = true;
+	if (registry.abilityButtons.size() > 0) {
+		Entity healing_clickable = registry.clickables.entities[3];
+		if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
+			registry.clickables.get(healing_clickable).on_cooldown = true;
+		}
+		else {
+			registry.clickables.get(healing_clickable).on_cooldown = false;
+		}
 	}
-	else {
-		registry.clickables.get(healing_clickable).on_cooldown = false;
-	}
+	
 }
 
 void PlayerController::step(float elapsed_ms)
