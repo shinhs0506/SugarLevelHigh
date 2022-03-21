@@ -27,7 +27,7 @@ public:
 	};
 
 	// flag for completed levels
-	vec4 levels_completed = { false, false, false, false };
+	vec4 levels_completed = { true, true, true, true };
 
 	LevelManager();
 
@@ -126,8 +126,6 @@ private:
     void destroy_saved_level_data_file();
 
     void update_curr_level_data();
-
-    void update_healthbar_len_color(Entity entity);
 
 	Mix_Chunk* hurt_sound;
 

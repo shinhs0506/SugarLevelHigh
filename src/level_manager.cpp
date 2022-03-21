@@ -74,9 +74,9 @@ void LevelManager::init_data(int level) {
 
     for (auto& player_data: reload_manager.get_player_data()) {
 
-        gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
+        gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
         gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
-        AttackArsenal ginerbread_arsenal = { gummybear_basic_attack, gummybear_advanced_attack};
+        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
                 player_data.energy, ginerbread_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gingerbread_buffs);
@@ -127,12 +127,11 @@ void LevelManager::load_level(int level)
         this->tutorial_controller.init(this);
         this->init_data(level);
     }
-    else if (level == 1) {
+    else {
         this->init_data(level);
         // for now since we do not have heal on tutorial level
         heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
     }
-    this->init_data(level);
 
     // common to all levels
     
