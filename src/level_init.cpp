@@ -482,7 +482,7 @@ Entity createBackground(vec2 size, int level)
 			{ TEXTURE_ASSET_ID::BACKGROUND1,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
-		background.proportion_velocity = 0.7;
+		background.proportion_velocity = 0.5;
 		break;
 	case 11:
 		registry.renderRequests.insert(
@@ -490,6 +490,7 @@ Entity createBackground(vec2 size, int level)
 			{ TEXTURE_ASSET_ID::BACKGROUND11,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
 		break;
 	case 12:
 		registry.renderRequests.insert(
@@ -497,7 +498,7 @@ Entity createBackground(vec2 size, int level)
 			{ TEXTURE_ASSET_ID::BACKGROUND12,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
-		background.proportion_velocity = 0.8;
+		background.proportion_velocity = 0.7;
 		break;
 	default:
 		break;

@@ -217,6 +217,16 @@ void PhysicsSystem::step(float elapsed_ms)
 		{
 			Camera& camera = registry.cameras.get(entity);
 			motion.position = clamp(motion.position, camera.lower_limit, camera.higer_limit);
+			for (int i = 0; i < registry.backgrounds.size(); i++) {
+				Entity& entity = registry.backgrounds.entities[i];
+				Motion& background_motion = registry.motions.get(entity);
+				float proportion = registry.backgrounds.get(entity).proportion_velocity;
+				// TODO: this original position might not be the center of the window in future levels
+				vec2 original_position = { window_width_px / 2, window_height_px / 2 };
+				vec2 lower_limit_offset = proportion * (camera.lower_limit - original_position);
+				vec2 higher_limit_offset = proportion * (camera.higer_limit - original_position);
+				background_motion.position = clamp(background_motion.position, original_position + lower_limit_offset, original_position + higher_limit_offset);
+			}
 		}
 	}
 

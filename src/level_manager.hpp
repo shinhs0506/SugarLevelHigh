@@ -106,6 +106,8 @@ private:
     Entity energy_bar;
 
     Entity background;
+	Entity background1;
+	Entity background2;
   
     // remove the character from order_vector
     void remove_character(Entity entity);
