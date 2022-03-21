@@ -53,6 +53,7 @@ class RenderSystem {
 		textures_path("chocolate_advanced_attack.png"),
 		textures_path("background11.png"),
 		textures_path("background12.png"),
+		textures_path("ladder.png"), // https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art
 	};
 
 	std::array<GLuint, effect_count> effects;
