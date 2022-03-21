@@ -548,10 +548,6 @@ bool LevelManager::is_over() {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
-    if (current_level_state == LevelState::ENEMY_BLINK) {
-        return;
-    }
-
     switch (current_level_state) {
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
@@ -611,10 +607,6 @@ void LevelManager::on_mouse_move(vec2 pos)
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
 {
-    if (current_level_state == LevelState::ENEMY_BLINK) {
-        return;
-    }
-
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
