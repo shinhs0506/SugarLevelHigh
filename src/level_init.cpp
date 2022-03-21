@@ -374,9 +374,6 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 		{ (TEXTURE_ASSET_ID)ability.texture_ID, // TEXTURE_COUNT indicates that no txture is needed
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
-
-	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
-
 	return entity;
 }
 
@@ -428,17 +425,15 @@ void removeTimer(Entity entity) {
 }
 
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
 	auto entity = createGenericButton(pos, size, on_click);
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(0.f, 0.f, 1.f));
+		{ texture_ID,
+			EFFECT_ASSET_ID::TEXTURED, // TODO COOLDOWN effect
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -451,9 +446,9 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)())
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
-    auto entity = createButton(pos, size, on_click);
+    auto entity = createButton(pos, size, on_click, texture_ID);
 
     registry.abilityButtons.emplace(entity);
 

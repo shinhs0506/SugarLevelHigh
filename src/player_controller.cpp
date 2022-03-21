@@ -18,6 +18,7 @@ PlayerController::PlayerController()
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 	melee_attack_sound = Mix_LoadWAV(audio_path("melee_attack.wav").c_str());
 	advanced_attack_sound = Mix_LoadWAV(audio_path("advanced_attack.wav").c_str());
+	heal_ability_sound = Mix_LoadWAV(audio_path("healing_ability.wav").c_str());
 }
 
 PlayerController::~PlayerController()
@@ -47,6 +48,25 @@ void PlayerController::start_turn(Entity player)
 
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
+
+	Entity advanced_attack_clickable = registry.clickables.entities[2];
+	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
+		registry.clickables.get(advanced_attack_clickable).on_cooldown = true;
+	}
+	else {
+		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
+	}
+
+	if (registry.abilityButtons.size() > 0) {
+		Entity healing_clickable = registry.clickables.entities[3];
+		if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
+			registry.clickables.get(healing_clickable).on_cooldown = true;
+		}
+		else {
+			registry.clickables.get(healing_clickable).on_cooldown = false;
+		}
+	}
+	
 }
 
 void PlayerController::step(float elapsed_ms)
@@ -79,6 +99,8 @@ void PlayerController::step(float elapsed_ms)
 
     if (current_state == CharacterState::PERFORM_ABILITY_AUTO) {
         perform_buff_ability(player);
+		// Play healing sound
+		Mix_PlayChannel(-1, heal_ability_sound, 0);
         move_to_state(CharacterState::END);
     }
 

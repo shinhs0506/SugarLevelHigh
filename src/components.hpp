@@ -193,6 +193,7 @@ struct Collision
 struct Clickable {
 	bool (*on_click)();
 	bool disabled = false;
+	bool on_cooldown = false;
 };
 
 // Attached to buttons that use Buff components
@@ -329,7 +330,8 @@ enum class TEXTURE_ASSET_ID {
 	CHOCOLATE_ADVANCED_ATTACK = BEAR_ADVANCED_ATTACK + 1,
 	BACKGROUND11 = CHOCOLATE_ADVANCED_ATTACK + 1,
 	BACKGROUND12 = BACKGROUND11 + 1,
-	TEXTURE_COUNT = BACKGROUND12 + 1
+	HEALTH_ABILITY = BACKGROUND12 + 1,
+	TEXTURE_COUNT = HEALTH_ABILITY + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

@@ -13,6 +13,9 @@ uniform bool hit_effect;
 // color disabled UI elements 
 uniform bool disabled;
 
+// cool down
+uniform bool on_cooldown;
+
 // spritesheet
 uniform bool is_character;
 uniform bool is_enemy;
@@ -74,4 +77,10 @@ void main()
 		vec3 greyscale = vec3(dot( color.xyz, vec3(0.3, 0.3, 0.3)));
 		color = vec4(greyscale.x, greyscale.y, greyscale.z, color.w);
 	}
+
+	if (on_cooldown) {
+		// Make ability red while on cooldown
+		color = vec4(vec3(1, 0, 0), color.w);
+	}
 }
+
