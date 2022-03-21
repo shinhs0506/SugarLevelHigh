@@ -17,6 +17,7 @@ PlayerController::PlayerController()
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 	melee_attack_sound = Mix_LoadWAV(audio_path("melee_attack.wav").c_str());
 	advanced_attack_sound = Mix_LoadWAV(audio_path("advanced_attack.wav").c_str());
+	heal_ability_sound = Mix_LoadWAV(audio_path("healing_ability.wav").c_str());
 }
 
 PlayerController::~PlayerController()
@@ -66,6 +67,8 @@ void PlayerController::step(float elapsed_ms)
 
     if (current_state == CharacterState::PERFORM_ABILITY_AUTO) {
         perform_buff_ability(player);
+		// Play healing sound
+		Mix_PlayChannel(-1, heal_ability_sound, 0);
         move_to_state(CharacterState::END);
     }
 
