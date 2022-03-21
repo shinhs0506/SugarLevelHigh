@@ -43,9 +43,17 @@ void main()
 			}
 		}
 
+		if (movement == 3) { // falling
+			index = vec2(2, 3);
+		}
+
+		if (movement == 4) { // climb ladder
+			index = vec2(0, 3);
+		}
+
 		float col = mod(index.x, 3);
 		float row = floor(index.y / 2);
-		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x * 1/3 + col * 1/3, 1.0 - 1/2 - row * 1/2 + texcoord.y * 1/2));
+		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x * 1/3 + col * 1/3, 1.0 - 1/3 - row * 1/3 + texcoord.y * 1/3));
 	}
 	else {
 		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));

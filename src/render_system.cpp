@@ -100,7 +100,9 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	int movement = 0; // idle
 	if (motion.goal_velocity.x < 0) movement = 1; // left
 	if (motion.goal_velocity.x > 0) movement = 2; // right
-	// TODO: only have left and right movements so far
+	// if (motion.is_falling && motion.goal_velocity.y > 0) movement = 3; // falling
+	// if (!motion.gravity_affected) movement = 4; // climb
+	// TODO: weird behaviour occurs with the implementation above; need to double check the movement implementation later
 	glUniform1i(movement_uloc, movement);
 	gl_has_errors();
 

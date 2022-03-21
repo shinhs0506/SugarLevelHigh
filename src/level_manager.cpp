@@ -61,6 +61,14 @@ void LevelManager::init_data(int level) {
 
     BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
+    if (level == 0) {
+        background = createBackground(background_data.size, 12);
+        background = createBackground(background_data.size, 11);
+    }
+    else {
+        background = createBackground(background_data.size, level * 10 + 2);
+        background = createBackground(background_data.size, level * 10 + 1);
+    }
 
     for (auto& player_data: reload_manager.get_player_data()) {
         gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
