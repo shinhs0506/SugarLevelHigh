@@ -578,6 +578,20 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 
 	switch (step)
 	{
+	case -1: // level won
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_WON,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case -10:// level lost
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_LOST,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
 	case 0:
 		registry.renderRequests.insert(
 			entity,

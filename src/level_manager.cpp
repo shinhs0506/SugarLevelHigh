@@ -374,7 +374,15 @@ bool LevelManager::step(float elapsed_ms)
                     if (curr_level == 0) {
                         tutorial_controller.should_advance = true;
                     }
+                    else {
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
+                        prompts.push_back(prompt);
+                    }
                     this->levels_completed[curr_level] = true;
+                }
+                else if (only_enemy_left && curr_level > 0) {
+                    Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
+                    prompts.push_back(prompt);
                 }
                 move_to_state(LevelState::TERMINATION);
                 break;
