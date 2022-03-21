@@ -127,10 +127,8 @@ bool GameSystem::is_over() {
         {
             bool is_level_over = level_manager.is_over();
             if (is_level_over) {
-				if (!level_manager.prompts.empty()) {
-					for (uint i = 0; i < level_manager.prompts.size(); i++) {
-						removePrompt(level_manager.prompts[i]);
-					}
+				for (uint i = 0; i < level_manager.prompts.size(); i++) {
+					removePrompt(level_manager.prompts[i]);
 				}
                 move_to_state(GameState::LEVEL_SELECTION);
             }
