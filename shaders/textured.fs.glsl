@@ -18,9 +18,12 @@ uniform bool on_cooldown;
 
 // spritesheet
 uniform bool is_character;
+uniform bool is_ladder;
 uniform bool is_enemy;
 uniform int movement;
 uniform float time;
+
+uniform int ladder_height;
 
 uniform float blink;
 
@@ -59,6 +62,10 @@ void main()
 		float row = mod(index.y, 3);
 		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x * 1/3 + col * 1/3, texcoord.y * 1/3 + row * 1/3));
 	}
+	else if (is_ladder) {
+			color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y * ladder_height));
+	}
+
 	else {
 		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
 	}

@@ -71,6 +71,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)registry.renderRequests.get(entity).used_texture];
 
+		if (registry.climbables.has(entity)) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		gl_has_errors();
 	}
@@ -100,9 +105,16 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	int movement = 0; // idle
 	if (motion.goal_velocity.x < 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 1; // left
 	if (motion.goal_velocity.x > 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 2; // right
-	if ((motion.location == LOCATION::NORMAL || motion.location == LOCATION::BELOW_CLIMBABLE) && motion.position.y != motion.prev_position.y) movement = 3; // falling
+	if ((motion.location == LOCATION::NORMAL) && motion.position.y != motion.prev_position.y) movement = 3; // falling
 	if (motion.location == LOCATION::ON_CLIMBABLE) movement = 4; // climb
 	glUniform1i(movement_uloc, movement);
+	gl_has_errors();
+
+	// ladder uniforms:
+	GLint is_ladder_uloc = glGetUniformLocation(program, "is_ladder");
+	glUniform1i(is_ladder_uloc, registry.climbables.has(entity));
+	GLint ladder_height_uloc = glGetUniformLocation(program, "ladder_height");
+	glUniform1i(ladder_height_uloc, registry.climbables.has(entity) ? round(registry.motions.get(entity).scale.y / 100.f) : 0);
 	gl_has_errors();
 
 	// hit by an attack uniform
