@@ -339,7 +339,10 @@ void PlayerController::move_to_state(CharacterState next_state)
 		std::cout << "moving to END state" << std::endl;
 
 		assert(current_state == CharacterState::PERFORM_ABILITY_MANUAL || 
-                current_state == CharacterState::PERFORM_ABILITY_AUTO);
+                current_state == CharacterState::PERFORM_ABILITY_AUTO ||
+				current_state == CharacterState::IDLE ||
+				current_state == CharacterState::MOVE_LEFT||
+				current_state == CharacterState::MOVE_RIGHT);
 		break;
 	}
 	this->next_state = next_state;
