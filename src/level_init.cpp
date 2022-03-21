@@ -150,6 +150,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
+    motion.original_scale = motion.scale;
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
 
@@ -192,7 +193,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
 {
 	auto entity = Entity();
 
@@ -207,13 +208,14 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 	motion.location = LOCATION::NORMAL;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
@@ -251,7 +253,8 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, BuffArsenal buff_arsenal)
+
 {
 	auto entity = Entity();
 
@@ -265,13 +268,14 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Playable player{ healthBar };
 	registry.playables.insert(entity, player);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy };
 	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
@@ -281,6 +285,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	registry.initiatives.insert(entity, initiative);
 
 	registry.attackArsenals.insert(entity, attack_arsenal);
+    registry.buffArsenals.insert(entity, buff_arsenal);
 
 	registry.renderRequests.insert(
 		entity,
@@ -369,9 +374,6 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 		{ (TEXTURE_ASSET_ID)ability.texture_ID, // TEXTURE_COUNT indicates that no txture is needed
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
-
-	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
-
 	return entity;
 }
 
@@ -423,17 +425,15 @@ void removeTimer(Entity entity) {
 }
 
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
 	auto entity = createGenericButton(pos, size, on_click);
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(0.f, 0.f, 1.f));
+		{ texture_ID,
+			EFFECT_ASSET_ID::TEXTURED, // TODO COOLDOWN effect
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -444,6 +444,21 @@ void removeButton(Entity entity)
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
+}
+
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+{
+    auto entity = createButton(pos, size, on_click, texture_ID);
+
+    registry.abilityButtons.emplace(entity);
+
+    return entity;
+}
+
+void removeAbilityButton(Entity entity)
+{
+    removeButton(entity);
+    registry.abilityButtons.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)
@@ -558,6 +573,9 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	motion.scale = size;
 	motion.depth = DEPTH::UI;
 
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
 	switch (step)
 	{
 	case 0:
@@ -605,5 +623,6 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 void removePrompt(Entity entity)
 {
 	registry.motions.remove(entity);
+	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
 }

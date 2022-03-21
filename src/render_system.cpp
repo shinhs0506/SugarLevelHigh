@@ -127,6 +127,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	glUniform1i(disabled_uloc, (registry.clickables.has(entity) && registry.clickables.get(entity).disabled));
 	gl_has_errors();
 
+	// Cooldown uniform
+	GLint cooldown_uloc = glGetUniformLocation(program, "on_cooldown");
+	glUniform1i(cooldown_uloc, (registry.clickables.has(entity) && registry.clickables.get(entity).on_cooldown));
+	gl_has_errors();
+
 	// pass a time uniform
 	GLint time_uloc = glGetUniformLocation(program, "time");
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));

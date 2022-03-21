@@ -2,6 +2,7 @@
 #include "physics_system.hpp"
 #include "level_init.hpp"
 #include "camera_manager.hpp"
+#include <iostream>
 
 // Returns the local bounding coordinates scaled by the current size of the entity
 vec2 get_bounding_box(const Motion& motion)
@@ -182,9 +183,14 @@ void update_location(Motion& motion) {
 	motion.position.y = round(motion.position.y);
 }
 
-float interpolation_acceleration(float goal_velocity, float current_velocity) {
-
+float interpolation_acceleration(float goal_velocity, float current_velocity, bool slippery) {
+	
 	float acceleration = 20.0f;
+
+	if (slippery == true) {
+		acceleration = 5.0f;
+	}
+
 	float velocity_difference = goal_velocity - current_velocity;
 
 	if (velocity_difference > acceleration) {
@@ -215,18 +221,32 @@ void PhysicsSystem::step(float elapsed_ms)
 			if (registry.playables.has(entity)) {
 				update_location(motion);
 			}
-			
-			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
 
+			if (motion.slippery == false) {
+				motion.prev_position = motion.position;
+				motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
+			}
+			else {
+				motion.prev_position = motion.position;
+				motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x, motion.slippery);
+				motion.current_velocity.y = motion.goal_velocity.y;
+				motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
+			}
+
+			updateHealthBar(entity);
+			if (registry.activeTurns.has(entity)) {
+				updateOrderIndicator(entity);
+			}
 		}
 
 		else {
 			motion.prev_position = motion.position;
-			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
-			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x, motion.slippery);
+			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y, motion.slippery);
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
+
+		
 
 		if (registry.cameras.has(entity))
 		{

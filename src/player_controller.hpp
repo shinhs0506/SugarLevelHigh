@@ -40,6 +40,7 @@ private:
 
 	Mix_Chunk* melee_attack_sound;
 	Mix_Chunk* advanced_attack_sound;
+	Mix_Chunk* heal_ability_sound;
 
 	void move_to_state(CharacterState next_state);
 };

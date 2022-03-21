@@ -73,10 +73,14 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& player_data: reload_manager.get_player_data()) {
-        gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
-        AttackArsenal ginerbread_arsenal = { gummybear_basic_attack, gummybear_advanced_attack};
+
+        gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
+        gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
+        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
-                player_data.energy, ginerbread_arsenal);
+                player_data.energy, ginerbread_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gingerbread_buffs);
+
         update_healthbar_len_color(player);
         order_vector.push_back(player);
     }
@@ -85,7 +89,7 @@ void LevelManager::init_data(int level) {
         chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
-                enemy_data.energy, gumball_arsenal);
+                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
     }
@@ -118,28 +122,30 @@ void LevelManager::load_level(int level)
 {
     this->curr_level = level;
 
-    // level specific logic
-    if (level == 0) {
-        this->tutorial_controller.init(this);
-        this->init_data(level);
-    }
-    else if (level == 1) {
-        this->init_data(level);
-    }
-
     // common to all levels
-    
-    back_button = createBackButton(vec2(100, 50), vec2(50,50), NULL); 
 
-    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
-    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
+    back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
+
+    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
+    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
 
     energy_bar = createEnergyBar();
     order_indicator = createOrderIndicator();
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
-    // update energy bar
+    // level specific logic
+    if (level == 0) {
+        this->tutorial_controller.init(this);
+        this->init_data(level);
+    }
+    else {
+        this->init_data(level);
+        // for now since we do not have heal on tutorial level
+        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
+    }
+
+
 }
 
 void LevelManager::restart_level()
@@ -148,7 +154,9 @@ void LevelManager::restart_level()
 }
 
 void LevelManager::save_level_data(){
-    reload_manager.save(curr_level);
+    if (curr_level > 0) {
+        reload_manager.save(curr_level);
+    }
 }
 
 void LevelManager::abandon_level()
@@ -180,6 +188,7 @@ void LevelManager::abandon_level()
     removeButton(back_button);
     removeButton(basic_attack_button);
     removeButton(advanced_attack_button);
+    removeAbilityButton(heal_button);
 
     removeEnergyBar();
     removeOrderIndicator();
@@ -206,16 +215,12 @@ void LevelManager::remove_character(Entity entity)
 
     // directly move to evaluation state only if current active character died
     // this is to ensure turn correctly ends the current active chracter died in movement state
-    if (order_vector[pos] == registry.activeTurns.entities[0])
-    {
-        move_to_state(LevelState::EVALUATION);
-    }
+    
     order_vector.erase(it);
 
 }
 
 void LevelManager::update_curr_level_data(){
-
     // save camera info
     Camera& camera = registry.cameras.get(main_camera);
     Motion& camera_motion = registry.motions.get(main_camera);
@@ -241,12 +246,14 @@ void LevelManager::update_curr_level_data(){
         Motion& player_motion = registry.motions.get(player);
         Health& player_health = registry.healths.get(player);
         Energy& player_energy = registry.energies.get(player);
+        BuffArsenal& player_buff = registry.buffArsenals.get(player);
         AttackArsenal& player_arsenal = registry.attackArsenals.get(player);
         PlayerData pd {
             player_motion.position,
             player_motion.scale,
             player_health.cur_health,
             player_energy.cur_energy,
+            player_buff.heal.current_cooldown,
             player_arsenal.advanced_attack.current_cooldown
         };
         player_data_vector.push_back(pd);
@@ -316,6 +323,7 @@ bool LevelManager::step(float elapsed_ms)
         assert(health.cur_health >= 0.f); // health shouldn't below 0
 
         if (health.dead) {
+            std::cout << "health dead" << std::endl;
             // check playables
             if (registry.playables.has(entity)) {
                 remove_character(entity);
@@ -354,6 +362,12 @@ bool LevelManager::step(float elapsed_ms)
 
     case LevelState::PREPARE:
         {
+
+            // update health bar for all characters
+            for (uint i = 0; i < registry.initiatives.size(); i++) {
+                Entity entity = registry.initiatives.entities[i];
+                update_healthbar_len_color(entity);
+            }
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
                 // allow progression to next level via menu if current level completed
@@ -470,11 +484,6 @@ bool LevelManager::step(float elapsed_ms)
         break;
     }
 
-    // update order indicator's position
-    if (registry.activeTurns.size() > 0) {
-        updateOrderIndicator(registry.activeTurns.entities[0]);
-    }
-
     return true;
 }
 
@@ -491,7 +500,7 @@ void LevelManager::update_healthbar_len_color(Entity entity) {
         healthBar = enemy.healthBar;
     }
     Motion& healthBar_motion = registry.motions.get(healthBar);
-    healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+    healthBar_motion.scale = { healthBar_motion.original_scale.x * (health.cur_health / health.max_health), 10 };
 
     // change health bar color based on remaining health
     vec3& color = registry.colors.get(healthBar);
@@ -563,10 +572,6 @@ bool LevelManager::is_over() {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
-    if (current_level_state == LevelState::ENEMY_BLINK) {
-        return;
-    }
-
     switch (current_level_state) {
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
@@ -619,17 +624,23 @@ void LevelManager::on_mouse_move(vec2 pos)
 {
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
-        player_controller.on_mouse_move(pos);
+
+        double cursor_window_x, cursor_window_y;
+        glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+        vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+        vec2 camera_pos = registry.motions.get(main_camera).position;
+        vec2 camera_offset = registry.cameras.get(main_camera).offset;
+
+        vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+
+        player_controller.on_mouse_move(cursor_world_pos);
         break;
     }
 }
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
 {
-    if (current_level_state == LevelState::ENEMY_BLINK) {
-        return;
-    }
-
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
