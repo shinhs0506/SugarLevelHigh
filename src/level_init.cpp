@@ -577,6 +577,9 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	motion.scale = size;
 	motion.depth = DEPTH::UI;
 
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
 	switch (step)
 	{
 	case 0:
@@ -624,5 +627,6 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 void removePrompt(Entity entity)
 {
 	registry.motions.remove(entity);
+	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
 }
