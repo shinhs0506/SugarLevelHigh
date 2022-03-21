@@ -202,7 +202,6 @@ float interpolation_acceleration(float goal_velocity, float current_velocity, bo
 	return goal_velocity; // reached goal
 }
 
-
 void PhysicsSystem::step(float elapsed_ms)
 {
 	// Move entities with motion component with respect to their velocity
@@ -218,9 +217,8 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 
 		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
-			if (registry.playables.has(entity)) {
-				update_location(motion);
-			}
+			// update location for players and enemies
+			update_location(motion);
 
 			if (motion.slippery == false) {
 				motion.prev_position = motion.position;
@@ -301,7 +299,7 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 	}
 
-	// Check collision between players and terrains
+	// Check collision between players and terrainss
 	auto& characters = registry.initiatives;
 	for (uint i = 0; i < characters.size(); i++) {
 		Entity character = characters.entities[i];
@@ -349,5 +347,3 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 	}
 }
-
-

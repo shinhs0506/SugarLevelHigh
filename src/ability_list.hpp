@@ -46,7 +46,7 @@ BuffAbility gingerbread_heal_buff = {
 AttackAbility chocolateball_basic_attack = {
     true, // Chosen attack
     0, // speed
-    20, // Damage
+    10, // Damage
     0, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(100, 100), // Size
@@ -59,7 +59,7 @@ AttackAbility chocolateball_basic_attack = {
 AttackAbility chocolateball_advanced_attack = {
     false, // Chosen attack
     500, // speed
-    40, // Damage
+    20, // Damage
     100, // Range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
     vec2(70, 50), // Size

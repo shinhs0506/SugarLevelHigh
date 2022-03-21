@@ -139,7 +139,6 @@ void PlayerController::on_key(int key, int, int action, int mod)
 					if (registry.motions.get(player).location == LOCATION::ON_CLIMBABLE) {
 						player_motion.location = LOCATION::NORMAL;
 						player_motion.is_falling = true;
-						
 					}
 					move_to_state(CharacterState::MOVE_LEFT);
 					break;

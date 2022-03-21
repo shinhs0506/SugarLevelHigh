@@ -164,6 +164,13 @@ enum LOCATION {
 	ABOVE_CLIMBABLE = ON_CLIMBABLE + 1
 };
 
+enum DIRECTION {
+	DIRECTION_UP,
+	DIRECTION_DOWN,
+	DIRECTION_LEFT,
+	DIRECTION_RIGHT
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
