@@ -4,6 +4,7 @@
 #include "game_init.hpp"
 #include "physics_system.hpp"
 #include "game_system.hpp"
+#include "camera_manager.hpp"
 
 LevelMenuManager::LevelMenuManager() {
 
@@ -14,6 +15,7 @@ LevelMenuManager::~LevelMenuManager() {
 }
 
 void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
+    reset_camera_pos();
     this->window = window;
     this->game_system = game_system;
     this->game_system->level_manager.get_progress();
