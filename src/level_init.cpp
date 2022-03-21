@@ -571,7 +571,7 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
-	motion.depth = DEPTH::UI;
+	motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ pos };
 	registry.overlays.insert(entity, overlay);
@@ -589,6 +589,13 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::LEVEL_LOST,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case -100:// tutorial failed
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_FAIL,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
