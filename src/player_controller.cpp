@@ -6,6 +6,7 @@
 #include "physics_system.hpp"
 #include "ability.hpp"
 #include "components.hpp"
+#include "level_manager.hpp"
 
 PlayerController::PlayerController()
 {
@@ -32,12 +33,40 @@ void PlayerController::start_turn(Entity player)
 {
 	this->player = player;
 
+	// For level 3 damage over turn 
+	Health& player_health = registry.healths.get(player);
+	std::cout << "over turn " << player_health.damage_per_turn << std::endl;
+	if (player_health.damage_per_turn == true) {
+		player_health.cur_health -= 5;
+		LevelManager::update_healthbar_len_color(player);
+		createHitEffect(player, 200);
+		if (player_health.cur_health < 0) {
+			player_health.cur_health = 0;
+		}
+	}
+
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 }
 
 void PlayerController::step(float elapsed_ms)
 {
+	// For Level 3 damage over time hit effect
+	for (uint i = 0; i < registry.hitEffects.size(); i++) {
+		Entity entity = registry.hitEffects.entities[i];
+		HitEffect& effect = registry.hitEffects.components[i];
+		effect.ttl_ms -= elapsed_ms;
+		if (effect.ttl_ms < 0) {
+			removeHitEffect(entity);
+
+			// only set dead after hit effect played 
+			if (registry.healths.has(entity) && registry.healths.get(entity).cur_health < epsilon) {
+				registry.healths.get(entity).dead = true;
+				move_to_state(CharacterState::END);
+			}
+		}
+	}
+
 	Motion& player_motion = registry.motions.get(player);
 	Energy& player_energy = registry.energies.get(player);
 	if (current_state == CharacterState::MOVE_LEFT || current_state == CharacterState::MOVE_RIGHT ||
@@ -56,6 +85,12 @@ void PlayerController::step(float elapsed_ms)
 	updateEnergyBar(player_energy);
 	updateHealthBar(player);
 
+	if (player_motion.position.y > 900) {
+		Health& player_health = registry.healths.get(player);
+		player_health.dead = true;
+		move_to_state(CharacterState::END);
+	}
+	
 	// update states
 	current_state = next_state;
 
@@ -302,8 +337,12 @@ void PlayerController::move_to_state(CharacterState next_state)
 
 	case CharacterState::END:
 		std::cout << "moving to END state" << std::endl;
+
 		assert(current_state == CharacterState::PERFORM_ABILITY_MANUAL || 
-                current_state == CharacterState::PERFORM_ABILITY_AUTO);
+                current_state == CharacterState::PERFORM_ABILITY_AUTO ||
+				current_state == CharacterState::IDLE ||
+				current_state == CharacterState::MOVE_LEFT||
+				current_state == CharacterState::MOVE_RIGHT);
 		break;
 	}
 	this->next_state = next_state;

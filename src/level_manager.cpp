@@ -73,12 +73,14 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& player_data: reload_manager.get_player_data()) {
+
         gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
         gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
-                player_data.energy, ginerbread_arsenal, gingerbread_buffs);
+                player_data.energy, ginerbread_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gingerbread_buffs);
+
         update_healthbar_len_color(player);
         order_vector.push_back(player);
     }
@@ -87,7 +89,7 @@ void LevelManager::init_data(int level) {
         chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
-                enemy_data.energy, gumball_arsenal);
+                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
     }
@@ -125,7 +127,7 @@ void LevelManager::load_level(int level)
         this->tutorial_controller.init(this);
         this->init_data(level);
     }
-    else if (level == 1) {
+    else {
         this->init_data(level);
         // for now since we do not have heal on tutorial level
         heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
@@ -213,16 +215,12 @@ void LevelManager::remove_character(Entity entity)
 
     // directly move to evaluation state only if current active character died
     // this is to ensure turn correctly ends the current active chracter died in movement state
-    if (order_vector[pos] == registry.activeTurns.entities[0])
-    {
-        move_to_state(LevelState::EVALUATION);
-    }
+    
     order_vector.erase(it);
 
 }
 
 void LevelManager::update_curr_level_data(){
-
     // save camera info
     Camera& camera = registry.cameras.get(main_camera);
     Motion& camera_motion = registry.motions.get(main_camera);
@@ -325,6 +323,7 @@ bool LevelManager::step(float elapsed_ms)
         assert(health.cur_health >= 0.f); // health shouldn't below 0
 
         if (health.dead) {
+            std::cout << "health dead" << std::endl;
             // check playables
             if (registry.playables.has(entity)) {
                 remove_character(entity);
@@ -363,12 +362,12 @@ bool LevelManager::step(float elapsed_ms)
 
     case LevelState::PREPARE:
         {
+
             // update health bar for all characters
             for (uint i = 0; i < registry.initiatives.size(); i++) {
                 Entity entity = registry.initiatives.entities[i];
                 update_healthbar_len_color(entity);
             }
-
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
                 // allow progression to next level via menu if current level completed
@@ -483,11 +482,6 @@ bool LevelManager::step(float elapsed_ms)
     case LevelState::TERMINATION:
         reload_manager.destroy_saved_level_data_file(curr_level);
         break;
-    }
-
-    // update order indicator's position
-    if (registry.activeTurns.size() > 0) {
-        updateOrderIndicator(registry.activeTurns.entities[0]);
     }
 
     return true;
@@ -630,7 +624,17 @@ void LevelManager::on_mouse_move(vec2 pos)
 {
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
-        player_controller.on_mouse_move(pos);
+
+        double cursor_window_x, cursor_window_y;
+        glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+        vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+        vec2 camera_pos = registry.motions.get(main_camera).position;
+        vec2 camera_offset = registry.cameras.get(main_camera).offset;
+
+        vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+
+        player_controller.on_mouse_move(cursor_world_pos);
         break;
     }
 }

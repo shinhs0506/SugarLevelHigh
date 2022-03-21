@@ -193,7 +193,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
 {
 	auto entity = Entity();
 
@@ -208,13 +208,14 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 	motion.location = LOCATION::NORMAL;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
@@ -252,7 +253,8 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal, BuffArsenal buff_arsenal)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, BuffArsenal buff_arsenal)
+
 {
 	auto entity = Entity();
 
@@ -266,13 +268,14 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Playable player{ healthBar };
 	registry.playables.insert(entity, player);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy };
 	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
