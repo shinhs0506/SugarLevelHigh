@@ -150,6 +150,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
+    motion.original_scale = motion.scale;
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
 
@@ -251,7 +252,7 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, BuffArsenal buff_arsenal)
 {
 	auto entity = Entity();
 
@@ -281,6 +282,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	registry.initiatives.insert(entity, initiative);
 
 	registry.attackArsenals.insert(entity, attack_arsenal);
+    registry.buffArsenals.insert(entity, buff_arsenal);
 
 	registry.renderRequests.insert(
 		entity,
@@ -444,6 +446,21 @@ void removeButton(Entity entity)
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
+}
+
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)())
+{
+    auto entity = createButton(pos, size, on_click);
+
+    registry.abilityButtons.emplace(entity);
+
+    return entity;
+}
+
+void removeAbilityButton(Entity entity)
+{
+    removeButton(entity);
+    registry.abilityButtons.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)

@@ -23,6 +23,7 @@ public:
 	ComponentContainer<AttackArsenal> attackArsenals;
 	ComponentContainer<AttackAbility> attackAbilities;
 	ComponentContainer<AttackObject> attackObjects;
+    ComponentContainer<BuffArsenal> buffArsenals;
 	ComponentContainer<Projectile> projectiles;
 	ComponentContainer<Terrain> terrains;
 	ComponentContainer<Motion> motions;
@@ -35,6 +36,7 @@ public:
 	ComponentContainer<Camera> cameras;
 	ComponentContainer<Timer> timers;
 	ComponentContainer<Clickable> clickables;
+	ComponentContainer<AbilityButton> abilityButtons;
 	ComponentContainer<Overlay> overlays;
 	ComponentContainer<HitEffect> hitEffects;
 	ComponentContainer<AI> AIs;
@@ -58,6 +60,7 @@ public:
         registry_list.push_back(&activeTurns);
 		registry_list.push_back(&attackArsenals);
 		registry_list.push_back(&attackObjects);
+		registry_list.push_back(&buffArsenals);
 		registry_list.push_back(&projectiles);
 		registry_list.push_back(&terrains);
 		registry_list.push_back(&motions);
@@ -70,6 +73,7 @@ public:
 		registry_list.push_back(&cameras);
 		registry_list.push_back(&timers);
 		registry_list.push_back(&clickables);
+		registry_list.push_back(&abilityButtons);
 		registry_list.push_back(&overlays);
 		registry_list.push_back(&hitEffects);
 		registry_list.push_back(&AIs);

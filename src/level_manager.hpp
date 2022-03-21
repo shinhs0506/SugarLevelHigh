@@ -106,6 +106,7 @@ private:
     Entity back_button;
     Entity basic_attack_button;
     Entity advanced_attack_button;
+    Entity heal_button;
 
     Entity energy_bar;
 

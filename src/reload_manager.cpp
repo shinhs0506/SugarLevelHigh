@@ -61,12 +61,14 @@ void ReloadManager::load(int level) {
         vec2 player_size = vec2(player_data["size"]["w"], player_data["size"]["h"]);
         float player_health = player_data["health"];
         float player_energy = player_data["energy"];
+        int heal_cooldown = player_data["heal_cooldown"];
         int advanced_attack_cooldown = player_data["advanced_attack_cooldown"];
         PlayerData pd {
             player_pos,
             player_size,
             player_health,
             player_energy,
+            heal_cooldown,
             advanced_attack_cooldown
         };
         player_data_vector.push_back(pd);
@@ -198,6 +200,7 @@ void ReloadManager::save(int level) {
         temp_json["size"]["h"] = player_data.size.y;
         temp_json["health"] = player_data.health;
         temp_json["energy"] = player_data.energy;
+        temp_json["heal_cooldown"] = player_data.heal_cooldown;
         temp_json["advanced_attack_cooldown"] = player_data.advanced_attack_cooldown;
         player_json.push_back(temp_json);
     }
