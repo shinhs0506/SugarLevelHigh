@@ -2,6 +2,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
 #include "ability.hpp"
+#include <iostream>
 
 Entity createDebugLine(vec2 position, vec2 scale)
 {
@@ -487,7 +488,6 @@ Entity createBackground(vec2 size, int level)
 	motion.depth = DEPTH::BACKGROUND;
 
 	Background background{ };
-	registry.backgrounds.insert(entity, background);
 
 	// Level number would determine which texture would be used
 	switch (level)
@@ -499,10 +499,29 @@ Entity createBackground(vec2 size, int level)
 			{ TEXTURE_ASSET_ID::BACKGROUND1,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND11,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 12:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND12,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
 		break;
 	default:
 		break;
 	}
+
+	registry.backgrounds.insert(entity, background);
 
 	return entity;
 }

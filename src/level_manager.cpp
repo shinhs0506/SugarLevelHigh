@@ -20,12 +20,14 @@
 
 LevelManager::LevelManager()
 {
-
+    hurt_sound = Mix_LoadWAV(audio_path("hurt.wav").c_str());
 }
 
 LevelManager::~LevelManager()
 {
-
+    if (hurt_sound != nullptr)
+        Mix_FreeChunk(hurt_sound);
+    Mix_CloseAudio();
 }
 
 void LevelManager::init(GLFWwindow* window)
@@ -61,6 +63,14 @@ void LevelManager::init_data(int level) {
 
     BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
+    if (level == 0) {
+        background2 = createBackground(background_data.size, 12);
+        background1 = createBackground(background_data.size, 11);
+    }
+    else {
+        background2 = createBackground(background_data.size, level * 10 + 2);
+        background1 = createBackground(background_data.size, level * 10 + 1);
+    }
 
     for (auto& player_data: reload_manager.get_player_data()) {
         gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
@@ -179,6 +189,8 @@ void LevelManager::abandon_level()
     removeEnergyBar();
     removeOrderIndicator();
     removeBackground(background);
+    removeBackground(background1);
+    removeBackground(background2);
 
     registry.activeTurns.clear();
 
@@ -544,6 +556,12 @@ void LevelManager::handle_collisions()
                 // health shouldn't be below zero
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
+
+                // Hit/hurt audio
+                Mix_PlayChannel(-1, hurt_sound, 0);
+
+                // change health bar length
+                update_healthbar_len_color(other_entity);
 
                 createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
           
