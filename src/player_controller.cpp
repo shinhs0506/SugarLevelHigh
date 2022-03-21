@@ -59,16 +59,21 @@ void PlayerController::on_key(int key, int, int action, int mod)
 				switch (key)
 				{
 				case GLFW_KEY_A:
-					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
-						player_motion.goal_velocity.x = -player_motion.speed;
-						move_to_state(CharacterState::MOVE_LEFT);
+					player_motion.goal_velocity.x = -player_motion.speed;
+					if (registry.motions.get(player).location == LOCATION::ON_CLIMBABLE) {
+						player_motion.location = LOCATION::NORMAL;
+						player_motion.is_falling = true;
+						
 					}
+					move_to_state(CharacterState::MOVE_LEFT);
 					break;
 				case GLFW_KEY_D:
-					if (registry.motions.get(player).location != LOCATION::ON_CLIMBABLE) {
-						player_motion.goal_velocity.x = player_motion.speed;
-						move_to_state(CharacterState::MOVE_RIGHT);
+					player_motion.goal_velocity.x = player_motion.speed;
+					if (registry.motions.get(player).location == LOCATION::ON_CLIMBABLE) {
+						player_motion.location = LOCATION::NORMAL;
+						player_motion.is_falling = true;
 					}
+					move_to_state(CharacterState::MOVE_RIGHT);
 					break;
 				case GLFW_KEY_W:
 					if (registry.motions.get(player).location == BELOW_CLIMBABLE 
@@ -223,6 +228,11 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 bool PlayerController::should_end_player_turn()
 {
 	return current_state == CharacterState::END;
+}
+
+bool PlayerController::has_player_moved_right()
+{
+	return current_state == CharacterState::MOVE_RIGHT;
 }
 
 void PlayerController::move_to_state(CharacterState next_state)

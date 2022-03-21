@@ -88,7 +88,7 @@ void perform_buff_ability(Entity player) {
 }
 
 vec2 offset_position(vec2 direction, vec2 player_pos, double angle) {
-	vec2 offset{ 100.f, 0.f }; // a bit before the character
+	vec2 offset{ 80.f, 0.f }; // a bit before the character
 	Transform trans;
 	trans.translate(player_pos);
 	trans.rotate(angle);

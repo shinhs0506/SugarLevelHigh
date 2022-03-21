@@ -83,6 +83,7 @@ struct AttackAbility
 	bool gravity_affected;
 	int max_cooldown;
 	int current_cooldown;
+	int texture_ID;
 };
 
 struct AttackArsenal
@@ -124,6 +125,11 @@ struct Camera
 	// limit are composed of a coord (x, y)
 	vec2 lower_limit;
 	vec2 higer_limit;
+};
+
+struct Timer
+{
+    float timer;
 };
 
 // Hit effect object will be created on entity that is hit by an attack
@@ -184,6 +190,7 @@ struct Collision
 // Components with callback on click
 struct Clickable {
 	bool (*on_click)();
+	bool disabled = false;
 };
 
 // Attached to buttons that use Buff components
@@ -306,8 +313,19 @@ enum class TEXTURE_ASSET_ID {
 	HELP_IMAGE = BACK_BUTTON + 1,
 	ADVANCED_ATTACK_PREVIEW = HELP_IMAGE + 1,
 	BASIC_ATTACK_PREVIEW = ADVANCED_ATTACK_PREVIEW + 1,
-	TEXTURE_COUNT = BASIC_ATTACK_PREVIEW + 1
-    
+	TUTORIAL_BUTTON = BASIC_ATTACK_PREVIEW + 1,
+	LEVEL_1_BUTTON = TUTORIAL_BUTTON + 1,
+	LEVEL_2_BUTTON = LEVEL_1_BUTTON + 1,
+	LEVEL_3_BUTTON = LEVEL_2_BUTTON + 1,
+	TUTORIAL_MOVE = LEVEL_3_BUTTON + 1,
+	TUTORIAL_ATTACK_BASIC = TUTORIAL_MOVE + 1,
+	TUTORIAL_ATTACK_ADVANCED = TUTORIAL_ATTACK_BASIC + 1,
+	TUTORIAL_COOLDOWN = TUTORIAL_ATTACK_ADVANCED + 1,
+	TUTORIAL_END = TUTORIAL_COOLDOWN + 1,
+	MELEE_ATTACK = TUTORIAL_END + 1,
+	BEAR_ADVANCED_ATTACK = MELEE_ATTACK + 1,
+	CHOCOLATE_ADVANCED_ATTACK = BEAR_ADVANCED_ATTACK + 1,
+	TEXTURE_COUNT = CHOCOLATE_ADVANCED_ATTACK + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

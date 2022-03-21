@@ -10,10 +10,16 @@ uniform vec3 fcolor;
 // hit effect
 uniform bool hit_effect;
 
+// color disabled UI elements 
+uniform bool disabled;
+
 // spritesheet
 uniform bool is_character;
+uniform bool is_enemy;
 uniform int movement;
 uniform float time;
+
+uniform float blink;
 
 // Output color
 layout(location = 0) out  vec4 color;
@@ -45,8 +51,18 @@ void main()
 		color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y));
 	}
 
+    if (is_enemy) {
+        color = vec4(color.xyz + (((sin((0.01 * blink + 3) * (3.14/2))+1)/2) * (vec3(1, 0, 0))), color.w);
+    }
+
 	if (hit_effect) {
 		// add some red component
 		color = vec4(normalize(color.xyz + vec3(0.3, 0, 0)), color.w);
+	}
+	
+	if (disabled) {
+		// make the button greyscale
+		vec3 greyscale = vec3(dot( color.xyz, vec3(0.3, 0.3, 0.3)));
+		color = vec4(greyscale.x, greyscale.y, greyscale.z, color.w);
 	}
 }

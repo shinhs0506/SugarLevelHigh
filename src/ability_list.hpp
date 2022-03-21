@@ -17,7 +17,8 @@ AttackAbility gingerbread_basic_attack = {
     vec2(100, 100), // size
     false, // gravity affected
     0, // max cooldown
-    0 // curr cooldown
+    0, // curr cooldown
+    (int)TEXTURE_ASSET_ID::MELEE_ATTACK,
 };
 
 AttackAbility gingerbread_advanced_attack = {
@@ -26,40 +27,44 @@ AttackAbility gingerbread_advanced_attack = {
     50, // damage
     500, // range
     (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
-    vec2(100, 50), // size
-    true, // gravity affected
-    2, // max cooldown
-    0 // curr cooldown
+    vec2(60, 40), // Size
+    true, // Gravit Affected
+    2, // Max cooldown
+    0, // Current cooldown
+    (int)TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK,
 };
 
 BuffAbility gingerbread_heal_buff = {
     0, // speed delta
-    20, // health delta
+    40, // health delta
+    0, // damage delta
     3, // max cooldown
     0 // curr cooldown
 };
 
-// Gumball used for enemy, at the moment, enemy only uses melee attack (the basic attack active hardcoded to true)
-AttackAbility gumball_basic_attack = {
-    false,
-    0,
-    20,
-    0,
-    (int)GEOMETRY_BUFFER_ID::SQUARE, 
-    vec2(100, 100),
-    false,
-    0,
-    0
+// Chocolate Ball used for enemy
+AttackAbility chocolateball_basic_attack = {
+    true, // Chosen attack
+    0, // speed
+    20, // Damage
+    0, // Range
+    (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
+    vec2(100, 100), // Size
+    false, // Gravit Affected
+    0, // Max cooldown
+    0, // Current cooldown 
+    (int)TEXTURE_ASSET_ID::MELEE_ATTACK,
 };
 
-AttackAbility gumball_advanced_attack = {
-    false,
-    500,
-    40,
-    100,
-    (int)GEOMETRY_BUFFER_ID::SQUARE, 
-    vec2(100, 100),
-    false,
-    2,
-    0
+AttackAbility chocolateball_advanced_attack = {
+    false, // Chosen attack
+    500, // speed
+    40, // Damage
+    100, // Range
+    (int)GEOMETRY_BUFFER_ID::SQUARE, // shape
+    vec2(70, 50), // Size
+    false, // Gravit Affected
+    2, // Max cooldown
+    0, // Current cooldown
+    (int)TEXTURE_ASSET_ID::CHOCOLATE_ADVANCED_ATTACK,
 };

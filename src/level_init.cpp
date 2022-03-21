@@ -63,7 +63,7 @@ Entity createOrderIndicator(){
 	auto entity = Entity();
 
 	registry.orderIndicators.emplace(entity);
-	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	vec2 pos = vec2(100000, 100000); // subject to change when adjusting UI positions, out of screen when started
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = { pos };
@@ -367,9 +367,9 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
-			EFFECT_ASSET_ID::COLOURED,
-			(GEOMETRY_BUFFER_ID)ability.shape });
+		{ (TEXTURE_ASSET_ID)ability.texture_ID, // TEXTURE_COUNT indicates that no txture is needed
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 
@@ -409,6 +409,20 @@ void removeCamera(Entity entity)
 	registry.motions.remove(entity);
 	registry.cameras.remove(entity);
 }
+
+Entity createTimer(float ms) {
+    auto entity = Entity();
+
+    Timer timer { ms };
+    registry.timers.insert(entity, timer);
+    
+    return entity;
+}
+
+void removeTimer(Entity entity) {
+    registry.timers.remove(entity);
+}
+
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
 {
@@ -479,6 +493,7 @@ Entity createBackground(vec2 size, int level)
 	switch (level)
 	{
 	case 0:
+	case 1:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND1,
@@ -529,5 +544,66 @@ void removeLadder(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.climbables.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
+Entity createPrompt(vec2 pos, vec2 size, int step) {
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.depth = DEPTH::UI;
+
+	switch (step)
+	{
+	case 0:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_MOVE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_ATTACK_BASIC,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 2:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_ATTACK_ADVANCED,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_COOLDOWN,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 4:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_END,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	default:
+		break;
+	}
+
+	return entity;
+}
+
+void removePrompt(Entity entity)
+{
+	registry.motions.remove(entity);
 	registry.renderRequests.remove(entity);
 }

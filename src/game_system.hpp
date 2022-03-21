@@ -10,6 +10,7 @@
 
 #include "render_system.hpp"
 #include "level_manager.hpp"
+#include "level_menu_manager.hpp"
 #include "menu_manager.hpp"
 #include "help_manager.hpp"
 
@@ -21,6 +22,7 @@ public:
     MenuManager menu_manager;
 	LevelManager level_manager;
     HelpManager help_manager;
+    LevelMenuManager level_menu_manager;
 
 	// different screen states
 	enum class GameState {

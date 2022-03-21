@@ -5,6 +5,8 @@
 #include "player_controller.hpp"
 #include <nlohmann/json.hpp>
 #include "enemy_controller.hpp"
+#include "reload_manager.hpp"
+#include "tutorial_controller.hpp"
 
 // Wraps all level logis and entities
 class LevelManager
@@ -12,6 +14,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
+        ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
 		ENEMY_TURN, // handled by AI system
@@ -19,11 +22,16 @@ public:
         TERMINATION, // game ending logic
 	};
 
+	// flag for completed levels
+	vec4 levels_completed = { false, false, false, false };
+
 	LevelManager();
 
 	~LevelManager();
 
 	void init(GLFWwindow* window);
+
+	void get_progress();
 
 	// Load all needed entities for the level
 	void load_level(int level);
@@ -44,8 +52,6 @@ public:
 	// Whether this level ended
     bool is_over();
 
-	void update_camera(vec2 velocity);
-
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 pos);
@@ -61,7 +67,7 @@ private:
 
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 100;
-    
+
 	// for turn order logic
 	std::vector<Entity> order_vector;
 	int curr_order_ind;
@@ -74,11 +80,17 @@ private:
 	// OpenGL window handle
 	GLFWwindow* window;
 
+    // manages data load and save
+    ReloadManager reload_manager;
+
 	// controller that handles enemy's behaviors
 	EnemyController enemy_controller;
 
 	// controller that handles player's input
 	PlayerController player_controller;
+
+	// controller that handles tutorial prompts
+	TutorialController tutorial_controller;
 	
 	LevelState current_level_state;
 	LevelState next_level_state;
@@ -105,7 +117,7 @@ private:
     void save_level_data();
     void destroy_saved_level_data_file();
 
-    void update_curr_level_data_json();
+    void update_curr_level_data();
 
     void update_healthbar_len_color(Entity entity);
 };

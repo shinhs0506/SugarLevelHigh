@@ -42,6 +42,59 @@ Entity createExitButton(vec2 pos, vec2 size, bool (*on_click)())
     return entity;
 }
 
+Entity createTutorialButton(vec2 pos, vec2 size, bool (*on_click)())
+{
+	Entity entity = createGenericButton(pos, size, on_click);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TUTORIAL_BUTTON,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+Entity createLevel1Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled)
+{
+	Entity entity = createGenericButton(pos, size, on_click, disabled);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::LEVEL_1_BUTTON,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+Entity createLevel2Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled)
+{
+	Entity entity = createGenericButton(pos, size, on_click, disabled);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::LEVEL_2_BUTTON,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+Entity createLevel3Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled)
+{
+	Entity entity = createGenericButton(pos, size, on_click, disabled);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::LEVEL_3_BUTTON,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+
 Entity createHelpImage(vec2 pos, vec2 size)
 {
     Entity entity = Entity();

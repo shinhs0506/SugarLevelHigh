@@ -34,6 +34,7 @@ public:
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<vec3> colors;
 	ComponentContainer<Camera> cameras;
+	ComponentContainer<Timer> timers;
 	ComponentContainer<Clickable> clickables;
 	ComponentContainer<AbilityButton> abilityButtons;
 	ComponentContainer<Overlay> overlays;
@@ -70,6 +71,7 @@ public:
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&colors);
 		registry_list.push_back(&cameras);
+		registry_list.push_back(&timers);
 		registry_list.push_back(&clickables);
 		registry_list.push_back(&abilityButtons);
 		registry_list.push_back(&overlays);

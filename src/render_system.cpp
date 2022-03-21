@@ -109,10 +109,23 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	glUniform1i(hit_effect_uloc, registry.hitEffects.has(entity));
 	gl_has_errors();
 
+	// disabled button uniform
+	GLint disabled_uloc = glGetUniformLocation(program, "disabled");
+	glUniform1i(disabled_uloc, (registry.clickables.has(entity) && registry.clickables.get(entity).disabled));
+	gl_has_errors();
+
 	// pass a time uniform
 	GLint time_uloc = glGetUniformLocation(program, "time");
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	gl_has_errors();
+
+	GLint is_enemy_uloc = glGetUniformLocation(program, "is_enemy");
+	glUniform1i(is_enemy_uloc, registry.enemies.has(entity));
+	gl_has_errors();
+
+    GLint timer_uloc = glGetUniformLocation(program, "blink");
+    glUniform1f(timer_uloc, registry.timers.size() > 0 ? registry.timers.components[0].timer : 0);
+    gl_has_errors();
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(program, "fcolor");
