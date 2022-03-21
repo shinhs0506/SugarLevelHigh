@@ -40,7 +40,7 @@ void removeCamera(Entity entity);
 Entity createTimer(float timer);
 void removeTimer(Entity entity);
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)());
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
 void removeButton(Entity entity);
 
 // this does not create a new entity but only attach a hit effect on the existing object

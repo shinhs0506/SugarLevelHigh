@@ -174,6 +174,7 @@ struct Collision
 struct Clickable {
 	bool (*on_click)();
 	bool disabled = false;
+	bool on_cooldown = false;
 };
 
 // Attached to components that are unaffected by camera
