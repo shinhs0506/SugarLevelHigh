@@ -100,8 +100,8 @@ bool is_above_climbable(Motion& motion, Motion& climbable) {
 	const vec2 char_pos = motion.position;
 	const vec2 climbable_pos = climbable.position;
 
-	if (char_pos[0] - char_bb[0] <= climbable_pos[0] + climbable_bb[0] // x collision left
-		&& char_pos[0] + char_bb[0] >= climbable_pos[0] - climbable_bb[0] // x collision right
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0] // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0] // x collision right
 		&& char_pos[1] + char_bb[1] + 0.001 <= (climbable_pos[1] + climbable_bb[1]) // y collision
 		) {
 		motion.position.y = round(climbable_pos[1] - climbable_bb[1] - char_bb[1]); // tmp avoid fake collisions
@@ -119,14 +119,29 @@ bool is_below_climbable(Motion& motion, Motion& climbable) {
 	const vec2 char_pos = motion.position;
 	const vec2 climbable_pos = climbable.position;
 
-	if (char_pos[0] - char_bb[0] <= climbable_pos[0] + climbable_bb[0] // x collision left
-		&& char_pos[0] + char_bb[0] >= climbable_pos[0] - climbable_bb[0]  // x collision right
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0]  // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0]  // x collision right
 		&& char_pos[1] + char_bb[1] + 0.001 >= (climbable_pos[1] + climbable_bb[1]) // y collision
 		) {
 		motion.position.y = round(climbable_pos[1] + climbable_bb[1] - char_bb[1]); // tmp avoid fake collisions
 		return true;
 	}
+	return false;
+}
 
+// kind of hacky; this should only ever be called in the update_location context below
+bool is_on_climbable(Motion& motion, Motion& climbable) {
+
+	const vec2 climbable_bb = get_bounding_box(climbable) / 2.f;
+	const vec2 char_bb = get_bounding_box(motion) / 2.f;
+	const vec2 char_pos = motion.position;
+	const vec2 climbable_pos = climbable.position;
+
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0]  // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0]  // x collision right
+		) {
+		return true;
+	}
 	return false;
 }
 
@@ -144,7 +159,7 @@ void update_location(Motion& motion) {
 				motion.gravity_affected = false;
 				return;
 			}
-			else if (!motion.is_falling) {
+			else if (is_on_climbable(motion, climbable_motion) && !motion.is_falling) {
 				motion.location = LOCATION::ON_CLIMBABLE;
 				motion.gravity_affected = false;
 				return;
