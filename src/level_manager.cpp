@@ -20,12 +20,14 @@
 
 LevelManager::LevelManager()
 {
-
+    hurt_sound = Mix_LoadWAV(audio_path("hurt.wav").c_str());
 }
 
 LevelManager::~LevelManager()
 {
-
+    if (hurt_sound != nullptr)
+        Mix_FreeChunk(hurt_sound);
+    Mix_CloseAudio();
 }
 
 void LevelManager::init(GLFWwindow* window)
@@ -61,12 +63,22 @@ void LevelManager::init_data(int level) {
 
     BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
+    if (level == 0) {
+        background2 = createBackground(background_data.size, 12);
+        background1 = createBackground(background_data.size, 11);
+    }
+    else {
+        background2 = createBackground(background_data.size, level * 10 + 2);
+        background1 = createBackground(background_data.size, level * 10 + 1);
+    }
 
     for (auto& player_data: reload_manager.get_player_data()) {
-        gummybear_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
-        AttackArsenal ginerbread_arsenal = { gummybear_basic_attack, gummybear_advanced_attack};
+        gingerbread_advanced_attack.current_cooldown = player_data.advanced_attack_cooldown;
+        gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
+        AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
+        BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
         Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
-                player_data.energy, ginerbread_arsenal);
+                player_data.energy, ginerbread_arsenal, gingerbread_buffs);
         update_healthbar_len_color(player);
         order_vector.push_back(player);
     }
@@ -115,6 +127,8 @@ void LevelManager::load_level(int level)
     }
     else if (level == 1) {
         this->init_data(level);
+        // for now since we do not have heal on tutorial level
+        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
     }
 
     // common to all levels
@@ -170,10 +184,13 @@ void LevelManager::abandon_level()
     removeButton(back_button);
     removeButton(basic_attack_button);
     removeButton(advanced_attack_button);
+    removeAbilityButton(heal_button);
 
     removeEnergyBar();
     removeOrderIndicator();
     removeBackground(background);
+    removeBackground(background1);
+    removeBackground(background2);
 
     registry.activeTurns.clear();
 
@@ -229,12 +246,14 @@ void LevelManager::update_curr_level_data(){
         Motion& player_motion = registry.motions.get(player);
         Health& player_health = registry.healths.get(player);
         Energy& player_energy = registry.energies.get(player);
+        BuffArsenal& player_buff = registry.buffArsenals.get(player);
         AttackArsenal& player_arsenal = registry.attackArsenals.get(player);
         PlayerData pd {
             player_motion.position,
             player_motion.scale,
             player_health.cur_health,
             player_energy.cur_energy,
+            player_buff.heal.current_cooldown,
             player_arsenal.advanced_attack.current_cooldown
         };
         player_data_vector.push_back(pd);
@@ -342,6 +361,12 @@ bool LevelManager::step(float elapsed_ms)
 
     case LevelState::PREPARE:
         {
+            // update health bar for all characters
+            for (uint i = 0; i < registry.initiatives.size(); i++) {
+                Entity entity = registry.initiatives.entities[i];
+                update_healthbar_len_color(entity);
+            }
+
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
                 // allow progression to next level via menu if current level completed
@@ -479,7 +504,7 @@ void LevelManager::update_healthbar_len_color(Entity entity) {
         healthBar = enemy.healthBar;
     }
     Motion& healthBar_motion = registry.motions.get(healthBar);
-    healthBar_motion.scale = { healthBar_motion.scale.x * (health.cur_health / health.max_health), 10 };
+    healthBar_motion.scale = { healthBar_motion.original_scale.x * (health.cur_health / health.max_health), 10 };
 
     // change health bar color based on remaining health
     vec3& color = registry.colors.get(healthBar);
@@ -532,6 +557,9 @@ void LevelManager::handle_collisions()
                 health.cur_health = clamp(health.cur_health - attack.damage, 0.f, FLT_MAX);
                 attack.attacked.insert(other_entity);
 
+                // Hit/hurt audio
+                Mix_PlayChannel(-1, hurt_sound, 0);
+
                 // change health bar length
                 update_healthbar_len_color(other_entity);
 
@@ -548,10 +576,6 @@ bool LevelManager::is_over() {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
-    if (current_level_state == LevelState::ENEMY_BLINK) {
-        return;
-    }
-
     switch (current_level_state) {
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
@@ -611,10 +635,6 @@ void LevelManager::on_mouse_move(vec2 pos)
 
 void LevelManager::on_mouse_button(int button, int action, int mod)
 {
-    if (current_level_state == LevelState::ENEMY_BLINK) {
-        return;
-    }
-
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };

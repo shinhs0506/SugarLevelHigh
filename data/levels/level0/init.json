@@ -31,6 +31,7 @@
             },
             "health": 100,
             "energy": 150,
+            "heal_cooldown": 0,
             "advanced_attack_cooldown": 0
         }
     ],

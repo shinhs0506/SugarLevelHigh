@@ -33,7 +33,7 @@ class RenderSystem {
 		textures_path("background1.png"),
 		textures_path("terrain.png"),
 		textures_path("button_start.png"),
-        textures_path("button_help.png"),
+		textures_path("button_help.png"),
 		textures_path("button_exit.png"),
 		textures_path("back_button.png"),
 		textures_path("basic_help.png"),
@@ -51,6 +51,8 @@ class RenderSystem {
 		textures_path("melee_slash.png"), // Credit for this image goes to Matheus Carvalho
 		textures_path("bear_advanced_attack.png"),
 		textures_path("chocolate_advanced_attack.png"),
+		textures_path("background11.png"),
+		textures_path("background12.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

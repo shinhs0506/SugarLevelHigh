@@ -98,9 +98,10 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	// movement uniform
 	GLint movement_uloc = glGetUniformLocation(program, "movement");
 	int movement = 0; // idle
-	if (motion.goal_velocity.x < 0) movement = 1; // left
-	if (motion.goal_velocity.x > 0) movement = 2; // right
-	// TODO: only have left and right movements so far
+	if (motion.goal_velocity.x < 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 1; // left
+	if (motion.goal_velocity.x > 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 2; // right
+	if ((motion.location == LOCATION::NORMAL || motion.location == LOCATION::BELOW_CLIMBABLE) && motion.position.y != motion.prev_position.y) movement = 3; // falling
+	if (motion.location == LOCATION::ON_CLIMBABLE) movement = 4; // climb
 	glUniform1i(movement_uloc, movement);
 	gl_has_errors();
 

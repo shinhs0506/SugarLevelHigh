@@ -17,6 +17,7 @@ struct PlayerData {
     vec2 size;
     float health;
     float energy;
+    int heal_cooldown;
     int advanced_attack_cooldown;
 };
 
