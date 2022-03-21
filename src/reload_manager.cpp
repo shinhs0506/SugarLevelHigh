@@ -221,6 +221,7 @@ void ReloadManager::save(int level) {
         temp_json["pos"]["y"] = terrain_data.pos.y;
         temp_json["size"]["w"] = terrain_data.size.x;
         temp_json["size"]["h"] = terrain_data.size.y;
+        temp_json["breakable"] = terrain_data.breakable;
         terrain_json.push_back(temp_json);
     }
     curr_level_data_json["terrains"] = terrain_json;
