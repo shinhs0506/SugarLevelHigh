@@ -117,6 +117,8 @@ void LevelManager::load_level(int level)
     }
     else if (level == 1) {
         this->init_data(level);
+        // for now since we do not have heal on tutorial level
+        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
     }
 
     // common to all levels
@@ -125,7 +127,6 @@ void LevelManager::load_level(int level)
 
     basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback);
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback);
-    heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
 
     energy_bar = createEnergyBar();
     order_indicator = createOrderIndicator();
