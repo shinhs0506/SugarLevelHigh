@@ -2,6 +2,8 @@
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
 
+#include <iostream>
+
 Entity init_camera() {
 	//// init a camera that is shared across all scenes
 	//// camera offsets are the same as the window size
@@ -31,6 +33,11 @@ void update_camera_pos(vec2 pos) {
 void move_camera(vec2 velocity) {
     Motion& camera_motion = registry.motions.get(get_camera());
     camera_motion.goal_velocity += velocity;
+    for (int i = 0; i < registry.backgrounds.size(); i++) {
+        Entity& entity = registry.backgrounds.entities[i];
+        Motion& motion = registry.motions.get(entity);
+        motion.goal_velocity += velocity * registry.backgrounds.get(entity).proportion_velocity;
+    }
 }
 
 void update_camera_upper_limit(vec2 upper_limit) {
