@@ -594,7 +594,17 @@ void LevelManager::on_mouse_move(vec2 pos)
 {
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
-        player_controller.on_mouse_move(pos);
+
+        double cursor_window_x, cursor_window_y;
+        glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+        vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+        vec2 camera_pos = registry.motions.get(main_camera).position;
+        vec2 camera_offset = registry.cameras.get(main_camera).offset;
+
+        vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+
+        player_controller.on_mouse_move(cursor_world_pos);
         break;
     }
 }
