@@ -183,7 +183,7 @@ struct Overlay {
 
 // Backgrounds
 struct Background {
-
+	float proportion_velocity = 1.0;
 };
 
 // Ladders
