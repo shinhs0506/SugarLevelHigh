@@ -148,7 +148,9 @@ void LevelManager::restart_level()
 }
 
 void LevelManager::save_level_data(){
-    reload_manager.save(curr_level);
+    if (curr_level > 0) {
+        reload_manager.save(curr_level);
+    }
 }
 
 void LevelManager::abandon_level()
