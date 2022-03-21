@@ -122,18 +122,6 @@ void LevelManager::load_level(int level)
 {
     this->curr_level = level;
 
-    // common to all levels
-
-    back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
-
-    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
-    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
-
-    energy_bar = createEnergyBar();
-    order_indicator = createOrderIndicator();
-
-    sort(order_vector.begin(), order_vector.end(), compare);
-
     // level specific logic
     if (level == 0) {
         this->tutorial_controller.init(this);
@@ -145,6 +133,17 @@ void LevelManager::load_level(int level)
         heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
     }
 
+    // common to all levels
+
+    back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
+
+    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
+    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
+
+    energy_bar = createEnergyBar();
+    order_indicator = createOrderIndicator();
+
+    sort(order_vector.begin(), order_vector.end(), compare);
 
 }
 
