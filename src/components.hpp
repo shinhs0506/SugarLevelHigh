@@ -72,7 +72,8 @@ struct AttackObject
 	Entity attacker;
 	std::unordered_set<Entity, EntityHash> attacked;
 };
-struct AttackAbility 
+
+struct AttackAbility
 {
 	bool activated;
 	float speed; // ttl can be approvimated by range/speed
@@ -85,10 +86,25 @@ struct AttackAbility
 	int current_cooldown;
 	int texture_ID;
 };
+
 struct AttackArsenal
 {
 	AttackAbility basic_attack;
 	AttackAbility advanced_attack;
+};
+
+struct BuffAbility
+{
+    float movement_speed_delta;
+    float health_delta;
+    float damage_delta;
+	int max_cooldown;
+	int current_cooldown;
+};
+
+struct BuffArsenal {
+    BuffAbility heal;
+    // add more if needed
 };
 
 struct AttackPreview {
@@ -155,6 +171,7 @@ struct Motion {
 	vec2 current_velocity = { 0, 0 };
 	vec2 goal_velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+    vec2 original_scale = { 10, 10 };
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
 	bool is_falling = false;
@@ -178,6 +195,11 @@ struct Clickable {
 	bool disabled = false;
 };
 
+// Attached to buttons that use Buff components
+struct AbilityButton {
+
+};
+
 // Attached to components that are unaffected by camera
 struct Overlay {
 	vec2 position = { 0, 0 };
@@ -185,7 +207,7 @@ struct Overlay {
 
 // Backgrounds
 struct Background {
-
+	float proportion_velocity = 1.0;
 };
 
 // Ladders
@@ -251,7 +273,8 @@ enum class CharacterState
 	MOVE_RIGHT,
 	MOVE_UP,
 	MOVE_DOWN,
-	PERFORM_ABILITY,
+    PERFORM_ABILITY_AUTO,
+	PERFORM_ABILITY_MANUAL,
 	END, // should not move to any other states from here
 		 // this is set to prevent player continue to act after his turn
 };
@@ -304,7 +327,9 @@ enum class TEXTURE_ASSET_ID {
 	MELEE_ATTACK = TUTORIAL_END + 1,
 	BEAR_ADVANCED_ATTACK = MELEE_ATTACK + 1,
 	CHOCOLATE_ADVANCED_ATTACK = BEAR_ADVANCED_ATTACK + 1,
-	TEXTURE_COUNT = CHOCOLATE_ADVANCED_ATTACK + 1
+	BACKGROUND11 = CHOCOLATE_ADVANCED_ATTACK + 1,
+	BACKGROUND12 = BACKGROUND11 + 1,
+	TEXTURE_COUNT = BACKGROUND12 + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -331,4 +356,3 @@ struct RenderRequest {
 	EFFECT_ASSET_ID used_effect = EFFECT_ASSET_ID::EFFECT_COUNT;
 	GEOMETRY_BUFFER_ID used_geometry = GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 };
-

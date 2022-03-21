@@ -2,6 +2,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
 #include "ability.hpp"
+#include <iostream>
 
 Entity createDebugLine(vec2 position, vec2 scale)
 {
@@ -149,6 +150,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
+    motion.original_scale = motion.scale;
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
 
@@ -251,7 +253,8 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, BuffArsenal buff_arsenal)
+
 {
 	auto entity = Entity();
 
@@ -282,6 +285,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	registry.initiatives.insert(entity, initiative);
 
 	registry.attackArsenals.insert(entity, attack_arsenal);
+    registry.buffArsenals.insert(entity, buff_arsenal);
 
 	registry.renderRequests.insert(
 		entity,
@@ -447,6 +451,21 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)())
+{
+    auto entity = createButton(pos, size, on_click);
+
+    registry.abilityButtons.emplace(entity);
+
+    return entity;
+}
+
+void removeAbilityButton(Entity entity)
+{
+    removeButton(entity);
+    registry.abilityButtons.remove(entity);
+}
+
 Entity createHitEffect(Entity entity, float ttl_ms)
 {
 	HitEffect effect{ ttl_ms };
@@ -472,7 +491,6 @@ Entity createBackground(vec2 size, int level)
 	motion.depth = DEPTH::BACKGROUND;
 
 	Background background{ };
-	registry.backgrounds.insert(entity, background);
 
 	// Level number would determine which texture would be used
 	switch (level)
@@ -484,10 +502,29 @@ Entity createBackground(vec2 size, int level)
 			{ TEXTURE_ASSET_ID::BACKGROUND1,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND11,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 12:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND12,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
 		break;
 	default:
 		break;
 	}
+
+	registry.backgrounds.insert(entity, background);
 
 	return entity;
 }

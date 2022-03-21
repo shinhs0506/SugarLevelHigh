@@ -1,6 +1,10 @@
 #pragma once
 #include <vector>
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
 #include <nlohmann/json.hpp>
@@ -104,10 +108,13 @@ private:
     Entity back_button;
     Entity basic_attack_button;
     Entity advanced_attack_button;
+    Entity heal_button;
 
     Entity energy_bar;
 
     Entity background;
+	Entity background1;
+	Entity background2;
   
     // remove the character from order_vector
     void remove_character(Entity entity);
@@ -119,4 +126,9 @@ private:
     void destroy_saved_level_data_file();
 
     void update_curr_level_data();
+
+    void update_healthbar_len_color(Entity entity);
+
+	Mix_Chunk* hurt_sound;
+
 };
