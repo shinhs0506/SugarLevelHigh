@@ -214,7 +214,7 @@ void PhysicsSystem::step(float elapsed_ms)
 			else {
 				motion.prev_position = motion.position;
 				motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x, motion.slippery);
-				motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y, motion.slippery);
+				motion.current_velocity.y = motion.goal_velocity.y;
 				motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 			}
 
