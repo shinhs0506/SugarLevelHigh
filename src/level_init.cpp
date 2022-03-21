@@ -2,6 +2,7 @@
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
 #include "ability.hpp"
+#include <iostream>
 
 Entity createDebugLine(vec2 position, vec2 scale)
 {
@@ -63,7 +64,7 @@ Entity createOrderIndicator(){
 	auto entity = Entity();
 
 	registry.orderIndicators.emplace(entity);
-	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	vec2 pos = vec2(100000, 100000); // subject to change when adjusting UI positions, out of screen when started
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = { pos };
@@ -149,6 +150,7 @@ Entity createHealthBar(vec2 pos, vec2 size)
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { size.x*0.8, 10 };
+    motion.original_scale = motion.scale;
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::CHARACTER;
 
@@ -191,7 +193,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
 {
 	auto entity = Entity();
 
@@ -206,13 +208,14 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
 	motion.location = LOCATION::NORMAL;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Enemy enemy{ healthBar };
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
@@ -250,7 +253,8 @@ void removeEnemy(Entity entity)
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,
-        AttackArsenal attack_arsenal)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, BuffArsenal buff_arsenal)
+
 {
 	auto entity = Entity();
 
@@ -264,13 +268,14 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	motion.scale = size;
 	motion.gravity_affected = true;
 	motion.depth = DEPTH::CHARACTER;
+	motion.slippery = slippery;
 
 	Entity healthBar = createHealthBar(pos, size);
 	Playable player{ healthBar };
 	registry.playables.insert(entity, player);
 
 	// stats
-	Health health{ 100, starting_health };
+	Health health{ 100, starting_health, damage_over_turn };
 	Energy energy{ 150, starting_energy, starting_energy };
 	/* Energy energy{ 500, 500, 500 }; */
 	Initiative initiative{ 50 };
@@ -280,6 +285,7 @@ Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_e
 	registry.initiatives.insert(entity, initiative);
 
 	registry.attackArsenals.insert(entity, attack_arsenal);
+    registry.buffArsenals.insert(entity, buff_arsenal);
 
 	registry.renderRequests.insert(
 		entity,
@@ -368,9 +374,6 @@ Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, v
 		{ (TEXTURE_ASSET_ID)ability.texture_ID, // TEXTURE_COUNT indicates that no txture is needed
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
-
-	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
-
 	return entity;
 }
 
@@ -408,17 +411,29 @@ void removeCamera(Entity entity)
 	registry.cameras.remove(entity);
 }
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)())
+Entity createTimer(float ms) {
+    auto entity = Entity();
+
+    Timer timer { ms };
+    registry.timers.insert(entity, timer);
+    
+    return entity;
+}
+
+void removeTimer(Entity entity) {
+    registry.timers.remove(entity);
+}
+
+
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
 	auto entity = createGenericButton(pos, size, on_click);
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(0.f, 0.f, 1.f));
+		{ texture_ID,
+			EFFECT_ASSET_ID::TEXTURED, // TODO COOLDOWN effect
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -429,6 +444,21 @@ void removeButton(Entity entity)
 	registry.clickables.remove(entity);
 	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
+}
+
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+{
+    auto entity = createButton(pos, size, on_click, texture_ID);
+
+    registry.abilityButtons.emplace(entity);
+
+    return entity;
+}
+
+void removeAbilityButton(Entity entity)
+{
+    removeButton(entity);
+    registry.abilityButtons.remove(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)
@@ -456,7 +486,6 @@ Entity createBackground(vec2 size, int level)
 	motion.depth = DEPTH::BACKGROUND;
 
 	Background background{ };
-	registry.backgrounds.insert(entity, background);
 
 	// Level number would determine which texture would be used
 	switch (level)
@@ -468,10 +497,29 @@ Entity createBackground(vec2 size, int level)
 			{ TEXTURE_ASSET_ID::BACKGROUND1,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND11,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 12:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND12,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
 		break;
 	default:
 		break;
 	}
+
+	registry.backgrounds.insert(entity, background);
 
 	return entity;
 }
@@ -500,11 +548,9 @@ Entity createLadder(vec2 pos, vec2 size)
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(1.f, 1.f, 0.f));
+		{ TEXTURE_ASSET_ID::LADDER,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -526,6 +572,9 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
 	motion.depth = DEPTH::UI;
+
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
 
 	switch (step)
 	{
@@ -574,5 +623,6 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 void removePrompt(Entity entity)
 {
 	registry.motions.remove(entity);
+	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
 }

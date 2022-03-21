@@ -19,7 +19,6 @@ GameSystem::~GameSystem() {
 	// Destroy music components
 	if (background_music != nullptr)
 		Mix_FreeMusic(background_music);
-
 	Mix_CloseAudio();
 
 	// Destroy all created components
@@ -89,6 +88,10 @@ GLFWwindow* GameSystem::create_window() {
 		return nullptr;
 	}
 
+	/*
+	* Music by Eric Matyas
+	* www.soundimage.org
+	*/
 	background_music = Mix_LoadMUS(audio_path("music.wav").c_str());
 
 	if (background_music == nullptr) {
@@ -189,6 +192,7 @@ bool GameSystem::step(float elapsed_ms_since_last_update) {
 
 // On key callback
 void GameSystem::on_key(int key, int, int action, int mod) {
+	
 	switch (current_game_state) {
 	case GameState::IN_LEVEL:
 		level_manager.on_key(key, 0, action, mod);

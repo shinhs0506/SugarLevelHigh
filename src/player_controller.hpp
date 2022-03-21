@@ -1,5 +1,10 @@
 #pragma once
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
+
 #include "common.hpp"
 #include "components.hpp"
 
@@ -9,6 +14,7 @@ class PlayerController
 {
 public:
 	PlayerController();
+	~PlayerController();
 
 	// reset the states to START
 	void start_turn(Entity player);
@@ -31,6 +37,10 @@ private:
 	CharacterState current_state;
 	CharacterState next_state;
 	vec2 player_pos;
+
+	Mix_Chunk* melee_attack_sound;
+	Mix_Chunk* advanced_attack_sound;
+	Mix_Chunk* heal_ability_sound;
 
 	void move_to_state(CharacterState next_state);
 };
