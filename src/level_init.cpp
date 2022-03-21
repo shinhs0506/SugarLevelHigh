@@ -443,9 +443,9 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)())
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
-    auto entity = createButton(pos, size, on_click);
+    auto entity = createButton(pos, size, on_click, texture_ID);
 
     registry.abilityButtons.emplace(entity);
 

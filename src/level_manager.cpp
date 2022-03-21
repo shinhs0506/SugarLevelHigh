@@ -128,7 +128,7 @@ void LevelManager::load_level(int level)
     else if (level == 1) {
         this->init_data(level);
         // for now since we do not have heal on tutorial level
-        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback);
+        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
     }
 
     // common to all levels

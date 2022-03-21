@@ -53,6 +53,7 @@ class RenderSystem {
 		textures_path("chocolate_advanced_attack.png"),
 		textures_path("background11.png"),
 		textures_path("background12.png"),
+		textures_path("health_potion.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

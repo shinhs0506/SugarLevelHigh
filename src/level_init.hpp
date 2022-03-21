@@ -42,7 +42,7 @@ void removeTimer(Entity entity);
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
 void removeButton(Entity entity);
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)());
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
 void removeAbilityButton(Entity entity);
 
 // this does not create a new entity but only attach a hit effect on the existing object
