@@ -11,6 +11,7 @@ Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)(), bool disable
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
+	motion.depth = DEPTH::UI;
 
 	Clickable clickable{ on_click, disabled };
 	registry.clickables.insert(entity, clickable);
