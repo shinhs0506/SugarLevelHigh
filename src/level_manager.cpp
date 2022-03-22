@@ -415,7 +415,7 @@ bool LevelManager::step(float elapsed_ms)
             if (registry.playables.has(registry.activeTurns.entities[0])) {
                 std::cout << "player is current character" << std::endl;
                 // reset player controller
-                player_controller.start_turn(registry.activeTurns.entities[0]);
+                player_controller.start_turn(registry.activeTurns.entities[0], curr_level);
 
                 move_to_state(LevelState::PLAYER_TURN);
                 resetEnergyBar();
