@@ -39,7 +39,13 @@ Created by Team 3
 - description here
 
 **Audio feedback**
-- description here
+- Background music has been added in game_system::create_window function (background music code was already there so basically the .wav file was just changed)
+- 4 Audio feedbacks were added. 
+- "melee_attack.wav" and "advanced_attack.wav" sound effects were added to both the player and the enemy and plays (using the Mix_PlayChannel function) whenever they make the respective attacks. For the player, it can be found in PlayerController::on_mouse_button inside the PERFORM_ABILITY_MANUAL case and for the enemy it can be found in EnemyController::make_decision function. 
+- "healing_ability.wav" sound effects were added to the healing ability that is exclusive to the player and plays when the player uses the healing ability. This sound effect can be found in PlayerController::step inside the if(current_state == CharacterState::PERFORM_ABILITY_AUTO) statement.
+- "hurt.wav" sound effects were added and plays whenever any character (player or enemy) gets hurt. This can be found in LevelManager::handle_collisions
+
+
 
 **Basic integrated assets**
 - More assets have been added to `data/textures`, including new textures for all buttons in the game, textures for ladders which tile according to the height of the ladder, visuals for character attacks, on-screen prompts for tutorials and level-endings, and new backgrounds. 
