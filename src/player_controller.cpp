@@ -114,7 +114,7 @@ void PlayerController::step(float elapsed_ms)
 	updateEnergyBar(player_energy);
 	updateHealthBar(player);
 
-	if (player_motion.position.y > 900) {
+	if (player_motion.position.y > 1100) {
 		Health& player_health = registry.healths.get(player);
 		player_health.dead = true;
 		move_to_state(CharacterState::END);
