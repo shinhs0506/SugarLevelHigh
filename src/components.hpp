@@ -21,6 +21,7 @@ struct Health
 {
 	float max_health = 100.f;
 	float cur_health = 100.f;
+	bool damage_per_turn = false;
 	bool dead = false; // set this to true to remove the entity to all registries
 };
 
@@ -71,7 +72,8 @@ struct AttackObject
 	Entity attacker;
 	std::unordered_set<Entity, EntityHash> attacked;
 };
-struct AttackAbility 
+
+struct AttackAbility
 {
 	bool activated;
 	float speed; // ttl can be approvimated by range/speed
@@ -84,10 +86,25 @@ struct AttackAbility
 	int current_cooldown;
 	int texture_ID;
 };
+
 struct AttackArsenal
 {
 	AttackAbility basic_attack;
 	AttackAbility advanced_attack;
+};
+
+struct BuffAbility
+{
+    float movement_speed_delta;
+    float health_delta;
+    float damage_delta;
+	int max_cooldown;
+	int current_cooldown;
+};
+
+struct BuffArsenal {
+    BuffAbility heal;
+    // add more if needed
 };
 
 struct AttackPreview {
@@ -111,6 +128,11 @@ struct Camera
 	vec2 higer_limit;
 };
 
+struct Timer
+{
+    float timer;
+};
+
 // Hit effect object will be created on entity that is hit by an attack
 struct HitEffect
 {
@@ -126,6 +148,7 @@ struct Terrain
 enum DEPTH {
 	CAMERA = -1,
 	UI = 1,
+	PROMPT = 2,
 	ATTACK = 5,
 	ACTIVE = 10,
 	CHARACTER = 20,
@@ -142,6 +165,13 @@ enum LOCATION {
 	ABOVE_CLIMBABLE = ON_CLIMBABLE + 1
 };
 
+enum DIRECTION {
+	DIRECTION_UP,
+	DIRECTION_DOWN,
+	DIRECTION_LEFT,
+	DIRECTION_RIGHT
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
@@ -149,12 +179,14 @@ struct Motion {
 	vec2 current_velocity = { 0, 0 };
 	vec2 goal_velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+    vec2 original_scale = { 10, 10 };
 	vec2 prev_position = { 0, 0 };
 	bool gravity_affected = false;
 	bool is_falling = false;
-    float speed = 200;
+    float speed = 150;
 	int depth = DEPTH::CHARACTER;
 	int location = LOCATION::NORMAL;
+	int slippery = false;
 };
 
 // Stucture to store collision information
@@ -169,6 +201,12 @@ struct Collision
 struct Clickable {
 	bool (*on_click)();
 	bool disabled = false;
+	bool on_cooldown = false;
+};
+
+// Attached to buttons that use Buff components
+struct AbilityButton {
+
 };
 
 // Attached to components that are unaffected by camera
@@ -178,7 +216,7 @@ struct Overlay {
 
 // Backgrounds
 struct Background {
-
+	float proportion_velocity = 1.0;
 };
 
 // Ladders
@@ -244,7 +282,8 @@ enum class CharacterState
 	MOVE_RIGHT,
 	MOVE_UP,
 	MOVE_DOWN,
-	PERFORM_ABILITY,
+    PERFORM_ABILITY_AUTO,
+	PERFORM_ABILITY_MANUAL,
 	END, // should not move to any other states from here
 		 // this is set to prevent player continue to act after his turn
 };
@@ -298,7 +337,14 @@ enum class TEXTURE_ASSET_ID {
 	MELEE_ATTACK = TUTORIAL_END + 1,
 	BEAR_ADVANCED_ATTACK = MELEE_ATTACK + 1,
 	CHOCOLATE_ADVANCED_ATTACK = BEAR_ADVANCED_ATTACK + 1,
-	TEXTURE_COUNT = CHOCOLATE_ADVANCED_ATTACK + 1
+	BACKGROUND11 = CHOCOLATE_ADVANCED_ATTACK + 1,
+	BACKGROUND12 = BACKGROUND11 + 1,
+	LADDER = BACKGROUND12 + 1,
+	HEALTH_ABILITY = LADDER + 1,
+	LEVEL_WON = HEALTH_ABILITY + 1,
+	LEVEL_LOST = LEVEL_WON + 1,
+	TUTORIAL_FAIL = LEVEL_LOST + 1,
+	TEXTURE_COUNT = TUTORIAL_FAIL + 1
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -325,4 +371,3 @@ struct RenderRequest {
 	EFFECT_ASSET_ID used_effect = EFFECT_ASSET_ID::EFFECT_COUNT;
 	GEOMETRY_BUFFER_ID used_geometry = GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 };
-

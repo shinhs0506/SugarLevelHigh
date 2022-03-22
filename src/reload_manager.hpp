@@ -17,6 +17,7 @@ struct PlayerData {
     vec2 size;
     float health;
     float energy;
+    int heal_cooldown;
     int advanced_attack_cooldown;
 };
 
@@ -53,6 +54,7 @@ class ReloadManager {
         std::vector<TerrainData> terrain_data_vector;
         std::vector<LadderData> ladder_data_vector;
         int curr_order_ind;
+        int curr_level_state;
 
     public:
         ReloadManager();
@@ -68,6 +70,7 @@ class ReloadManager {
         std::vector<TerrainData> get_terrain_data();
         std::vector<LadderData> get_ladder_data();
         int get_curr_order_ind();
+        int get_curr_level_state();
 
         void update_camera_data(CameraData camera_data);
         void update_background_data(BackgroundData background_data);

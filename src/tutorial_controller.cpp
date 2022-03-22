@@ -12,10 +12,19 @@ TutorialController::~TutorialController() {
 
 void TutorialController::init(LevelManager* level_manager) {
     this->level_manager = level_manager;
+    failed = false;
+    should_advance = false;
     return;
 }
 
 void TutorialController::step(float elapsed_ms) {
+    if (failed) {
+        remove_prompts();
+        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -100);
+        all_entities.push_back(prompt);
+        prompt_active = true;
+        return;
+    }
     // if there is already a prompt on the screen, decrement counter
     if (curr_step >= max_step) {
         return;

@@ -1,6 +1,10 @@
 #pragma once
 #include <vector>
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 #include "tiny_ecs_registry.hpp"
 #include "player_controller.hpp"
 #include <nlohmann/json.hpp>
@@ -14,6 +18,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
+        ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
 		ENEMY_TURN, // handled by AI system
@@ -23,6 +28,7 @@ public:
 
 	// flag for completed levels
 	vec4 levels_completed = { false, false, false, false };
+	std::vector<Entity> prompts; // not added to init or save
 
 	LevelManager();
 
@@ -61,12 +67,14 @@ public:
 
 	LevelState current_state();
 
+	static void update_healthbar_len_color(Entity entity);
+
 private:
 	int curr_level;
 
 	Entity main_camera;
-	const float CAM_MOVE_SPEED = 100;
-    
+	const float CAM_MOVE_SPEED = 200;
+
 	// for turn order logic
 	std::vector<Entity> order_vector;
 	int curr_order_ind;
@@ -101,10 +109,13 @@ private:
     Entity back_button;
     Entity basic_attack_button;
     Entity advanced_attack_button;
+    Entity heal_button;
 
     Entity energy_bar;
 
     Entity background;
+	Entity background1;
+	Entity background2;
   
     // remove the character from order_vector
     void remove_character(Entity entity);
@@ -117,5 +128,6 @@ private:
 
     void update_curr_level_data();
 
-    void update_healthbar_len_color(Entity entity);
+	Mix_Chunk* hurt_sound;
+
 };

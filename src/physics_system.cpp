@@ -2,6 +2,7 @@
 #include "physics_system.hpp"
 #include "level_init.hpp"
 #include "camera_manager.hpp"
+#include <iostream>
 
 // Returns the local bounding coordinates scaled by the current size of the entity
 vec2 get_bounding_box(const Motion& motion)
@@ -100,8 +101,8 @@ bool is_above_climbable(Motion& motion, Motion& climbable) {
 	const vec2 char_pos = motion.position;
 	const vec2 climbable_pos = climbable.position;
 
-	if (char_pos[0] - char_bb[0] <= climbable_pos[0] + climbable_bb[0] // x collision left
-		&& char_pos[0] + char_bb[0] >= climbable_pos[0] - climbable_bb[0] // x collision right
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0] // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0] // x collision right
 		&& char_pos[1] + char_bb[1] + 0.001 <= (climbable_pos[1] + climbable_bb[1]) // y collision
 		) {
 		motion.position.y = round(climbable_pos[1] - climbable_bb[1] - char_bb[1]); // tmp avoid fake collisions
@@ -119,14 +120,29 @@ bool is_below_climbable(Motion& motion, Motion& climbable) {
 	const vec2 char_pos = motion.position;
 	const vec2 climbable_pos = climbable.position;
 
-	if (char_pos[0] - char_bb[0] <= climbable_pos[0] + climbable_bb[0] // x collision left
-		&& char_pos[0] + char_bb[0] >= climbable_pos[0] - climbable_bb[0]  // x collision right
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0]  // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0]  // x collision right
 		&& char_pos[1] + char_bb[1] + 0.001 >= (climbable_pos[1] + climbable_bb[1]) // y collision
 		) {
 		motion.position.y = round(climbable_pos[1] + climbable_bb[1] - char_bb[1]); // tmp avoid fake collisions
 		return true;
 	}
+	return false;
+}
 
+// kind of hacky; this should only ever be called in the update_location context below
+bool is_on_climbable(Motion& motion, Motion& climbable) {
+
+	const vec2 climbable_bb = get_bounding_box(climbable) / 2.f;
+	const vec2 char_bb = get_bounding_box(motion) / 2.f;
+	const vec2 char_pos = motion.position;
+	const vec2 climbable_pos = climbable.position;
+
+	if (char_pos[0] - char_bb[0] <= climbable_pos[0]  // x collision left
+		&& char_pos[0] + char_bb[0] >= climbable_pos[0]  // x collision right
+		) {
+		return true;
+	}
 	return false;
 }
 
@@ -144,7 +160,7 @@ void update_location(Motion& motion) {
 				motion.gravity_affected = false;
 				return;
 			}
-			else if (!motion.is_falling) {
+			else if (is_on_climbable(motion, climbable_motion) && !motion.is_falling) {
 				motion.location = LOCATION::ON_CLIMBABLE;
 				motion.gravity_affected = false;
 				return;
@@ -158,6 +174,7 @@ void update_location(Motion& motion) {
 					motion.goal_velocity.y = 0;
 					motion.is_falling = false;
 				}
+				motion.position.y = round_to_nearest_hundred(motion.position.y);
 				return;
 			}
 		}
@@ -167,9 +184,14 @@ void update_location(Motion& motion) {
 	motion.position.y = round(motion.position.y);
 }
 
-float interpolation_acceleration(float goal_velocity, float current_velocity) {
-
+float interpolation_acceleration(float goal_velocity, float current_velocity, bool slippery) {
+	
 	float acceleration = 20.0f;
+
+	if (slippery == true) {
+		acceleration = 5.0f;
+	}
+
 	float velocity_difference = goal_velocity - current_velocity;
 
 	if (velocity_difference > acceleration) {
@@ -180,7 +202,6 @@ float interpolation_acceleration(float goal_velocity, float current_velocity) {
 	}
 	return goal_velocity; // reached goal
 }
-
 
 void PhysicsSystem::step(float elapsed_ms)
 {
@@ -197,26 +218,49 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 
 		if (registry.playables.has(entity) || registry.enemies.has(entity)) {
-			if (registry.playables.has(entity)) {
-				update_location(motion);
-			}
-			
-			motion.prev_position = motion.position;
-			motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
+			// update location for players and enemies
+			update_location(motion);
 
+			if (motion.slippery == false) {
+				motion.prev_position = motion.position;
+				motion.position = motion.position + elapsed_ms / 1000.f * motion.goal_velocity;
+			}
+			else {
+				motion.prev_position = motion.position;
+				motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x, motion.slippery);
+				motion.current_velocity.y = motion.goal_velocity.y;
+				motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
+			}
+
+			updateHealthBar(entity);
+			if (registry.activeTurns.has(entity)) {
+				updateOrderIndicator(entity);
+			}
 		}
 
 		else {
 			motion.prev_position = motion.position;
-			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x);
-			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y);
+			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x, motion.slippery);
+			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y, motion.slippery);
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
+
+		
 
 		if (registry.cameras.has(entity))
 		{
 			Camera& camera = registry.cameras.get(entity);
 			motion.position = clamp(motion.position, camera.lower_limit, camera.higer_limit);
+			for (int i = 0; i < registry.backgrounds.size(); i++) {
+				Entity& entity = registry.backgrounds.entities[i];
+				Motion& background_motion = registry.motions.get(entity);
+				float proportion = registry.backgrounds.get(entity).proportion_velocity;
+				// TODO: this original position might not be the center of the window in future levels
+				vec2 original_position = { window_width_px / 2, window_height_px / 2 };
+				vec2 lower_limit_offset = proportion * (camera.lower_limit - original_position);
+				vec2 higher_limit_offset = proportion * (camera.higer_limit - original_position);
+				background_motion.position = clamp(background_motion.position, original_position + lower_limit_offset, original_position + higher_limit_offset);
+			}
 		}
 	}
 
@@ -256,7 +300,7 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 	}
 
-	// Check collision between players and terrains
+	// Check collision between players and terrainss
 	auto& characters = registry.initiatives;
 	for (uint i = 0; i < characters.size(); i++) {
 		Entity character = characters.entities[i];
@@ -298,11 +342,12 @@ void PhysicsSystem::step(float elapsed_ms)
 				character_motion.is_falling = true;
 			}
 		}
-		updateHealthBar(character);
 		if (registry.activeTurns.has(character)) {
 			updateOrderIndicator(character);
 		}
+		if (character_motion.location == LOCATION::ABOVE_CLIMBABLE) {
+			character_motion.position.y = round_to_nearest_hundred(character_motion.position.y);
+		}
+		updateHealthBar(character);
 	}
 }
-
-
