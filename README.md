@@ -47,3 +47,6 @@ Created by Team 3
 
 **Basic integrated assets**
 - More assets have been added to `data/textures`, including new textures for all buttons in the game, textures for ladders which tile according to the height of the ladder, visuals for character attacks, on-screen prompts for tutorials and level-endings, new backgrounds, storytelling elements at the start of the game, new spritesheet animations for the enemy characters, and an improved UI for a character's energy bar. 
+
+**Complex physical interactions with environment**
+- Cracked terrain blocks can now be broken by player attacks, which will cause anything resting on top of the terrain block to fall down due to gravity. Blocks are flagged as `breakable` in 'createTerrain' in `level_init.cpp` and in each level's `data/levels` files, and the breakage is handled in `LevelManager::step`, where terrains with "dead" health are removed from the game.
