@@ -97,7 +97,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 
 	// character uniform: check whether the entity is a character with a spritesheet
 	GLint is_character_uloc = glGetUniformLocation(program, "is_character");
-	glUniform1i(is_character_uloc, registry.playables.has(entity)); // TODO: so far, only the player gummy bear has a spritesheet
+	glUniform1i(is_character_uloc, registry.playables.has(entity) || registry.enemies.has(entity));
 	gl_has_errors();
 
 	// movement uniform
@@ -106,7 +106,8 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	if (motion.goal_velocity.x < 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 1; // left
 	if (motion.goal_velocity.x > 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 2; // right
 	if ((motion.location == LOCATION::NORMAL) && motion.position.y != motion.prev_position.y) movement = 3; // falling
-	if (motion.location == LOCATION::ON_CLIMBABLE) movement = 4; // climb
+	if (motion.location == LOCATION::ON_CLIMBABLE && motion.goal_velocity.y != 0) movement = 4; // climb
+	if (motion.location == LOCATION::ON_CLIMBABLE && motion.goal_velocity.y == 0) movement = 5; // stop on the ladder
 	glUniform1i(movement_uloc, movement);
 	gl_has_errors();
 

@@ -63,14 +63,10 @@ void LevelManager::init_data(int level) {
 
     BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
-    if (level == 0) {
-        background2 = createBackground(background_data.size, 12);
-        background1 = createBackground(background_data.size, 11);
-    }
-    else {
-        background2 = createBackground(background_data.size, level * 10 + 2);
-        background1 = createBackground(background_data.size, level * 10 + 1);
-    }
+    
+    background2 = createBackground(background_data.size, 12);
+    background1 = createBackground(background_data.size, 11);
+    
 
     for (auto& player_data: reload_manager.get_player_data()) {
 
@@ -95,7 +91,7 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
-        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
+        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable);
     }
 
     for (auto& ladder_data : reload_manager.get_ladder_data()) {
@@ -140,6 +136,7 @@ void LevelManager::load_level(int level)
     basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
 
+    ui_layout = createUI(vec2(640, 360), vec2(1280, 720));
     energy_bar = createEnergyBar();
     order_indicator = createOrderIndicator();
 
@@ -189,6 +186,7 @@ void LevelManager::abandon_level()
     removeButton(advanced_attack_button);
     removeAbilityButton(heal_button);
 
+    removeUI(ui_layout);
     removeEnergyBar();
     removeOrderIndicator();
     removeBackground(background);
@@ -374,7 +372,21 @@ bool LevelManager::step(float elapsed_ms)
                     if (curr_level == 0) {
                         tutorial_controller.should_advance = true;
                     }
+                    else {
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
+                        prompts.push_back(prompt);
+                    }
                     this->levels_completed[curr_level] = true;
+                }
+                else if (only_enemy_left) {
+                    if (curr_level == 0) {
+                        tutorial_controller.failed = true;
+                        tutorial_controller.should_advance = true;
+                    }
+                    else {
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
+                        prompts.push_back(prompt);
+                    }
                 }
                 move_to_state(LevelState::TERMINATION);
                 break;
@@ -401,7 +413,7 @@ bool LevelManager::step(float elapsed_ms)
             if (registry.playables.has(registry.activeTurns.entities[0])) {
                 std::cout << "player is current character" << std::endl;
                 // reset player controller
-                player_controller.start_turn(registry.activeTurns.entities[0]);
+                player_controller.start_turn(registry.activeTurns.entities[0], curr_level);
 
                 move_to_state(LevelState::PLAYER_TURN);
                 resetEnergyBar();
@@ -554,12 +566,13 @@ void LevelManager::handle_collisions()
 
                 // Hit/hurt audio
                 Mix_PlayChannel(-1, hurt_sound, 0);
-
-                // change health bar length
-                update_healthbar_len_color(other_entity);
-
-                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
-          
+  
+                // change health bar length for players or enemies
+                if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
+                    update_healthbar_len_color(other_entity);
+                }
+              
+                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl 
             }
         }
     }

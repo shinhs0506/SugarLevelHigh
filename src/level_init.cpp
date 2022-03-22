@@ -34,7 +34,7 @@ Entity createEnergyBar()
 	auto entity = Entity();
 
 	registry.energyBars.emplace(entity);
-	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	vec2 pos = vec2(640, 625); // subject to change when adjusting UI positions
 
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
@@ -42,7 +42,7 @@ Entity createEnergyBar()
 	motion.prev_position = { pos };
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
-	motion.scale = { 300, 20 };
+	motion.scale = { 270, 20 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
 
@@ -108,17 +108,17 @@ void resetEnergyBar()
 {
 	// As all characters share one energy bar, there should always be only 1 entity inside energyBars
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
-	vec2 pos = vec2(700, 600); // subject to change when adjusting UI positions
+	vec2 pos = vec2(640, 625); // subject to change when adjusting UI positions
 	motion.position = { pos };
 	motion.prev_position = { pos };
 	motion.goal_velocity = { 0.f, 0.f };
-	motion.scale = { 300, 20 };
+	motion.scale = { 270, 20 };
 }
 
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
-	motion.scale.x = 300 * (energy.cur_energy / energy.max_energy);
+	motion.scale.x = 270 * (energy.cur_energy / energy.max_energy);
 }
 
 void removeEnergyBar()
@@ -311,7 +311,7 @@ void removePlayer(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createTerrain(vec2 pos, vec2 size)
+Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 {
 	auto entity = Entity();
 
@@ -326,18 +326,29 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.depth = DEPTH::TERRAIN;
 
 	// TODO: terrains might have more components
-	Terrain terrain{ false }; 
+	Terrain terrain{ breakable };
 	registry.terrains.insert(entity, terrain);
 	
 	// Break when the terrain is breakable and health < 0
 	Health health{ 20, 20 };
 	registry.healths.insert(entity, health);
 
-	registry.renderRequests.insert(
-		entity,
-		{ TEXTURE_ASSET_ID::TERRAIN1,
-			EFFECT_ASSET_ID::TEXTURED,
-			GEOMETRY_BUFFER_ID::SPRITE });
+	if (!breakable) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN_UNBREAKABLE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN_BREAKABLE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+
+	
 
 	return entity;
 }
@@ -492,6 +503,8 @@ Entity createBackground(vec2 size, int level)
 	{
 	case 0:
 	case 1:
+	case 2:
+	case 3:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND1,
@@ -571,13 +584,34 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
-	motion.depth = DEPTH::UI;
+	motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ pos };
 	registry.overlays.insert(entity, overlay);
 
 	switch (step)
 	{
+	case -1: // level won
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_WON,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case -10:// level lost
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_LOST,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case -100:// tutorial failed
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_FAIL,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
 	case 0:
 		registry.renderRequests.insert(
 			entity,
@@ -622,6 +656,104 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 
 void removePrompt(Entity entity)
 {
+	registry.motions.remove(entity);
+	registry.overlays.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
+Entity createStorySlide(vec2 pos, vec2 size, int slide) {
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.depth = DEPTH::BACKGROUND;
+
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
+	switch (slide)
+	{
+	case 0:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 2:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY3,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY4,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 4:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY5,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	default:
+		break;
+	}
+
+	return entity;
+}
+
+void removeStorySlide(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.overlays.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
+Entity createUI(vec2 pos, vec2 size) {
+	auto entity = Entity();
+	registry.UIs.emplace(entity);
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.depth = DEPTH::PROMPT;
+
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::UI_LAYOUT,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+		
+
+	return entity;
+}
+
+void removeUI(Entity entity)
+{
+	registry.UIs.remove(entity);
 	registry.motions.remove(entity);
 	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);

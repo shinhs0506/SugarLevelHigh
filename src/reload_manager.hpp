@@ -33,6 +33,7 @@ struct EnemyData {
 struct TerrainData {
     vec2 pos;
     vec2 size;
+    bool breakable;
 };
 
 struct LadderData {

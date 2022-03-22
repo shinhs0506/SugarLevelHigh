@@ -27,7 +27,9 @@ public:
 	};
 
 	// flag for completed levels
-	vec4 levels_completed = { true, true, true, true };
+	vec4 levels_completed = { false, false, false, false };
+
+	std::vector<Entity> prompts; // not added to init or save
 
 	LevelManager();
 
@@ -110,6 +112,7 @@ private:
     Entity advanced_attack_button;
     Entity heal_button;
 
+	Entity ui_layout;
     Entity energy_bar;
 
     Entity background;

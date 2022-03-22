@@ -32,6 +32,7 @@ class RenderSystem {
 		textures_path("enemy.png"),
 		textures_path("background1.png"),
 		textures_path("terrain.png"),
+		textures_path("terrain_breakable.png"),
 		textures_path("button_start.png"),
 		textures_path("button_help.png"),
 		textures_path("button_exit.png"),
@@ -55,6 +56,16 @@ class RenderSystem {
 		textures_path("background12.png"),
 		textures_path("ladder.png"), // https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art
 		textures_path("health_potion.png"), // Credit for this images goes to "magdum" found at https://opengameart.org/content/basic-potion-set
+		textures_path("level_won.png"),
+		textures_path("level_lost.png"),
+		textures_path("tutorial_fail.png"),
+		textures_path("story1.png"),
+		textures_path("story2.png"),
+		textures_path("story3.png"),
+		textures_path("story4.png"),
+		textures_path("story5.png"),
+		textures_path("next_button.png"),
+		textures_path("ui_layout.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

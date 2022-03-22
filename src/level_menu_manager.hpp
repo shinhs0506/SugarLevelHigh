@@ -15,7 +15,10 @@ private:
 
     Entity back_button;
 
+    int slide = 0;
+
     // buttons
+    Entity next_button;
     Entity tutorial_button;
     Entity level_1_button;
     Entity level_2_button;
@@ -24,6 +27,7 @@ private:
     bool is_back_button_clicked;
 
     std::vector<Entity> all_entities;
+    std::vector<Entity> story_slides;
 
 public:
     int selected_level = 0;
@@ -34,7 +38,10 @@ public:
 
     void init(GLFWwindow* window, GameSystem* game_system);
 
+    void generateLevelMenu();
+
     void destroy();
+    void removeStorySlides();
 
     bool step(float elapsed_ms);
     void handle_collisions();

@@ -29,7 +29,7 @@ Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,
 
 void removePlayer(Entity entity);
 
-Entity createTerrain(vec2 pos, vec2 size);
+Entity createTerrain(vec2 pos, vec2 size, bool breakable);
 void removeTerrain(Entity entity);
 
 Entity createAttackObject(Entity attacker, AttackAbility ability, float angle, vec2 pos);
@@ -58,4 +58,10 @@ void removeLadder(Entity entity);
 
 Entity createPrompt(vec2 pos, vec2 size, int step);
 void removePrompt(Entity entity);
+
+Entity createStorySlide(vec2 pos, vec2 size, int slide);
+void removeStorySlide(Entity entity);
+
+Entity createUI(vec2 pos, vec2 size);
+void removeUI(Entity entity);
 

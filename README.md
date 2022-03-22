@@ -32,6 +32,7 @@ Created by Team 3
 - We have fixed a bug related to our physics systems, which was discovered during the last crossplay session. Characters and their respective health bars are now in sync and react the same to gravity, rather than having slightly different positions due to be affected by gravity in different ways as before. This can be found in `PhysicsSystem::step`.
 - Interpolation is now used to determine character movement in level 2. This can be found in `PhysicsSystem::step`.
 - We have fixed a bug which led to unpredictable behaviour when the camera was moved in-level and the player returned to the menu screen. This can be found in `CameraManager::reset_camera_pos`.
+- Attack previews now show the correct projectile direction after the camera has been moved
 
 ## Creative Components
 
