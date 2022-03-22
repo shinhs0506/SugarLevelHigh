@@ -5,6 +5,7 @@
 #include "level_init.hpp"
 #include "ability.hpp"
 #include "level_manager.hpp"
+#include "camera_manager.hpp""
 
 
 
@@ -44,6 +45,9 @@ void EnemyController::start_turn(Entity enemy)
 
 	current_state = CharacterState::IDLE;
 	next_state = CharacterState::IDLE;
+
+	Motion& enemy_motion = registry.motions.get(enemy);
+	update_camera_pos(enemy_motion.position);
 
 	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
 }

@@ -7,6 +7,7 @@
 #include "ability.hpp"
 #include "components.hpp"
 #include "level_manager.hpp"
+#include "camera_manager.hpp"
 
 PlayerController::PlayerController()
 {
@@ -73,7 +74,10 @@ void PlayerController::start_turn(Entity player, int curr_level)
 	else {
 		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
 	}
-	
+
+	Motion& player_motion = registry.motions.get(player);
+	update_camera_pos(player_motion.position);
+
 }
 
 void PlayerController::step(float elapsed_ms)
