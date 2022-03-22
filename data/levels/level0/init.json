@@ -215,7 +215,7 @@
         "w": 99.999,
         "h": 99.999
       },
-      "breakable": true
+      "breakable": false
     },
     {
       "pos": {
@@ -226,7 +226,7 @@
         "w": 99.999,
         "h": 99.999
       },
-      "breakable": true
+      "breakable": false
     },
     {
       "pos": {
