@@ -238,7 +238,7 @@ void EnemyController::step(float elapsed_ms)
 		if (move_counter < 0.f || energy.cur_energy == 0.f) {
 			move_counter = 0.f;
 			motion.goal_velocity.x = 0;
-			//motion.goal_velocity.y = 0;
+			motion.goal_velocity.y = 0;
 			move_to_state(CharacterState::IDLE);
 		}
 		break;
