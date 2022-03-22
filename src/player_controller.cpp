@@ -376,6 +376,3 @@ void PlayerController::move_to_state(CharacterState next_state)
 	this->next_state = next_state;
 }
 
-void clickable_cooldown (Entity clickable) {
-
-}
