@@ -35,6 +35,8 @@ public:
 
     // whether the tutorial should show the next instruction 
     bool should_advance = false;
+    // whether the player has failed the tutorial
+    bool failed = false;
 
     TutorialController();
 
