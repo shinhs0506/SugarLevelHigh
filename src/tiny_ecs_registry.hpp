@@ -41,6 +41,7 @@ public:
 	ComponentContainer<HitEffect> hitEffects;
 	ComponentContainer<AI> AIs;
 	ComponentContainer<Background> backgrounds;
+	ComponentContainer<UiComponent> UIs;
 	ComponentContainer<AttackPreview> attackPreviews;
 	ComponentContainer<Climbable> climbables;
     ComponentContainer<OrderIndicator> orderIndicators;

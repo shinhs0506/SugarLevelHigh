@@ -219,6 +219,11 @@ struct Background {
 	float proportion_velocity = 1.0;
 };
 
+// UI components
+struct UiComponent {
+	
+};
+
 // Ladders
 struct Climbable {
 
@@ -350,7 +355,8 @@ enum class TEXTURE_ASSET_ID {
 	STORY4 = STORY3 + 1,
 	STORY5 = STORY4 + 1,
 	NEXT_BUTTON = STORY5 + 1,
-	TEXTURE_COUNT = NEXT_BUTTON + 1,
+	UI_LAYOUT = NEXT_BUTTON + 1,
+	TEXTURE_COUNT = UI_LAYOUT + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
