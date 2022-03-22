@@ -311,7 +311,7 @@ void removePlayer(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createTerrain(vec2 pos, vec2 size)
+Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 {
 	auto entity = Entity();
 
@@ -326,18 +326,29 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.depth = DEPTH::TERRAIN;
 
 	// TODO: terrains might have more components
-	Terrain terrain{ false }; 
+	Terrain terrain{ breakable };
 	registry.terrains.insert(entity, terrain);
 	
 	// Break when the terrain is breakable and health < 0
 	Health health{ 20, 20 };
 	registry.healths.insert(entity, health);
 
-	registry.renderRequests.insert(
-		entity,
-		{ TEXTURE_ASSET_ID::TERRAIN1,
-			EFFECT_ASSET_ID::TEXTURED,
-			GEOMETRY_BUFFER_ID::SPRITE });
+	if (!breakable) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN_UNBREAKABLE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN_BREAKABLE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+
+	
 
 	return entity;
 }
@@ -571,13 +582,34 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
-	motion.depth = DEPTH::UI;
+	motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ pos };
 	registry.overlays.insert(entity, overlay);
 
 	switch (step)
 	{
+	case -1: // level won
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_WON,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case -10:// level lost
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_LOST,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case -100:// tutorial failed
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_FAIL,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
 	case 0:
 		registry.renderRequests.insert(
 			entity,

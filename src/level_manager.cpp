@@ -95,7 +95,7 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
-        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
+        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable);
     }
 
     for (auto& ladder_data : reload_manager.get_ladder_data()) {
@@ -374,7 +374,21 @@ bool LevelManager::step(float elapsed_ms)
                     if (curr_level == 0) {
                         tutorial_controller.should_advance = true;
                     }
+                    else {
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
+                        prompts.push_back(prompt);
+                    }
                     this->levels_completed[curr_level] = true;
+                }
+                else if (only_enemy_left) {
+                    if (curr_level == 0) {
+                        tutorial_controller.failed = true;
+                        tutorial_controller.should_advance = true;
+                    }
+                    else {
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
+                        prompts.push_back(prompt);
+                    }
                 }
                 move_to_state(LevelState::TERMINATION);
                 break;
@@ -554,12 +568,13 @@ void LevelManager::handle_collisions()
 
                 // Hit/hurt audio
                 Mix_PlayChannel(-1, hurt_sound, 0);
-
-                // change health bar length
-                update_healthbar_len_color(other_entity);
-
-                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
-          
+  
+                // change health bar length for players or enemies
+                if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
+                    update_healthbar_len_color(other_entity);
+                }
+              
+                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl 
             }
         }
     }
