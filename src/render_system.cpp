@@ -106,7 +106,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	if (motion.goal_velocity.x < 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 1; // left
 	if (motion.goal_velocity.x > 0 && motion.location != LOCATION::ON_CLIMBABLE) movement = 2; // right
 	if ((motion.location == LOCATION::NORMAL) && motion.position.y != motion.prev_position.y) movement = 3; // falling
-	if (motion.location == LOCATION::ON_CLIMBABLE) movement = 4; // climb
+	if (motion.location == LOCATION::ON_CLIMBABLE && motion.goal_velocity.y != 0) movement = 4; // climb
 	glUniform1i(movement_uloc, movement);
 	gl_has_errors();
 
