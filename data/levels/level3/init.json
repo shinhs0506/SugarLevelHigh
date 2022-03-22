@@ -253,7 +253,7 @@
           "w": 99.999,
           "h": 99.999
         },
-        "breakable": false
+        "breakable": true
       },
       {
         "pos": {
@@ -345,17 +345,6 @@
       },
       {
         "pos": {
-          "x": 200,
-          "y": 600
-        },
-        "size": {
-          "w": 99.999,
-          "h": 99.999
-        },
-        "breakable": false
-      },
-      {
-        "pos": {
           "x": 300,
           "y": 600
         },
@@ -418,7 +407,7 @@
           "w": 99.999,
           "h": 99.999
         },
-        "breakable": false
+        "breakable": true
       },
       {
         "pos": {
@@ -550,7 +539,7 @@
           "w": 99.999,
           "h": 99.999
         },
-        "breakable": false
+        "breakable": true
       },
       {
         "pos": {
@@ -693,7 +682,7 @@
           "w": 99.999,
           "h": 99.999
         },
-        "breakable": false
+        "breakable": true
       },
       {
         "pos": {
@@ -704,7 +693,7 @@
           "w": 99.999,
           "h": 99.999
         },
-        "breakable": false
+        "breakable": true
       }
   ],
     "curr_order_ind": -1,
