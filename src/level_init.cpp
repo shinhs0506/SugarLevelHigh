@@ -311,7 +311,7 @@ void removePlayer(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createTerrain(vec2 pos, vec2 size)
+Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 {
 	auto entity = Entity();
 
@@ -326,18 +326,29 @@ Entity createTerrain(vec2 pos, vec2 size)
 	motion.depth = DEPTH::TERRAIN;
 
 	// TODO: terrains might have more components
-	Terrain terrain{ false }; 
+	Terrain terrain{ breakable };
 	registry.terrains.insert(entity, terrain);
 	
 	// Break when the terrain is breakable and health < 0
 	Health health{ 20, 20 };
 	registry.healths.insert(entity, health);
 
-	registry.renderRequests.insert(
-		entity,
-		{ TEXTURE_ASSET_ID::TERRAIN1,
-			EFFECT_ASSET_ID::TEXTURED,
-			GEOMETRY_BUFFER_ID::SPRITE });
+	if (!breakable) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN_UNBREAKABLE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TERRAIN_BREAKABLE,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+
+	
 
 	return entity;
 }

@@ -95,7 +95,7 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
-        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size);
+        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable);
     }
 
     for (auto& ladder_data : reload_manager.get_ladder_data()) {
@@ -568,12 +568,13 @@ void LevelManager::handle_collisions()
 
                 // Hit/hurt audio
                 Mix_PlayChannel(-1, hurt_sound, 0);
-
-                // change health bar length
-                update_healthbar_len_color(other_entity);
-
-                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl
-          
+  
+                // change health bar length for players or enemies
+                if (registry.playables.has(other_entity) || registry.enemies.has(other_entity)) {
+                    update_healthbar_len_color(other_entity);
+                }
+              
+                createHitEffect(other_entity, 200); // this ttl should be less then attack object ttl 
             }
         }
     }

@@ -95,9 +95,11 @@ void ReloadManager::load(int level) {
     for (auto& terrain_data: terrains_data) {
         vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
         vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
+        bool terrain_breakable = terrain_data["breakable"];
         TerrainData td {
             terrain_pos,
-            terrain_size
+            terrain_size,
+            terrain_breakable
         };
         terrain_data_vector.push_back(td);
     }
@@ -227,6 +229,7 @@ void ReloadManager::save(int level) {
         temp_json["pos"]["y"] = terrain_data.pos.y;
         temp_json["size"]["w"] = terrain_data.size.x;
         temp_json["size"]["h"] = terrain_data.size.y;
+        temp_json["breakable"] = terrain_data.breakable;
         terrain_json.push_back(temp_json);
     }
     curr_level_data_json["terrains"] = terrain_json;
