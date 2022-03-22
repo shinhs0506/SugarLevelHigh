@@ -30,7 +30,7 @@ PlayerController::~PlayerController()
 	Mix_CloseAudio();
 }
 
-void PlayerController::start_turn(Entity player)
+void PlayerController::start_turn(Entity player, int curr_level)
 {
 	this->player = player;
 
@@ -49,27 +49,30 @@ void PlayerController::start_turn(Entity player)
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 
-	/*
-	Entity advanced_attack_clickable = registry.clickables.entities[2];
+	Entity advanced_attack_clickable;
+	if (curr_level == 0) {
+		advanced_attack_clickable = registry.clickables.entities[2];
+	}
+	else {
+		advanced_attack_clickable = registry.clickables.entities[3];
+		Entity healing_clickable = registry.clickables.entities[0];
+
+		if (registry.abilityButtons.size() > 0) {
+			if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
+				registry.clickables.get(healing_clickable).on_cooldown = true;
+			}
+			else {
+				registry.clickables.get(healing_clickable).on_cooldown = false;
+			}
+		}
+	}
+
 	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
 		registry.clickables.get(advanced_attack_clickable).on_cooldown = true;
 	}
 	else {
 		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
 	}
-
-	if (registry.abilityButtons.size() > 0) {
-		Entity healing_clickable = registry.clickables.entities[3];
-		if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
-			registry.clickables.get(healing_clickable).on_cooldown = true;
-		}
-		else {
-			registry.clickables.get(healing_clickable).on_cooldown = false;
-		}
-	}
-	*/
-
-
 	
 }
 
@@ -373,3 +376,6 @@ void PlayerController::move_to_state(CharacterState next_state)
 	this->next_state = next_state;
 }
 
+void clickable_cooldown (Entity clickable) {
+
+}
