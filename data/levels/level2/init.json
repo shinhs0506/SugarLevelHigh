@@ -75,9 +75,36 @@
         "energy": 150,
         "heal_cooldown": 0,
         "advanced_attack_cooldown": 0
+      },
+      {
+        "pos": {
+            "x": 1400,
+            "y": 200
+        },
+        "size": {
+            "w": 64,
+            "h": 100
+        },
+        "health": 100,
+        "energy": 150,
+        "heal_cooldown": 0,
+        "advanced_attack_cooldown": 0
       }
     ],
     "enemies": [
+      {
+        "pos": {
+            "x": -100,
+            "y": 200
+        },
+        "size": {
+            "w": 80,
+            "h": 100
+        },
+        "health": 100,
+        "energy": 150,
+        "advanced_attack_cooldown": 0
+      },
       {
         "pos": {
             "x": 300,
@@ -183,7 +210,7 @@
           "w": 99.999,
           "h": 99.999
         },
-      	"breakable": true
+      	"breakable": false
       },
       {
         "pos": {
@@ -249,7 +276,7 @@
         "w": 99.999,
         "h": 99.999
       },
-      "breakable": false
+      "breakable": true
     },
     {
       "pos": {
@@ -260,7 +287,7 @@
         "w": 99.999,
         "h": 99.999
       },
-      "breakable": false
+      "breakable": true
     },
     {
       "pos": {
@@ -381,7 +408,7 @@
         "w": 99.999,
         "h": 99.999
       },
-      "breakable": false
+      "breakable": true
     },
     {
       "pos": {
@@ -392,7 +419,7 @@
         "w": 99.999,
         "h": 99.999
       },
-      "breakable": false
+      "breakable": true
     },
     {
       "pos": {
