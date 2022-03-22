@@ -5,6 +5,8 @@
 #include "level_init.hpp"
 #include "ability.hpp"
 #include "level_manager.hpp"
+#include "camera_manager.hpp"
+#include "physics_system.hpp"
 
 
 
@@ -45,6 +47,12 @@ void EnemyController::start_turn(Entity enemy)
 	current_state = CharacterState::IDLE;
 	next_state = CharacterState::IDLE;
 
+	Motion& enemy_motion = registry.motions.get(enemy);
+	Motion& camera_motion = registry.motions.get(registry.cameras.entities[0]);
+	camera_motion.scale = { window_width_px , window_height_px };
+	if (!collides(camera_motion, enemy_motion)) {
+		update_camera_pos(enemy_motion.position);
+	}
 	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
 }
 

@@ -1,8 +1,10 @@
 #include "camera_manager.hpp"
 #include "level_init.hpp"
 #include "tiny_ecs_registry.hpp"
+#include "physics_system.hpp"
 
 #include <iostream>
+
 
 Entity init_camera() {
 	//// init a camera that is shared across all scenes
@@ -26,8 +28,23 @@ Entity& get_camera() {
 }
 
 void update_camera_pos(vec2 pos) {
+    Camera& camera = registry.cameras.get(get_camera());
     Motion& camera_motion = registry.motions.get(get_camera());
-    camera_motion.position = pos;
+    vec2 old_pos = camera_motion.position;
+    vec2 distance = { pos - old_pos };
+    camera_motion.position = pos; 
+    camera_motion.position = clamp(camera_motion.position, camera.lower_limit, camera.higer_limit);
+    for (int i = 0; i < registry.backgrounds.size(); i++) {
+        Entity& entity = registry.backgrounds.entities[i];
+        Motion& background_motion = registry.motions.get(entity);
+        float proportion = registry.backgrounds.get(entity).proportion_velocity;
+        background_motion.position += distance * proportion;
+        // TODO: this original position might not be the center of the window in future levels
+        vec2 original_position = { window_width_px / 2, window_height_px / 2 };
+        vec2 lower_limit_offset = proportion * (camera.lower_limit - original_position);
+        vec2 higher_limit_offset = proportion * (camera.higer_limit - original_position);
+        background_motion.position = clamp(background_motion.position, original_position + lower_limit_offset, original_position + higher_limit_offset);
+    }
 }
 
 void move_camera(vec2 velocity) {

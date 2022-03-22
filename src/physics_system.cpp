@@ -236,15 +236,13 @@ void PhysicsSystem::step(float elapsed_ms)
 				updateOrderIndicator(entity);
 			}
 		}
-
+		
 		else {
 			motion.prev_position = motion.position;
 			motion.current_velocity.x = interpolation_acceleration(motion.goal_velocity.x, motion.current_velocity.x, motion.slippery);
 			motion.current_velocity.y = interpolation_acceleration(motion.goal_velocity.y, motion.current_velocity.y, motion.slippery);
 			motion.position = motion.position + elapsed_ms / 1000.f * motion.current_velocity;
 		}
-
-		
 
 		if (registry.cameras.has(entity))
 		{
@@ -261,6 +259,7 @@ void PhysicsSystem::step(float elapsed_ms)
 				background_motion.position = clamp(background_motion.position, original_position + lower_limit_offset, original_position + higher_limit_offset);
 			}
 		}
+		
 	}
 
 	// Update overlays relative to main camera
