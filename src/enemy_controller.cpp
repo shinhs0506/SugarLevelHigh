@@ -209,7 +209,7 @@ void EnemyController::step(float elapsed_ms)
 	Health& health = registry.healths.get(enemy);
 
 	// Check if enemy fell off the map
-	if (motion.position.y > 900) {
+	if (motion.position.y > 1100) {
 		health.dead = true;
 		move_to_state(CharacterState::END);
 	}
