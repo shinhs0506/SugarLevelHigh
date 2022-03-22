@@ -5,6 +5,8 @@
 #include "physics_system.hpp"
 #include "game_system.hpp"
 #include "camera_manager.hpp"
+#include <level_init.hpp>
+#include <iostream>
 
 LevelMenuManager::LevelMenuManager() {
 
@@ -20,25 +22,46 @@ void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->game_system = game_system;
     this->game_system->level_manager.get_progress();
 
+    is_back_button_clicked = false;
+
+    if (slide > 4) { // always enter the level selection menu after all the story slides are watched
+        generateLevelMenu();
+    }
+    else {
+        Entity story_slide = createStorySlide(vec2(640, 360), vec2(1280, 720), this->slide);
+        next_button = createNextButton(vec2(1180, 620), vec2(50, 50), NULL);
+
+        story_slides.push_back(next_button);
+        story_slides.push_back(story_slide);
+    }
+
+    return;
+}
+
+void LevelMenuManager::generateLevelMenu()
+{
     back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
     tutorial_button = createTutorialButton(vec2(640, 125), vec2(200, 50), NULL);
-    level_1_button = createLevel1Button(vec2(640, 265), vec2(200, 50), NULL, !game_system->level_manager.levels_completed[0]);
-    level_2_button = createLevel2Button(vec2(640, 405), vec2(200, 50), NULL, !game_system->level_manager.levels_completed[1]);
-    level_3_button = createLevel3Button(vec2(640, 545), vec2(200, 50), NULL, !game_system->level_manager.levels_completed[2]);
-
-    is_back_button_clicked = false;
+    level_1_button = createLevel1Button(vec2(640, 265), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[0]);
+    level_2_button = createLevel2Button(vec2(640, 405), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[1]);
+    level_3_button = createLevel3Button(vec2(640, 545), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[2]);
 
     all_entities.push_back(back_button);
     all_entities.push_back(tutorial_button);
     all_entities.push_back(level_1_button);
     all_entities.push_back(level_2_button);
     all_entities.push_back(level_3_button);
-
-    return;
 }
 
 void LevelMenuManager::destroy() {
     for (Entity& e : all_entities) {
+        registry.remove_all_components_of(e);
+    }
+    return;
+}
+
+void LevelMenuManager::removeStorySlides() {
+    for (Entity& e : story_slides) {
         registry.remove_all_components_of(e);
     }
     return;
@@ -83,24 +106,38 @@ void LevelMenuManager::on_mouse_button(int button, int action, int mod) {
         click_motion.position = cursor_world_pos;
         click_motion.scale = { 1.f, 1.f };
 
-        if (collides(click_motion, registry.motions.get(back_button))) {
-            is_back_button_clicked = true;
-        } 
-        else if (collides(click_motion, registry.motions.get(tutorial_button))) {
-            this->selected_level = 0;
-            this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+        if (slide <= 4) {
+            if (collides(click_motion, registry.motions.get(next_button))) {
+                slide++;
+                if (slide > 4) {
+                    removeStorySlides();
+                    generateLevelMenu();
+                }
+                else {
+                    story_slides.push_back(createStorySlide(vec2(640, 360), vec2(1280, 720), slide));
+                }
+            }
         }
-        else if (collides(click_motion, registry.motions.get(level_1_button)) && this->game_system->level_manager.levels_completed[0]) {
-            this->selected_level = 1;
-            this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
-        }
-        else if (collides(click_motion, registry.motions.get(level_2_button)) && this->game_system->level_manager.levels_completed[1]) {
-            this->selected_level = 2;
-            this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
-        }
-        else if (collides(click_motion, registry.motions.get(level_3_button)) && this->game_system->level_manager.levels_completed[2]) {
-            this->selected_level = 3;
-            this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+        else {
+            if (collides(click_motion, registry.motions.get(back_button))) {
+                is_back_button_clicked = true;
+            }
+            else if (collides(click_motion, registry.motions.get(tutorial_button))) {
+                this->selected_level = 0;
+                this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+            }
+            else if (collides(click_motion, registry.motions.get(level_1_button)) && this->game_system->level_manager.levels_completed[0]) {
+                this->selected_level = 1;
+                this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+            }
+            else if (collides(click_motion, registry.motions.get(level_2_button)) && this->game_system->level_manager.levels_completed[1]) {
+                this->selected_level = 2;
+                this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+            }
+            else if (collides(click_motion, registry.motions.get(level_3_button)) && this->game_system->level_manager.levels_completed[2]) {
+                this->selected_level = 3;
+                this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+            }
         }
     }
     return;

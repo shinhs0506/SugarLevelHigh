@@ -658,3 +658,68 @@ void removePrompt(Entity entity)
 	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
 }
+
+Entity createStorySlide(vec2 pos, vec2 size, int slide) {
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.depth = DEPTH::BACKGROUND;
+
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
+	switch (slide)
+	{
+	case 0:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 2:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY3,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY4,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 4:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY5,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	default:
+		break;
+	}
+
+	return entity;
+}
+
+void removeStorySlide(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.overlays.remove(entity);
+	registry.renderRequests.remove(entity);
+}
