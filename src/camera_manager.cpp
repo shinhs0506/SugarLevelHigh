@@ -3,6 +3,7 @@
 #include "tiny_ecs_registry.hpp"
 
 #include <iostream>
+#include <physics_system.hpp>
 
 Entity init_camera() {
 	//// init a camera that is shared across all scenes
@@ -26,8 +27,10 @@ Entity& get_camera() {
 }
 
 void update_camera_pos(vec2 pos) {
+    Camera& camera = registry.cameras.get(get_camera());
     Motion& camera_motion = registry.motions.get(get_camera());
     camera_motion.position = pos;
+    update_camera_parallax(get_camera(), registry.motions.get(get_camera()));
 }
 
 void move_camera(vec2 velocity) {
