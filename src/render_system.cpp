@@ -97,7 +97,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 
 	// character uniform: check whether the entity is a character with a spritesheet
 	GLint is_character_uloc = glGetUniformLocation(program, "is_character");
-	glUniform1i(is_character_uloc, registry.playables.has(entity)); // TODO: so far, only the player gummy bear has a spritesheet
+	glUniform1i(is_character_uloc, registry.playables.has(entity) || registry.enemies.has(entity));
 	gl_has_errors();
 
 	// movement uniform
