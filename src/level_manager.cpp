@@ -140,6 +140,7 @@ void LevelManager::load_level(int level)
     basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
     advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
 
+    ui_layout = createUI(vec2(640, 360), vec2(1280, 720));
     energy_bar = createEnergyBar();
     order_indicator = createOrderIndicator();
 
@@ -189,6 +190,7 @@ void LevelManager::abandon_level()
     removeButton(advanced_attack_button);
     removeAbilityButton(heal_button);
 
+    removeUI(ui_layout);
     removeEnergyBar();
     removeOrderIndicator();
     removeBackground(background);

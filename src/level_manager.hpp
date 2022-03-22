@@ -112,6 +112,7 @@ private:
     Entity advanced_attack_button;
     Entity heal_button;
 
+	Entity ui_layout;
     Entity energy_bar;
 
     Entity background;
