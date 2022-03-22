@@ -57,6 +57,9 @@ void main()
 				index.x = 1;
 			}
 		}
+		if (movement == 5) { // stop on the ladder
+			index = vec2(1, 2);
+		}
 
 		float col = mod(index.x, 3);
 		float row = mod(index.y, 3);
