@@ -174,7 +174,6 @@ void update_location(Motion& motion) {
 					motion.goal_velocity.y = 0;
 					motion.is_falling = false;
 				}
-				motion.position.y = round_to_nearest_hundred(motion.position.y);
 				return;
 			}
 		}
@@ -344,9 +343,6 @@ void PhysicsSystem::step(float elapsed_ms)
 		}
 		if (registry.activeTurns.has(character)) {
 			updateOrderIndicator(character);
-		}
-		if (character_motion.location == LOCATION::ABOVE_CLIMBABLE) {
-			character_motion.position.y = round_to_nearest_hundred(character_motion.position.y);
 		}
 		updateHealthBar(character);
 	}
