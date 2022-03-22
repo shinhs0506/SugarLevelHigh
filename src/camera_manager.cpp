@@ -27,10 +27,12 @@ Entity& get_camera() {
 }
 
 void update_camera_pos(vec2 pos) {
-    Camera& camera = registry.cameras.get(get_camera());
     Motion& camera_motion = registry.motions.get(get_camera());
-    camera_motion.position = pos;
-    update_camera_parallax(get_camera(), registry.motions.get(get_camera()));
+    vec2 old_pos = camera_motion.position;
+    vec2 vel = { pos - old_pos };
+    move_camera(vel);
+    update_camera_parallax(get_camera(), camera_motion, 10000.f);
+    move_camera(-vel);
 }
 
 void move_camera(vec2 velocity) {
