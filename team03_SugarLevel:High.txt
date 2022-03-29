@@ -3,58 +3,46 @@
 Experiments: which modes / parts of the game did you test?
 
 ====================================================================
-Game and help screen
+in the main menu there's a cool animation, and lots introduction
 
 --------------------------------------------------------------
-Game 
-
---------------------------------------------------------------
-Main game
-
---------------------------------------------------------------
-The entire game
-
---------------------------------------------------------------
-All 
-
---------------------------------------------------------------
-Turn based part, attack part
-
---------------------------------------------------------------
-Turn-based combat and aiming at enemies
-
---------------------------------------------------------------
-Game
-
---------------------------------------------------------------
-Bear and chocolate 
+All parts
 
 --------------------------------------------------------------
 Watched
 
 --------------------------------------------------------------
-General gameplay
+Gameplay
 
 --------------------------------------------------------------
-Fighting vs AI
+Level 1 and 2
 
 --------------------------------------------------------------
-Game logic and battle system
+tutorial, level 1
 
 --------------------------------------------------------------
-Killing monsters
+Main
 
 --------------------------------------------------------------
-Walk/ jump
+The game 
 
 --------------------------------------------------------------
-First level
+Level 1 and 2
 
 --------------------------------------------------------------
-Movement
+Gameplay
 
 --------------------------------------------------------------
-Combat
+Tutorial, actual game (battle with enemy) 
+
+--------------------------------------------------------------
+Gameplay
+
+--------------------------------------------------------------
+Up to level 3
+
+--------------------------------------------------------------
+game
 
 --------------------------------------------------------------
 
@@ -62,16 +50,7 @@ Combat
 Controls: were the game interactions / transitions appropriately smooth?
 
 ====================================================================
-4
-
---------------------------------------------------------------
-4
-
---------------------------------------------------------------
-4
-
---------------------------------------------------------------
-3
+5
 
 --------------------------------------------------------------
 5
@@ -80,19 +59,10 @@ Controls: were the game interactions / transitions appropriately smooth?
 3
 
 --------------------------------------------------------------
-3
-
---------------------------------------------------------------
 4
 
 --------------------------------------------------------------
-3
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
-3
+4
 
 --------------------------------------------------------------
 4
@@ -101,10 +71,13 @@ Controls: were the game interactions / transitions appropriately smooth?
 4
 
 --------------------------------------------------------------
-3
+4
 
 --------------------------------------------------------------
-5
+4
+
+--------------------------------------------------------------
+4
 
 --------------------------------------------------------------
 5
@@ -113,7 +86,10 @@ Controls: were the game interactions / transitions appropriately smooth?
 4
 
 --------------------------------------------------------------
-3
+5
+
+--------------------------------------------------------------
+5
 
 --------------------------------------------------------------
 
@@ -124,13 +100,13 @@ Visuals: are the game visuals responsive to the game events?
 5
 
 --------------------------------------------------------------
+5
+
+--------------------------------------------------------------
 4
 
 --------------------------------------------------------------
-3
-
---------------------------------------------------------------
-3
+5
 
 --------------------------------------------------------------
 5
@@ -142,25 +118,7 @@ Visuals: are the game visuals responsive to the game events?
 4
 
 --------------------------------------------------------------
-4
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
 5
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
-4
 
 --------------------------------------------------------------
 5
@@ -172,7 +130,13 @@ Visuals: are the game visuals responsive to the game events?
 5
 
 --------------------------------------------------------------
-2
+5
+
+--------------------------------------------------------------
+5
+
+--------------------------------------------------------------
+5
 
 --------------------------------------------------------------
 
@@ -180,16 +144,16 @@ Visuals: are the game visuals responsive to the game events?
 Gameplay: was the experience playing challenging / fun / ...?
 
 ====================================================================
-4
+5
+
+--------------------------------------------------------------
+5
 
 --------------------------------------------------------------
 4
 
 --------------------------------------------------------------
 4
-
---------------------------------------------------------------
-3
 
 --------------------------------------------------------------
 5
@@ -201,27 +165,6 @@ Gameplay: was the experience playing challenging / fun / ...?
 4
 
 --------------------------------------------------------------
-4
-
---------------------------------------------------------------
-4
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
-4
-
---------------------------------------------------------------
-4
-
---------------------------------------------------------------
-4
-
---------------------------------------------------------------
-3
-
---------------------------------------------------------------
 5
 
 --------------------------------------------------------------
@@ -231,7 +174,16 @@ Gameplay: was the experience playing challenging / fun / ...?
 5
 
 --------------------------------------------------------------
-3
+5
+
+--------------------------------------------------------------
+5
+
+--------------------------------------------------------------
+5
+
+--------------------------------------------------------------
+4
 
 --------------------------------------------------------------
 
@@ -239,41 +191,40 @@ Gameplay: was the experience playing challenging / fun / ...?
 Any other thoughts you want to share with the developers?
 
 ====================================================================
-Crashed once. Wish there were more visual indicatora lf game stare, like curent char, selected attack
+Maybe a display for context dependent controls would be nice. Ex. What I can do during my phase. 
+The game itself looks pretty enjoyable to play tho, good job!
+For visuals, maybe grey out via alpha channel the used items instead of using red for the indication
 
 --------------------------------------------------------------
-It would be helpful for the instructions to be more informing. I didn’t realize when/how enemies would be able to fight back. I also suggest making the projectile smaller so it doesn’t immediately collide with the platforms/cover up the characters. 
+Awesome improvements on ai and visuals from the last milestone
 
 --------------------------------------------------------------
-Visuals and gameplay, especially the animations are visually appealing. Just work on the indicator for which character is being controlled, as well as aiming.
+turn taking felt a bit slow but game was still fun!
 
 --------------------------------------------------------------
-I think its a little hard to tell whos turn it is, if there is some UI thing you could add I think it would help
+Good, controls need tutorial
 
 --------------------------------------------------------------
-The interactions and effects are clearly depicted. However I think the visual style could be improved (still looks like placeholder).
-Maybe an indication of damage could be shown.
-Looks promising so far though.
+Better camera would be nice but very fun 
 
 --------------------------------------------------------------
-Pretty good game, should have an indicator or something to show when special can be used. AI very abusable
+Gameplay confusing at times, don’t know what to do
 
 --------------------------------------------------------------
-Nice game logic, but need to improve the animation of the attack
+Could be cool to have the camera automatically pan to the currently controlled player/enemy. Also would be a nice quality of life thing to have an undo option.
 
 --------------------------------------------------------------
-Not very intuitive
+Great game, nice visuals. I liked how there were multiple player entities that could attack the enemy. The cuts scenes in the beginning were a nice touch. Props to whoever drew the pictures. Multiple levels available. An improvement would be to put a border around the attacks/ give a description in the beginning. 
 
 --------------------------------------------------------------
-I think the movement could be improved, right now it's a bit laggy.
+Slash button can sometimes be hard to see against the background.
+
+It might be good to center the camera on the player each turn. Also, it would be nice to see a number for cooldowns.
 
 --------------------------------------------------------------
-Theme is interesting.
+Really fun, maybe have a hot key so I can attack with 1 instead of having to move my mouse to the left and clicking 
 
-Visually it isn't super clear what things do. I didn't know what the abilities were or what they did until after they appeared. The stamina bar is a neat touch, and I like that the enemy's stamina bar is implemented as well. The health bar is clear, and the stamina bar does as well. I wasn't super sure how long the cooldown was or even that it existed. I would have also liked to see what the range of the attacks were before I used them, and how far the stamina is able to take me. That would make planning against enemy movements useful as well. I like that the melee is directional.
-
-I appreciated being able to cheese the game using the ladders. I would have liked to be able to fall off of the ladders to conserve stamina.
-
-I also saw that you had camera controls. I think a great way to build off of them is to make the camera centre on the active player or enemy.
+--------------------------------------------------------------
+it would be nice to have descriptions of attacks
 
 --------------------------------------------------------------
