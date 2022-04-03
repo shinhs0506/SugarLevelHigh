@@ -41,7 +41,7 @@ Entity createSaveButton(vec2 pos, vec2 size, bool (*on_click)())
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::BACK_BUTTON,
+		{ TEXTURE_ASSET_ID::SAVE_BUTTON,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
 
