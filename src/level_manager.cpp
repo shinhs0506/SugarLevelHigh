@@ -185,6 +185,10 @@ void LevelManager::abandon_level()
         removeLadder(ladder);
     }
 
+    for (auto& prompts : registry.promptsWithTimer.entities) {
+        removePromptWithTimer(prompts);
+    }
+
     removeButton(back_button);
     removeButton(save_button);
     removePlayerButton(basic_attack_button);
@@ -324,7 +328,6 @@ bool LevelManager::step(float elapsed_ms)
 
         prompWithTimer.timer -= elapsed_ms;
         if (prompWithTimer.timer < 0) {
-        std::cout << "delete timer" << std::endl;
             removePromptWithTimer(entity);
         }
     }

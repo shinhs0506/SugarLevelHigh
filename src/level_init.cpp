@@ -1,5 +1,4 @@
 #include "level_init.hpp"
-#include "components.hpp"
 #include "tiny_ecs_registry.hpp"
 #include "game_init.hpp"
 #include "ability.hpp"
