@@ -66,6 +66,7 @@ class RenderSystem {
 		textures_path("story5.png"),
 		textures_path("next_button.png"),
 		textures_path("ui_layout.png"),
+        textures_path("prompt_saved.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

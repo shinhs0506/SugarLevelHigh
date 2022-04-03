@@ -5,4 +5,5 @@
 
 Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)(), bool disabled = false);
 Entity createBackButton(vec2 pos, vec2 size, bool (*on_click)());
+Entity createSaveButton(vec2 pos, vec2 size, bool (*on_click)());
 Entity createNextButton(vec2 pos, vec2 size, bool (*on_click)());

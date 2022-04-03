@@ -143,7 +143,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	gl_has_errors();
 
     GLint timer_uloc = glGetUniformLocation(program, "blink");
-    glUniform1f(timer_uloc, registry.timers.size() > 0 ? registry.timers.components[0].timer : 0);
+    glUniform1f(timer_uloc, registry.blinkTimers.size() > 0 ? registry.blinkTimers.components[0].timer : 0);
     gl_has_errors();
 
 	// Getting uniform locations for glUniform* calls
