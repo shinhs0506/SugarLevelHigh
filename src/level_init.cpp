@@ -436,14 +436,21 @@ void removeBlinkTimer(Entity entity) {
 }
 
 Entity createPromptWithTimer(float ms, TEXTURE_ASSET_ID texture_ID) {
+
+    // delete previous prompts
+    for (uint i = 0; i < registry.promptsWithTimer.size(); i++) {
+        Entity& entity = registry.promptsWithTimer.entities[i];
+        removePromptWithTimer(entity);
+    }
+
     auto entity = Entity();
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0, 0 };
-	motion.position = { 600, 50 };
+	motion.position = { 650, 50 };
 	motion.prev_position = motion.position;
-	motion.scale = {100, 50};
+	motion.scale = {500, 50};
     motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ motion.position };
