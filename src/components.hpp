@@ -212,6 +212,7 @@ struct AbilityButton {
 // Attached to components that are unaffected by camera
 struct Overlay {
 	vec2 position = { 0, 0 };
+	vec2 original_position = { 0, 0 };
 };
 
 // Backgrounds
