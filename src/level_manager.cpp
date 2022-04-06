@@ -312,6 +312,27 @@ bool LevelManager::step(float elapsed_ms)
     if (curr_level == 0) {
         this->tutorial_controller.step(elapsed_ms);
     }
+
+    double cursor_window_x, cursor_window_y;
+    glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+    vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+    if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 275 && cursor_window_pos.y < 325 && !tooltipAppear) {
+        createAbilityTooltip(vec2(300, 300), 0);
+        tooltipAppear = true;
+    }
+    else if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 350 && cursor_window_pos.y < 400 && !tooltipAppear) {
+        createAbilityTooltip(vec2(300, 375), 1);
+        tooltipAppear = true;
+    }
+    else if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 425 && cursor_window_pos.y < 475 && !tooltipAppear && curr_level != 0) {
+        createAbilityTooltip(vec2(300, 450), 2);
+        tooltipAppear = true;
+    }
+    else if ((cursor_window_pos.x < 75 || cursor_window_pos.x > 125 || cursor_window_pos.y < 275 || (cursor_window_pos.y > 325 && cursor_window_pos.y < 350) || (cursor_window_pos.y > 400 && cursor_window_pos.y < 425) || cursor_window_pos.y > 475) && tooltipAppear) {
+        removeAbilityTooltip();
+        tooltipAppear = false;
+    }
   
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {

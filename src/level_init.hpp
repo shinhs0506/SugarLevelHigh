@@ -46,6 +46,10 @@ void removeButton(Entity entity);
 Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
 void removeAbilityButton(Entity entity);
 
+void createAbilityTooltip(vec2 pos, int ability);
+void removeAbilityTooltip();
+
+
 // this does not create a new entity but only attach a hit effect on the existing object
 Entity createHitEffect(Entity entity, float ttl_ms);
 void removeHitEffect(Entity entity);

@@ -37,6 +37,7 @@ public:
 	ComponentContainer<Timer> timers;
 	ComponentContainer<Clickable> clickables;
 	ComponentContainer<AbilityButton> abilityButtons;
+	ComponentContainer<AbilityTooltip> abilityTooltip;
 	ComponentContainer<Overlay> overlays;
 	ComponentContainer<HitEffect> hitEffects;
 	ComponentContainer<AI> AIs;
@@ -75,6 +76,7 @@ public:
 		registry_list.push_back(&timers);
 		registry_list.push_back(&clickables);
 		registry_list.push_back(&abilityButtons);
+		registry_list.push_back(&abilityTooltip);
 		registry_list.push_back(&overlays);
 		registry_list.push_back(&hitEffects);
 		registry_list.push_back(&AIs);

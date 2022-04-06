@@ -75,6 +75,7 @@ private:
 
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 200;
+	bool tooltipAppear = false;
 
 	// for turn order logic
 	std::vector<Entity> order_vector;
