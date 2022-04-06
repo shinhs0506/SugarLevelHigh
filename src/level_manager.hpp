@@ -40,7 +40,7 @@ public:
 	void get_progress();
 
 	// Load all needed entities for the level
-	void load_level(int level);
+	void load_level(int level, float x_resolution_scale, float y_resolution_scale);
 
 	// Restart the level
 	void restart_level();
@@ -61,7 +61,7 @@ public:
 	// Input callback functions, should be called within GameSystem input callbacks
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 pos);
-	void on_mouse_button(int button, int action, int mod);
+	void on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale);
 
 	// state machine functions
 	void move_to_state(LevelState level_state);
@@ -123,7 +123,7 @@ private:
     void remove_character(Entity entity);
 
     // read and initialize level data
-    void init_data(int level);
+    void init_data(int level, float x_resolution_scale, float y_resolution_scale);
 
     void save_level_data();
     void destroy_saved_level_data_file();

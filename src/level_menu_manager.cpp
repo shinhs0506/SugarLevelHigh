@@ -91,7 +91,7 @@ void LevelMenuManager::on_mouse_move(vec2 pos) {
     return;
 }
 
-void LevelMenuManager::on_mouse_button(int button, int action, int mod) {
+void LevelMenuManager::on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale) {
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
@@ -101,6 +101,9 @@ void LevelMenuManager::on_mouse_button(int button, int action, int mod) {
     vec2 camera_offset = registry.cameras.get(camera).offset;
 
     vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+    cursor_world_pos.x = cursor_world_pos.x * *x_resolution_scale;
+    cursor_world_pos.y = cursor_world_pos.y * *y_resolution_scale;
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         Motion click_motion;
         click_motion.position = cursor_world_pos;

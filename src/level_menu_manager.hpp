@@ -49,6 +49,6 @@ public:
 
     void on_key(int key, int, int action, int mod);
     void on_mouse_move(vec2 pos);
-    void on_mouse_button(int button, int action, int mod);
+    void on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale);
 };
 

@@ -21,6 +21,7 @@ class MenuManager
         Entity level_selection_button;
         Entity help_button;
         Entity exit_button;
+        Entity config_button;
 
         // player exit click
         bool did_player_exit = false;
@@ -40,5 +41,5 @@ class MenuManager
 
         void on_key(int key, int, int action, int mod);
         void on_mouse_move(vec2 pos);
-        void on_mouse_button(int button, int action, int mod);
+        void on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale);
 };
