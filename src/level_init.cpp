@@ -591,21 +591,21 @@ Entity createCooldown(vec2 pos, int cool_down_left) {
 
 	switch (cool_down_left)
 	{
-	case 1: // level won
+	case 1:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::COOLDOWN1,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 2:// level lost
+	case 2:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::COOLDOWN2,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 3:// tutorial failed
+	case 3:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::COOLDOWN3,
