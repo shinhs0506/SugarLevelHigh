@@ -181,6 +181,10 @@ void LevelManager::abandon_level()
         removeLadder(ladder);
     }
 
+    for (auto& cooldown : registry.cooldowns.entities) {
+        removeCooldown(cooldown);
+    }
+
     removeButton(back_button);
     removeButton(basic_attack_button);
     removeButton(advanced_attack_button);

@@ -45,6 +45,7 @@ public:
 	ComponentContainer<AttackPreview> attackPreviews;
 	ComponentContainer<Climbable> climbables;
     ComponentContainer<OrderIndicator> orderIndicators;
+	ComponentContainer<CoolDown> cooldowns;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -83,6 +84,7 @@ public:
 		registry_list.push_back(&attackAbilities);
 		registry_list.push_back(&climbables);
         registry_list.push_back(&orderIndicators);
+		registry_list.push_back(&cooldowns);
 	}
 
 	void clear_all_components() {
