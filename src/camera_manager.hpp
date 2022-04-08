@@ -2,7 +2,6 @@
 
 Entity init_camera();
 void reset_camera_pos();
-void reset_camera();
 Entity& get_camera();
 
 void update_camera_pos(vec2 pos);

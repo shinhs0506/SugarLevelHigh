@@ -90,13 +90,6 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
             *x_resolution_scale = 1;
             *y_resolution_scale = 1;
 
-            Camera& camera = registry.cameras.get(get_camera());
-            float x_offset = 1280 / 2.f;
-            float y_offset = 720 / 2.f;
-            vec2 new_offset = vec2{ x_offset, y_offset };
-            //camera.offset = new_offset;
-            //reset_camera();
-
             delete_frame_buffer();
             remake_frame_buffer(1280, 720);
         }
@@ -106,13 +99,6 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
             float mouse_y = 720.f / 480.f;
             *x_resolution_scale = mouse_x;
             *y_resolution_scale = mouse_y;
-
-            Camera& camera = registry.cameras.get(get_camera());
-            float x_offset = 854.f / 2.f;
-            float y_offset = 480.f / 2.f;
-            vec2 new_offset = vec2{ x_offset, y_offset };
-            //camera.offset = new_offset;
-            //reset_camera();
 
             delete_frame_buffer();
             remake_frame_buffer(853, 480);

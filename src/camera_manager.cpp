@@ -16,14 +16,6 @@ Entity init_camera() {
     Entity camera = createCamera(offset, offset, offset, offset);
     return camera;
 }
-void reset_camera() {
-    Motion& camera_motion = registry.motions.get(get_camera());
-    Camera camera = registry.cameras.get(get_camera());
-    vec2 offset = camera.offset;
-    camera.higer_limit = offset;
-    camera.lower_limit = offset;
-    camera_motion.position = offset;
-}
 
 void reset_camera_pos() {
     Motion& camera_motion = registry.motions.get(get_camera());

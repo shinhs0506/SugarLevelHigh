@@ -108,7 +108,7 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
 	// Playing background music indefinitely
-	//Mix_PlayMusic(background_music, -1); 
+	Mix_PlayMusic(background_music, -1); 
 	fprintf(stderr, "Loaded music\n");
 
 	// set the title of the game
