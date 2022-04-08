@@ -33,6 +33,7 @@ EnemyController::~EnemyController()
 void EnemyController::start_turn(Entity enemy)
 {
 	this->enemy = enemy;
+	has_camera_snapped = false;
 
 	Health& player_health = registry.healths.get(enemy);
 	if (player_health.damage_per_turn == true) {
@@ -47,12 +48,6 @@ void EnemyController::start_turn(Entity enemy)
 	current_state = CharacterState::IDLE;
 	next_state = CharacterState::IDLE;
 
-	Motion& enemy_motion = registry.motions.get(enemy);
-	Motion& camera_motion = registry.motions.get(registry.cameras.entities[0]);
-	camera_motion.scale = { window_width_px , window_height_px };
-	if (!collides(camera_motion, enemy_motion)) {
-		update_camera_pos(enemy_motion.position);
-	}
 	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
 }
 
@@ -226,7 +221,15 @@ void EnemyController::step(float elapsed_ms)
 	case CharacterState::IDLE:
 		// A small delay before AI moves to allow for player to see AI abit easier
 		// and so that AI doesnt instantly do its turn causing player to miss it
-		if (beginning_delay_counter_ms > 0) {
+		if (!has_camera_snapped && should_camera_snap && beginning_delay_counter_ms < DEFAULT_BEGINNING_DELAY - DEFAULT_CAMERA_DELAY) {
+			beginning_delay_counter_ms -= elapsed_ms;
+			if (!collides_camera(motion)) {
+				update_camera_pos(motion.position);
+			}
+			has_camera_snapped = true;
+			break;
+		}
+		else if (beginning_delay_counter_ms > 0) {
 			beginning_delay_counter_ms -= elapsed_ms;
 			break;
 		}
@@ -249,6 +252,7 @@ void EnemyController::step(float elapsed_ms)
 			motion.goal_velocity.y = 0;
 			move_to_state(CharacterState::IDLE);
 		}
+		update_camera_pos(motion.position);
 		break;
 
 	case CharacterState::END:

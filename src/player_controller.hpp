@@ -32,11 +32,18 @@ public:
 
 	bool has_player_moved_right();
 
+	bool should_camera_snap = true;
+
 private:
 	Entity player;
 	CharacterState current_state;
 	CharacterState next_state;
 	vec2 player_pos;
+
+	// prevent camera from snapping too quickly
+	const float DEFAULT_BEGINNING_DELAY = 200.0f;
+	float beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY; 
+	bool has_camera_snapped = false;
 
 	Mix_Chunk* melee_attack_sound;
 	Mix_Chunk* advanced_attack_sound;
