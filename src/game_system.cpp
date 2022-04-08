@@ -238,9 +238,9 @@ void GameSystem::on_mouse_move(vec2 mouse_position) {
 	vec2 camera_pos = registry.motions.get(camera).position;
 	vec2 camera_offset = registry.cameras.get(camera).offset;
 
-	vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
-	cursor_world_pos.x = cursor_world_pos.x * x_resolution_scale;
-	cursor_world_pos.y = cursor_world_pos.y * y_resolution_scale;
+	float cursor_x = cursor_window_pos.x * x_resolution_scale + camera_pos.x - camera_offset.x;
+	float cursor_y = cursor_window_pos.y * y_resolution_scale + camera_pos.y - camera_offset.y;
+	vec2 cursor_world_pos = vec2(cursor_x, cursor_y);
 
 	switch (current_game_state) {
 	case GameState::IN_LEVEL:

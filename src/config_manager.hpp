@@ -19,7 +19,11 @@ private:
     bool is_back_button_clicked;
 
     Entity reso1920x1080_button;
-    Entity reso1280x720_button;
+    Entity reso1600x900_button;
+    Entity reso1366x768_button;
+    Entity reso1280x800_button;
+    Entity reso1176x664_button;
+    Entity reso800x600_button;
     Entity back_button;
     std::vector<Entity> all_entities;
 
@@ -44,4 +48,5 @@ public:
     void on_mouse_button(int button, int action, float* mouse_x_resolution_scale, float* mouse_y_resolution_scale);
     void delete_frame_buffer();
     void remake_frame_buffer(int new_width, int new_height);
+    void resizing_window(float width, float height, float* x_resolution_scale, float* y_resolution_scale);
 };

@@ -18,13 +18,23 @@ void ConfigManager::init(GLFWwindow* window, GameSystem* game_system, RenderSyst
     back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
 
     reso1920x1080_button = createConfigButton(vec2(640, 125), vec2(200, 50), NULL);
-    reso1280x720_button = createConfigButton(vec2(640, 225), vec2(200, 50), NULL);
+    reso1600x900_button = createConfigButton(vec2(640, 225), vec2(200, 50), NULL);
+    reso1366x768_button = createConfigButton(vec2(640, 325), vec2(200, 50), NULL);
+    reso1280x800_button = createConfigButton(vec2(640, 425), vec2(200, 50), NULL);
+    reso1176x664_button = createConfigButton(vec2(640, 525), vec2(200, 50), NULL);
+    reso800x600_button = createConfigButton(vec2(640, 625), vec2(200, 50), NULL);
+    
+    
 
     is_back_button_clicked = false;
 
     all_entities.push_back(back_button);
     all_entities.push_back(reso1920x1080_button);
-    all_entities.push_back(reso1280x720_button);
+    all_entities.push_back(reso1600x900_button);
+    all_entities.push_back(reso1366x768_button);
+    all_entities.push_back(reso1280x800_button);
+    all_entities.push_back(reso1176x664_button);
+    all_entities.push_back(reso800x600_button);
 
     return;
 }
@@ -80,28 +90,33 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
 
         Motion back_button_motion = registry.motions.get(back_button);
         Motion reso1920x1080_motion = registry.motions.get(reso1920x1080_button);
-        Motion reso1280x720_motion = registry.motions.get(reso1280x720_button);
+        Motion reso1600x900_motion = registry.motions.get(reso1600x900_button);
+        Motion reso1366x768_motion = registry.motions.get(reso1366x768_button);
+        Motion reso1280x800_motion = registry.motions.get(reso1280x800_button);
+        Motion reso1176x664_motion = registry.motions.get(reso1176x664_button);
+        Motion reso800x600_motion = registry.motions.get(reso800x600_button);
+
         if (collides(click_motion, back_button_motion)) {
             // move to MAIN_MENU state
             is_back_button_clicked = true;
         }
         else if (collides(click_motion, reso1920x1080_motion)) {
-            glfwSetWindowSize(window, 1280, 720);
-            *x_resolution_scale = 1;
-            *y_resolution_scale = 1;
-
-            delete_frame_buffer();
-            remake_frame_buffer(1280, 720);
+            resizing_window(1280, 720, x_resolution_scale, y_resolution_scale);
         }
-        else if (collides(click_motion, reso1280x720_motion)) {
-            glfwSetWindowSize(window, 853, 480);
-            float mouse_x = 1280.f / 853.f;
-            float mouse_y = 720.f / 480.f;
-            *x_resolution_scale = mouse_x;
-            *y_resolution_scale = mouse_y;
-
-            delete_frame_buffer();
-            remake_frame_buffer(853, 480);
+        else if (collides(click_motion, reso1600x900_motion)) {
+            resizing_window(1066, 600, x_resolution_scale, y_resolution_scale);
+        }
+        else if (collides(click_motion, reso1366x768_motion)) {
+            resizing_window(910, 512, x_resolution_scale, y_resolution_scale);
+        }
+        else if (collides(click_motion, reso1280x800_motion)) {
+            resizing_window(883, 503, x_resolution_scale, y_resolution_scale);
+        }
+        else if (collides(click_motion, reso1176x664_motion)) {
+            resizing_window(784, 442, x_resolution_scale, y_resolution_scale);
+        }
+        else if (collides(click_motion, reso800x600_motion)) {
+            resizing_window(580, 320, x_resolution_scale, y_resolution_scale);
         }
         
     }
@@ -114,4 +129,13 @@ void ConfigManager:: delete_frame_buffer() {
 
 void ConfigManager:: remake_frame_buffer(int new_width, int new_height) {
     renderer->remakeFrameBuffer(window, new_width, new_height);
+}
+
+void ConfigManager::resizing_window(float width, float height, float* x_resolution_scale, float* y_resolution_scale) {
+    glfwSetWindowSize(window, width, height);
+    *x_resolution_scale = 1280.f / width;
+    *y_resolution_scale = 720.f / height;
+
+    delete_frame_buffer();
+    remake_frame_buffer(width, height);
 }
