@@ -238,7 +238,7 @@ void RenderSystem::draw()
 	// Getting size of window
 	int w, h;
 	glfwGetFramebufferSize(window, &w, &h); // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
-	std::cout << " w = " << w << " h = " << h << std::endl;
+	//std::cout << " w = " << w << " h = " << h << std::endl;
 	// First render to the custom framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
 	gl_has_errors();
@@ -283,8 +283,8 @@ mat3 RenderSystem::createProjectionMatrix()
 	// affected by main camera
 	Entity entity = registry.cameras.entities[0];
 	vec2 offset = registry.cameras.components[0].offset;
+	//std::cout << "offset.x = " << offset.x << " offset.y = " << offset.y << std::endl;
 	vec2 pos = registry.motions.get(entity).position;
-	std::cout << "pos.x = " << pos.x << " pos.y = " << pos.y << std::endl;
 
 	float left = pos[0] - offset[0];
 	float top = pos[1] - offset[1];

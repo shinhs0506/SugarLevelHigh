@@ -108,7 +108,7 @@ void GameSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
 	// Playing background music indefinitely
-	Mix_PlayMusic(background_music, -1); 
+	//Mix_PlayMusic(background_music, -1); 
 	fprintf(stderr, "Loaded music\n");
 
 	// set the title of the game
@@ -359,11 +359,11 @@ void GameSystem::move_to_state(GameState next_game_state) {
         case GameState::IN_LEVEL:
             assert(current_game_state == GameState::LEVEL_SELECTION);
             level_manager.init(window);
-            level_manager.load_level(this->level_menu_manager.selected_level, x_resolution_scale, y_resolution_scale);
+            level_manager.load_level(this->level_menu_manager.selected_level);
             break;
 		case GameState::CONFIG:
 			assert(current_game_state == GameState::MAIN_MENU);
-			config_manager.init(window, this);
+			config_manager.init(window, this, renderer);
 			break;
     }
         

@@ -104,6 +104,9 @@ public:
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
 
+	void deleteFrameBuffer();
+	void remakeFrameBuffer(GLFWwindow* window_arg, int new_width, int new_height);
+
 	// Draw all entities
 	void draw();
 
@@ -117,8 +120,9 @@ private:
 	// Window handle
 	GLFWwindow* window;
 
-	// Screen texture handles
 	GLuint frame_buffer;
+
+	// Screen texture handles
 	GLuint off_screen_render_buffer_color;
 	GLuint off_screen_render_buffer_depth;
 

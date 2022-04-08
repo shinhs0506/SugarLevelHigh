@@ -1,4 +1,5 @@
 #include "config_manager.hpp"
+#include "render_system.hpp"
 #include <iostream>
 
 ConfigManager::ConfigManager() {
@@ -9,9 +10,10 @@ ConfigManager::~ConfigManager() {
 
 }
 
-void ConfigManager::init(GLFWwindow* window, GameSystem* game_system) {
+void ConfigManager::init(GLFWwindow* window, GameSystem* game_system, RenderSystem* renderer) {
     this->window = window;
     this->game_system = game_system;
+    this->renderer = renderer;
 
     back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
 
@@ -92,8 +94,11 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
             float x_offset = 1280 / 2.f;
             float y_offset = 720 / 2.f;
             vec2 new_offset = vec2{ x_offset, y_offset };
-            camera.offset = new_offset;
-            reset_camera();
+            //camera.offset = new_offset;
+            //reset_camera();
+
+            delete_frame_buffer();
+            remake_frame_buffer(1280, 720);
         }
         else if (collides(click_motion, reso800x600_motion)) {
             glfwSetWindowSize(window, 853, 480);
@@ -106,11 +111,21 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
             float x_offset = 854.f / 2.f;
             float y_offset = 480.f / 2.f;
             vec2 new_offset = vec2{ x_offset, y_offset };
-            
-            camera.offset = new_offset;
-            reset_camera();
+            //camera.offset = new_offset;
+            //reset_camera();
+
+            delete_frame_buffer();
+            remake_frame_buffer(853, 480);
         }
         
     }
     return;
+}
+
+void ConfigManager:: delete_frame_buffer() {
+    renderer->deleteFrameBuffer();
+}
+
+void ConfigManager:: remake_frame_buffer(int new_width, int new_height) {
+    renderer->remakeFrameBuffer(window, new_width, new_height);
 }

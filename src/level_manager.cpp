@@ -32,10 +32,9 @@ LevelManager::~LevelManager()
 
 void LevelManager::init(GLFWwindow* window)
 {
+    reset_camera_pos();
     this->window = window;
     this->main_camera = get_camera();
-    Motion test = registry.motions.get(this->main_camera);
-    std::cout << "test.position.x = " << test.position.x << " test.position.y =" << test.position.y << std::endl;
 
     is_level_over = false;
 }
@@ -52,15 +51,13 @@ void LevelManager::get_progress() {
     }
 }
 
-void LevelManager::init_data(int level, float x_resolution_scale, float y_resolution_scale) {
+void LevelManager::init_data(int level) {
     Camera& camera = registry.cameras.get(main_camera);
     Motion& motion = registry.motions.get(main_camera);
 
     reload_manager.load(level);
 
     CameraData camera_data = reload_manager.get_camera_data();
-    motion.position.x = camera_data.pos.x / x_resolution_scale;
-    motion.position.y = camera_data.pos.y / y_resolution_scale;
     camera.lower_limit = motion.position + camera_data.lower_limit_delta;
     camera.higer_limit = motion.position + camera_data.upper_limit_delta;
 
@@ -117,17 +114,17 @@ bool compare(Entity a, Entity b) {
     return a_init.value < b_init.value;
 };
 
-void LevelManager::load_level(int level, float x_resolution_scale, float y_resolution_scale)
+void LevelManager::load_level(int level)
 {
     this->curr_level = level;
 
     // level specific logic
     if (level == 0) {
         this->tutorial_controller.init(this);
-        this->init_data(level, x_resolution_scale, y_resolution_scale);
+        this->init_data(level);
     }
     else {
-        this->init_data(level, x_resolution_scale, y_resolution_scale);
+        this->init_data(level);
         // for now since we do not have heal on tutorial level
         heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
     }
