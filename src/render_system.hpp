@@ -104,6 +104,9 @@ public:
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
 
+	void deleteFrameBuffer();
+	void remakeFrameBuffer(GLFWwindow* window_arg, int new_width, int new_height);
+
 	// Draw all entities
 	void draw();
 

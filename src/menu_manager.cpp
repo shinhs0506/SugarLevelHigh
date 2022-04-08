@@ -18,15 +18,17 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->window = window;
     this->game_system = game_system;
 
-    level_selection_button = createStartButton(vec2(640, 230), vec2(200,50), NULL);
-    help_button = createHelpButton(vec2(640, 370), vec2(200,50), NULL);
-    exit_button = createExitButton(vec2(640, 510), vec2(200,50), NULL);
+    level_selection_button = createStartButton(vec2(640, 150), vec2(200,50), NULL);
+    help_button = createHelpButton(vec2(640, 290), vec2(200,50), NULL);
+    config_button = createConfigButton(vec2(640, 430), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
+    exit_button = createExitButton(vec2(640, 570), vec2(200, 50), NULL);
 }
 
 void MenuManager::destroy() {
     registry.remove_all_components_of(level_selection_button);
     registry.remove_all_components_of(help_button);
     registry.remove_all_components_of(exit_button);
+    registry.remove_all_components_of(config_button);
 }
 
 void MenuManager::step(float elapsed_ms) {
@@ -49,7 +51,7 @@ void MenuManager::on_mouse_move(vec2 pos) {
     // do nothing
 }
 
-void MenuManager::on_mouse_button(int button, int action, int mod) {
+void MenuManager::on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale) {
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
@@ -59,6 +61,9 @@ void MenuManager::on_mouse_button(int button, int action, int mod) {
     vec2 camera_offset = registry.cameras.get(camera).offset;
 
     vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+    cursor_world_pos.x = cursor_world_pos.x * *x_resolution_scale;
+    cursor_world_pos.y = cursor_world_pos.y * *y_resolution_scale;
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         Motion click_motion;
         click_motion.position = cursor_world_pos;
@@ -67,6 +72,7 @@ void MenuManager::on_mouse_button(int button, int action, int mod) {
         Motion level_selection_button_motion = registry.motions.get(level_selection_button);
         Motion help_button_motion = registry.motions.get(help_button);
         Motion exit_button_motion = registry.motions.get(exit_button);
+        Motion config_button_motion = registry.motions.get(config_button);
 
         if (collides(click_motion, level_selection_button_motion)) {
             // open level selection menu
@@ -77,6 +83,8 @@ void MenuManager::on_mouse_button(int button, int action, int mod) {
         } else if (collides(click_motion, exit_button_motion)) {
             // exit game
             did_player_exit = true;
+        } else if (collides(click_motion, config_button_motion)) {
+            this->game_system->move_to_state(GameSystem::GameState::CONFIG);
         }
     }
 }

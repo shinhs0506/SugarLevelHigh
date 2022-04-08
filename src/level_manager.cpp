@@ -32,6 +32,7 @@ LevelManager::~LevelManager()
 
 void LevelManager::init(GLFWwindow* window)
 {
+    reset_camera_pos();
     this->window = window;
     this->main_camera = get_camera();
 
@@ -57,7 +58,6 @@ void LevelManager::init_data(int level) {
     reload_manager.load(level);
 
     CameraData camera_data = reload_manager.get_camera_data();
-    motion.position = camera_data.pos;
     camera.lower_limit = motion.position + camera_data.lower_limit_delta;
     camera.higer_limit = motion.position + camera_data.upper_limit_delta;
 
@@ -636,22 +636,12 @@ void LevelManager::on_mouse_move(vec2 pos)
 {
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
-
-        double cursor_window_x, cursor_window_y;
-        glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
-        vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
-
-        vec2 camera_pos = registry.motions.get(main_camera).position;
-        vec2 camera_offset = registry.cameras.get(main_camera).offset;
-
-        vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
-
-        player_controller.on_mouse_move(cursor_world_pos);
+        player_controller.on_mouse_move(pos);
         break;
     }
 }
 
-void LevelManager::on_mouse_button(int button, int action, int mod)
+void LevelManager::on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale)
 {
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
@@ -660,7 +650,9 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
     vec2 camera_pos = registry.motions.get(main_camera).position;
     vec2 camera_offset = registry.cameras.get(main_camera).offset;
 
-    vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+    float cursor_x = cursor_window_pos.x * *x_resolution_scale + camera_pos.x - camera_offset.x;
+    float cursor_y = cursor_window_pos.y * *y_resolution_scale + camera_pos.y - camera_offset.y;
+    vec2 cursor_world_pos = vec2(cursor_x, cursor_y);
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         Motion click_motion;
@@ -685,7 +677,7 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
         // handle all player logic to a player controller
-        player_controller.on_mouse_button(button, action, mod, cursor_world_pos);
+        player_controller.on_mouse_button(button, action, 0, cursor_world_pos);
         break;
     }
 }
