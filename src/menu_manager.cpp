@@ -20,7 +20,7 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
 
     level_selection_button = createStartButton(vec2(640, 150), vec2(200,50), NULL);
     help_button = createHelpButton(vec2(640, 290), vec2(200,50), NULL);
-    config_button = createConfigButton(vec2(640, 430), vec2(200, 50), NULL);
+    config_button = createConfigButton(vec2(640, 430), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
     exit_button = createExitButton(vec2(640, 570), vec2(200, 50), NULL);
 }
 

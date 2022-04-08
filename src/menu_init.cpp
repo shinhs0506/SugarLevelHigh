@@ -116,13 +116,13 @@ Entity createHelpImage(vec2 pos, vec2 size)
     return entity;
 }
 
-Entity createConfigButton(vec2 pos, vec2 size, bool (*on_click)())
+Entity createConfigButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
 	Entity entity = createGenericButton(pos, size, on_click);
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::EXIT_BUTTON, // Wrong texture, TODO: fix
+		{ texture_ID, 
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
 
