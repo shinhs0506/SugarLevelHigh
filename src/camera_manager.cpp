@@ -22,15 +22,6 @@ void reset_camera_pos() {
     Camera camera = registry.cameras.get(get_camera());
     vec2 offset = camera.offset;
     camera_motion.position = offset;
-
-    /*
-    Motion& camera_motion = registry.motions.get(get_camera());
-    Camera camera = registry.cameras.get(get_camera());
-    vec2 offset = camera.offset;
-    camera.higer_limit = offset;
-    camera.lower_limit = offset;
-    camera_motion.position = offset;
-    */
 }
 
 Entity& get_camera() {

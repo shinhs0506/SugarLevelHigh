@@ -18,13 +18,13 @@ void ConfigManager::init(GLFWwindow* window, GameSystem* game_system, RenderSyst
     back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
 
     reso1920x1080_button = createConfigButton(vec2(640, 125), vec2(200, 50), NULL);
-    reso800x600_button = createConfigButton(vec2(640, 225), vec2(200, 50), NULL);
+    reso1280x720_button = createConfigButton(vec2(640, 225), vec2(200, 50), NULL);
 
     is_back_button_clicked = false;
 
     all_entities.push_back(back_button);
     all_entities.push_back(reso1920x1080_button);
-    all_entities.push_back(reso800x600_button);
+    all_entities.push_back(reso1280x720_button);
 
     return;
 }
@@ -80,7 +80,7 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
 
         Motion back_button_motion = registry.motions.get(back_button);
         Motion reso1920x1080_motion = registry.motions.get(reso1920x1080_button);
-        Motion reso800x600_motion = registry.motions.get(reso800x600_button);
+        Motion reso1280x720_motion = registry.motions.get(reso1280x720_button);
         if (collides(click_motion, back_button_motion)) {
             // move to MAIN_MENU state
             is_back_button_clicked = true;
@@ -93,7 +93,7 @@ void ConfigManager::on_mouse_button(int button, int action, float* x_resolution_
             delete_frame_buffer();
             remake_frame_buffer(1280, 720);
         }
-        else if (collides(click_motion, reso800x600_motion)) {
+        else if (collides(click_motion, reso1280x720_motion)) {
             glfwSetWindowSize(window, 853, 480);
             float mouse_x = 1280.f / 853.f;
             float mouse_y = 720.f / 480.f;

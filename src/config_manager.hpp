@@ -19,7 +19,7 @@ private:
     bool is_back_button_clicked;
 
     Entity reso1920x1080_button;
-    Entity reso800x600_button;
+    Entity reso1280x720_button;
     Entity back_button;
     std::vector<Entity> all_entities;
 
