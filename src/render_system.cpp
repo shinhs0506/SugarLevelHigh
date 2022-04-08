@@ -75,6 +75,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
+
+		if (registry.energyBars.has(entity)) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
 		
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		gl_has_errors();
@@ -116,6 +121,13 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	glUniform1i(is_ladder_uloc, registry.climbables.has(entity));
 	GLint ladder_height_uloc = glGetUniformLocation(program, "ladder_height");
 	glUniform1i(ladder_height_uloc, registry.climbables.has(entity) ? round(registry.motions.get(entity).scale.y / 100.f) : 0);
+	gl_has_errors();
+
+	// energy/health uniforms:
+	GLint is_bar_uloc = glGetUniformLocation(program, "is_bar");
+	glUniform1i(is_bar_uloc, registry.energyBars.has(entity) || registry.healthBars.has(entity));
+	GLint bar_uloc = glGetUniformLocation(program, "bar");
+	glUniform1i(bar_uloc, (registry.energyBars.has(entity) || registry.healthBars.has(entity)) ? ceil(registry.motions.get(entity).scale.x / 20.f) : 0);
 	gl_has_errors();
 
 	// hit by an attack uniform

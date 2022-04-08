@@ -51,9 +51,9 @@ Entity createEnergyBar()
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
+		{ TEXTURE_ASSET_ID::BAR,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 
@@ -71,17 +71,15 @@ Entity createOrderIndicator(){
 	motion.prev_position = { pos };
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
-	motion.scale = { 20, 20 };
+	motion.scale = { 50, 50 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
+		{ TEXTURE_ASSET_ID::TURN_INDICATOR,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -100,7 +98,6 @@ void removeOrderIndicator(){
 	Entity entity = registry.orderIndicators.entities[0];
 	registry.motions.remove(entity);
 	registry.renderRequests.remove(entity);
-	registry.colors.remove(entity);
     registry.orderIndicators.remove(entity);
 }
 
@@ -156,9 +153,9 @@ Entity createHealthBar(vec2 pos, vec2 size)
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
+		{ TEXTURE_ASSET_ID::BAR,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
 

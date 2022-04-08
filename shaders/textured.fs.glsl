@@ -20,10 +20,12 @@ uniform bool on_cooldown;
 uniform bool is_character;
 uniform bool is_ladder;
 uniform bool is_enemy;
+uniform bool is_bar;
 uniform int movement;
 uniform float time;
 
 uniform int ladder_height;
+uniform int bar;
 
 uniform float blink;
 
@@ -67,6 +69,10 @@ void main()
 	}
 	else if (is_ladder) {
 			color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x, texcoord.y * ladder_height));
+	}
+
+	else if (is_bar) {
+			color = vec4(fcolor, 1.0) * texture(sampler0, vec2(texcoord.x * bar, texcoord.y));
 	}
 
 	else {
