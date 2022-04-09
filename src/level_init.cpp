@@ -46,7 +46,7 @@ Entity createEnergyBar()
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
 
-	Overlay overlay{ pos };
+	Overlay overlay{ pos, pos };
 	registry.overlays.insert(entity, overlay);
 
 	registry.renderRequests.insert(
@@ -115,10 +115,14 @@ void resetEnergyBar()
 	motion.scale = { 270, 20 };
 }
 
+
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
 	motion.scale.x = 270 * (energy.cur_energy / energy.max_energy);
+    float dx = (270 - motion.scale.x) / 2;
+    Overlay& overlay = registry.overlays.get(registry.energyBars.entities[0]);
+    overlay.position.x = overlay.original_position.x - dx;
 }
 
 void removeEnergyBar()
