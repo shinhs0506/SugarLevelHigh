@@ -233,6 +233,10 @@ void PlayerController::on_key(int key, int, int action, int mod)
 			player_motion.goal_velocity = vec2(0);
 			move_to_state(CharacterState::IDLE);
 		}
+
+        if (key == GLFW_KEY_A || key == GLFW_KEY_S || key == GLFW_KEY_D || key == GLFW_KEY_W) {
+            createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_NO_ENERGY);
+        }
 	}
 }
 
@@ -275,6 +279,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 					bool ability_successfully_chosen = registry.clickables.get(entity).on_click();
 					if (ability_successfully_chosen) {
                         if (registry.abilityButtons.has(entity)) {
+                            createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_HEAL_ABILITY);
                             move_to_state(CharacterState::PERFORM_ABILITY_AUTO);    
                             break;
                         }
@@ -284,9 +289,18 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 						// Create preview object
 						create_preview_object(player_pos);
 
+                        AttackArsenal& active_arsenal = registry.attackArsenals.get(player);
+                        if (active_arsenal.basic_attack.activated) {
+                            createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_BASIC_ATTACK);
+                        } else {
+                            createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_ADVANCED_ATTACK);
+                        }
+
 						move_to_state(CharacterState::PERFORM_ABILITY_MANUAL);
                         break;
-					}
+					} else {
+                        createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_ABILITY_COOLDOWN);
+                    }
 				}
 			}
 		}
@@ -306,7 +320,7 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 		{
 			AttackArsenal& active_arsenal = registry.attackArsenals.get(player);
             AttackAbility& chosen_attack = (active_arsenal.basic_attack.activated == true) ? active_arsenal.basic_attack : active_arsenal.advanced_attack;
-		
+
 			// manually calculate a world position with some offsets
 			vec2 direction = cursor_world_pos - player_pos;
 			vec2 offset{ 75.f, 0.f }; // a bit before the character
