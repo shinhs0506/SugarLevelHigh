@@ -40,7 +40,7 @@ void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
 
 void LevelMenuManager::generateLevelMenu()
 {
-    back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
+    back_button = createBackButton(vec2(100, 100), vec2(64, 64), NULL);
     tutorial_button = createTutorialButton(vec2(640, 125), vec2(200, 50), NULL);
     level_1_button = createLevel1Button(vec2(640, 265), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[0]);
     level_2_button = createLevel2Button(vec2(640, 405), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[1]);

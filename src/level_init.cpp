@@ -312,11 +312,10 @@ void removePlayer(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createTerrain(vec2 pos, vec2 size, bool breakable)
+Entity createTerrain(vec2 pos, vec2 size, bool breakable, int level)
 {
 	auto entity = Entity();
 
-	// TODO: tmp use yellow square to represent terrain
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
@@ -335,18 +334,44 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 	registry.healths.insert(entity, health);
 
 	if (!breakable) {
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::TERRAIN_UNBREAKABLE,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
+		switch (level)
+		{
+		case 0:
+		case 1:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN1,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		case 2:
+		case 3:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN2,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		default:
+			break;
+		}
 	}
 	else {
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::TERRAIN_BREAKABLE,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
+		switch (level)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN2_BREAKABLE,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		default:
+			break;
+		}
 	}
 
 	
@@ -559,11 +584,18 @@ Entity createBackground(vec2 size, int level)
 	{
 	case 0:
 	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
 	case 2:
 	case 3:
 		registry.renderRequests.insert(
 			entity,
-			{ TEXTURE_ASSET_ID::BACKGROUND1,
+			{ TEXTURE_ASSET_ID::BACKGROUND2,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		background.proportion_velocity = 0.5;
@@ -580,6 +612,22 @@ Entity createBackground(vec2 size, int level)
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND12,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
+		break;
+	case 21:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND21,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 22:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND22,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		background.proportion_velocity = 0.7;

@@ -18,6 +18,7 @@ private:
 
     bool is_back_button_clicked;
 
+    Entity background;
     Entity reso1920x1080_button;
     Entity reso1600x900_button;
     Entity reso1366x768_button;

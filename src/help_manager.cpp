@@ -18,8 +18,8 @@ void HelpManager::init(GLFWwindow *window, GameSystem *game_system) {
     this->window = window;
     this->game_system = game_system;
 
-    help_image = createHelpImage(vec2(640, 360), vec2(1280, 720));
-    back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
+    help_image = createImage(vec2(640, 360), vec2(1280, 720), TEXTURE_ASSET_ID::HELP_IMAGE);
+    back_button = createBackButton(vec2(100, 100), vec2(64, 64), NULL);
 
     is_back_button_clicked = false;
 

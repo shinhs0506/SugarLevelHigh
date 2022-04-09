@@ -63,10 +63,15 @@ void LevelManager::init_data(int level) {
 
     BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
-    
-    background2 = createBackground(background_data.size, 12);
-    background1 = createBackground(background_data.size, 11);
-    
+
+    if (level == 0 || level == 1) {
+        background1 = createBackground(background_data.size, 11);
+        background2 = createBackground(background_data.size, 12);
+    }
+    else { // TODO: add more backgrounds for later levels
+        background1 = createBackground(background_data.size, 21);
+        background2 = createBackground(background_data.size, 22);
+    }
 
     for (auto& player_data: reload_manager.get_player_data()) {
 
@@ -91,7 +96,7 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
-        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable);
+        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable, level);
     }
 
     for (auto& ladder_data : reload_manager.get_ladder_data()) {
@@ -135,7 +140,7 @@ void LevelManager::load_level(int level)
 
     // common to all levels
 
-    back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
+    back_button = createBackButton(vec2(100, 50), vec2(64, 64), NULL);
 
     if (curr_level > 0) {
         save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);
