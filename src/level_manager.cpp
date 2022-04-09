@@ -140,7 +140,7 @@ void LevelManager::load_level(int level)
 
     // common to all levels
 
-    back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
+    back_button = createBackButton(vec2(100, 50), vec2(64, 64), NULL);
 
     if (curr_level > 0) {
         save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);

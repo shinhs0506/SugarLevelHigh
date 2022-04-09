@@ -15,14 +15,14 @@ void ConfigManager::init(GLFWwindow* window, GameSystem* game_system, RenderSyst
     this->game_system = game_system;
     this->renderer = renderer;
 
-    back_button = createBackButton(vec2(100, 100), vec2(50, 50), NULL);
+    back_button = createBackButton(vec2(100, 100), vec2(64, 64), NULL);
 
-    reso1920x1080_button = createConfigButton(vec2(640, 125), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
-    reso1600x900_button = createConfigButton(vec2(640, 225), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
-    reso1366x768_button = createConfigButton(vec2(640, 325), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
-    reso1280x800_button = createConfigButton(vec2(640, 425), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
-    reso1176x664_button = createConfigButton(vec2(640, 525), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
-    reso800x600_button = createConfigButton(vec2(640, 625), vec2(200, 50), NULL, TEXTURE_ASSET_ID::EXIT_BUTTON);
+    reso1920x1080_button = createConfigButton(vec2(640, 125), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG1);
+    reso1600x900_button = createConfigButton(vec2(640, 225), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG2);
+    reso1366x768_button = createConfigButton(vec2(640, 325), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG3);
+    reso1280x800_button = createConfigButton(vec2(640, 425), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG4);
+    reso1176x664_button = createConfigButton(vec2(640, 525), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG5);
+    reso800x600_button = createConfigButton(vec2(640, 625), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG6);
     
     
 
