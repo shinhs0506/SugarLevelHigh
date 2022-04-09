@@ -81,8 +81,20 @@ bool LevelMenuManager::is_over() {
     return is_back_button_clicked;
 }
 
-void LevelMenuManager::on_key(int key, int, int action, int mod) {
-    // do nothing;
+void LevelMenuManager::on_key(int key, int, int action, int mod) 
+{
+    // enable all levels if press X
+    if (action == GLFW_RELEASE)
+    {
+        switch (key) {
+            case GLFW_KEY_X:
+                printf("pressed x\n");
+                this->game_system->level_manager.levels_completed = { true, true, true, true };
+                destroy();
+                generateLevelMenu();
+                break;
+        }
+    }
     return;
 }
 

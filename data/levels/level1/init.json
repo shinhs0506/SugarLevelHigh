@@ -2,7 +2,7 @@
     "camera": {
         "lower_limit": {
             "x": -100,
-            "y": -100
+            "y": -200
         }, 
         "upper_limit": {
             "x": 100,

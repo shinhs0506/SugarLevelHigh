@@ -408,7 +408,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.goal_velocity = {0.f, 0.f};
-	motion.scale = {1.f, 1.f};
+	motion.scale = { window_width_px / 3, window_height_px / 3 };
 	motion.depth = DEPTH::CAMERA;
 
 	Camera camera{ offset, lower_limit, higher_limit };

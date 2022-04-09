@@ -34,6 +34,8 @@ PlayerController::~PlayerController()
 void PlayerController::start_turn(Entity player, int curr_level)
 {
 	this->player = player;
+	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
+	has_camera_snapped = false;
 
 	// For level 3 damage over turn 
 	Health& player_health = registry.healths.get(player);
@@ -82,18 +84,24 @@ void PlayerController::start_turn(Entity player, int curr_level)
 	else {
 		registry.clickables.get(advanced_attack_clickable).disabled = false;
 	}
-
-
-	Motion& player_motion = registry.motions.get(player);
-	Motion& camera_motion = registry.motions.get(registry.cameras.entities[0]);
-	camera_motion.scale = { window_width_px , window_height_px };
-	if (!collides(camera_motion, player_motion)) {
-		update_camera_pos(player_motion.position);
-	}
 }
 
 void PlayerController::step(float elapsed_ms)
 {
+
+	if (!has_camera_snapped && beginning_delay_counter_ms > 0) {
+		beginning_delay_counter_ms -= elapsed_ms;
+		return;
+	}
+	else if (!has_camera_snapped) {
+		Motion& player_motion = registry.motions.get(player);
+		if (should_camera_snap && !collides_camera(player_motion)) {
+			update_camera_pos(player_motion.position);
+		}
+		has_camera_snapped = true;
+	}
+	
+
 	// For Level 3 damage over time hit effect
 	for (uint i = 0; i < registry.hitEffects.size(); i++) {
 		Entity entity = registry.hitEffects.entities[i];

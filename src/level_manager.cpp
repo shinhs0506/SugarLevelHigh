@@ -122,9 +122,13 @@ void LevelManager::load_level(int level)
     if (level == 0) {
         this->tutorial_controller.init(this);
         this->init_data(level);
+        this->player_controller.should_camera_snap = false;
+        this->enemy_controller.should_camera_snap = false;
     }
     else {
         this->init_data(level);
+        this->player_controller.should_camera_snap = true;
+        this->enemy_controller.should_camera_snap = true;
         // for now since we do not have heal on tutorial level
         heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
     }
