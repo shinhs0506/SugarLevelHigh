@@ -623,6 +623,53 @@ void removeLadder(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
+Entity createCooldown(vec2 pos, int cool_down_left) {
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = vec2(50, 50);
+	motion.depth = DEPTH::COOLDOWN;
+
+	CoolDown coolDown{ };
+	registry.cooldowns.insert(entity, coolDown);
+
+	switch (cool_down_left)
+	{
+	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 2:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN3,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	return entity;
+}
+
+void removeCooldown(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.cooldowns.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
 Entity createPrompt(vec2 pos, vec2 size, int step) {
 	auto entity = Entity();
 

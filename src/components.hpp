@@ -152,6 +152,7 @@ struct Terrain
 // proximity to camera
 enum DEPTH {
 	CAMERA = -1,
+	COOLDOWN = 0,
 	UI = 1,
 	PROMPT = 2,
 	ATTACK = 5,
@@ -287,6 +288,11 @@ struct AI
 	vec2 movement_direction = vec2(-1, 0);
 };
 
+struct CoolDown 
+{
+
+};
+
 // Character states for players and enemies
 // This will be later used for animation system as well
 
@@ -367,7 +373,10 @@ enum class TEXTURE_ASSET_ID {
 	STORY5 = STORY4 + 1,
 	NEXT_BUTTON = STORY5 + 1,
 	UI_LAYOUT = NEXT_BUTTON + 1,
-    PROMPT_SAVED = UI_LAYOUT + 1,
+	COOLDOWN1 = UI_LAYOUT + 1,
+	COOLDOWN2 = COOLDOWN1 + 1,
+	COOLDOWN3 = COOLDOWN2 + 1,
+  	PROMPT_SAVED = COOLDOWN3 + 1,
 	TEXTURE_COUNT = PROMPT_SAVED + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;

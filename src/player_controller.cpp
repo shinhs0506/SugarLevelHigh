@@ -50,6 +50,12 @@ void PlayerController::start_turn(Entity player, int curr_level)
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 
+	if (registry.cooldowns.size() > 0) {
+		for (auto& cooldown : registry.cooldowns.entities) {
+			removeCooldown(cooldown);
+		}
+	}
+
 	Entity advanced_attack_clickable;
 	if (curr_level == 0) {
 		advanced_attack_clickable = registry.clickables.entities[2];
@@ -60,20 +66,23 @@ void PlayerController::start_turn(Entity player, int curr_level)
 
 		if (registry.abilityButtons.size() > 0) {
 			if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
-				registry.clickables.get(healing_clickable).on_cooldown = true;
+				registry.clickables.get(healing_clickable).disabled = true;
+				createCooldown(vec2(100, 450), registry.buffArsenals.get(player).heal.current_cooldown);
 			}
 			else {
-				registry.clickables.get(healing_clickable).on_cooldown = false;
+				registry.clickables.get(healing_clickable).disabled = false;
 			}
 		}
 	}
 
 	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
-		registry.clickables.get(advanced_attack_clickable).on_cooldown = true;
+		registry.clickables.get(advanced_attack_clickable).disabled = true;
+		createCooldown(vec2(100, 375), registry.attackArsenals.get(player).advanced_attack.current_cooldown);
 	}
 	else {
-		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
+		registry.clickables.get(advanced_attack_clickable).disabled = false;
 	}
+
 
 	Motion& player_motion = registry.motions.get(player);
 	Motion& camera_motion = registry.motions.get(registry.cameras.entities[0]);

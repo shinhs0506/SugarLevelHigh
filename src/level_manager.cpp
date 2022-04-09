@@ -185,6 +185,10 @@ void LevelManager::abandon_level()
         removeLadder(ladder);
     }
 
+    for (auto& cooldown : registry.cooldowns.entities) {
+        removeCooldown(cooldown);
+    }
+  
     for (auto& prompts : registry.promptsWithTimer.entities) {
         removePromptWithTimer(prompts);
     }
