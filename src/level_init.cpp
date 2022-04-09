@@ -559,11 +559,18 @@ Entity createBackground(vec2 size, int level)
 	{
 	case 0:
 	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
 	case 2:
 	case 3:
 		registry.renderRequests.insert(
 			entity,
-			{ TEXTURE_ASSET_ID::BACKGROUND1,
+			{ TEXTURE_ASSET_ID::BACKGROUND2,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		background.proportion_velocity = 0.5;
@@ -580,6 +587,22 @@ Entity createBackground(vec2 size, int level)
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND12,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
+		break;
+	case 21:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND21,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 22:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND22,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		background.proportion_velocity = 0.7;

@@ -30,7 +30,6 @@ class RenderSystem {
 		// textures_path("player.png"),
 		textures_path("playable_gummy_bear.png"),
 		textures_path("enemy.png"),
-		textures_path("background1.png"),
 		textures_path("terrain.png"),
 		textures_path("terrain_breakable.png"),
 		textures_path("button_start.png"),
@@ -53,8 +52,12 @@ class RenderSystem {
 		textures_path("melee_slash.png"), // Credit for this image goes to Matheus Carvalho
 		textures_path("bear_advanced_attack.png"),
 		textures_path("chocolate_advanced_attack.png"),
+		textures_path("background1.png"),
 		textures_path("background11.png"),
 		textures_path("background12.png"),
+		textures_path("background2.png"),
+		textures_path("background21.png"),
+		textures_path("background22.png"),
 		textures_path("ladder.png"), // https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art
 		textures_path("health_potion.png"), // Credit for this images goes to "magdum" found at https://opengameart.org/content/basic-potion-set
 		textures_path("level_won.png"),
