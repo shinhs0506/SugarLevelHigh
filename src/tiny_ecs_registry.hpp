@@ -34,9 +34,11 @@ public:
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<vec3> colors;
 	ComponentContainer<Camera> cameras;
-	ComponentContainer<Timer> timers;
+	ComponentContainer<BlinkTimer> blinkTimers;
+	ComponentContainer<PromptWithTimer> promptsWithTimer;
 	ComponentContainer<Clickable> clickables;
 	ComponentContainer<AbilityButton> abilityButtons;
+	ComponentContainer<PlayerButton> playerButtons;
 	ComponentContainer<Overlay> overlays;
 	ComponentContainer<HitEffect> hitEffects;
 	ComponentContainer<AI> AIs;
@@ -45,6 +47,7 @@ public:
 	ComponentContainer<AttackPreview> attackPreviews;
 	ComponentContainer<Climbable> climbables;
     ComponentContainer<OrderIndicator> orderIndicators;
+	ComponentContainer<CoolDown> cooldowns;
 
 	// constructor that adds all containers for looping over them
 	// IMPORTANT: Don't forget to add any newly added containers!
@@ -72,9 +75,11 @@ public:
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&colors);
 		registry_list.push_back(&cameras);
-		registry_list.push_back(&timers);
+		registry_list.push_back(&blinkTimers);
+		registry_list.push_back(&promptsWithTimer);
 		registry_list.push_back(&clickables);
 		registry_list.push_back(&abilityButtons);
+		registry_list.push_back(&playerButtons);
 		registry_list.push_back(&overlays);
 		registry_list.push_back(&hitEffects);
 		registry_list.push_back(&AIs);
@@ -83,6 +88,7 @@ public:
 		registry_list.push_back(&attackAbilities);
 		registry_list.push_back(&climbables);
         registry_list.push_back(&orderIndicators);
+		registry_list.push_back(&cooldowns);
 	}
 
 	void clear_all_components() {

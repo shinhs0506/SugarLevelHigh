@@ -18,8 +18,9 @@ Entity init_camera() {
 }
 
 void reset_camera_pos() {
-    vec2 offset = vec2(window_width_px / 2, window_height_px / 2);
     Motion& camera_motion = registry.motions.get(get_camera());
+    Camera camera = registry.cameras.get(get_camera());
+    vec2 offset = camera.offset;
     camera_motion.position = offset;
 }
 

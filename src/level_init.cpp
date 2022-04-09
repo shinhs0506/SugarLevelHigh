@@ -46,7 +46,7 @@ Entity createEnergyBar()
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
 
-	Overlay overlay{ pos };
+	Overlay overlay{ pos, pos };
 	registry.overlays.insert(entity, overlay);
 
 	registry.renderRequests.insert(
@@ -112,10 +112,14 @@ void resetEnergyBar()
 	motion.scale = { 270, 20 };
 }
 
+
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
 	motion.scale.x = 270 * (energy.cur_energy / energy.max_energy);
+    float dx = (270 - motion.scale.x) / 2;
+    Overlay& overlay = registry.overlays.get(registry.energyBars.entities[0]);
+    overlay.position.x = overlay.original_position.x - dx;
 }
 
 void removeEnergyBar()
@@ -419,19 +423,52 @@ void removeCamera(Entity entity)
 	registry.cameras.remove(entity);
 }
 
-Entity createTimer(float ms) {
+Entity createBlinkTimer(float ms) {
     auto entity = Entity();
 
-    Timer timer { ms };
-    registry.timers.insert(entity, timer);
+    BlinkTimer timer { ms };
+    registry.blinkTimers.insert(entity, timer);
     
     return entity;
 }
 
-void removeTimer(Entity entity) {
-    registry.timers.remove(entity);
+void removeBlinkTimer(Entity entity) {
+    registry.blinkTimers.remove(entity);
 }
 
+Entity createPromptWithTimer(float ms, TEXTURE_ASSET_ID texture_ID) {
+    auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0, 0 };
+	motion.position = { 600, 50 };
+	motion.prev_position = motion.position;
+	motion.scale = {100, 50};
+    motion.depth = DEPTH::PROMPT;
+
+	Overlay overlay{ motion.position };
+	registry.overlays.insert(entity, overlay);
+
+    PromptWithTimer timer { ms };
+    registry.promptsWithTimer.insert(entity, timer);
+
+
+	registry.renderRequests.insert(
+		entity,
+		{ texture_ID,
+			EFFECT_ASSET_ID::TEXTURED, // TODO COOLDOWN effect
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+    return entity;
+}
+
+void removePromptWithTimer(Entity entity) {
+    registry.motions.remove(entity);
+    registry.overlays.remove(entity);
+    registry.promptsWithTimer.remove(entity);
+    registry.renderRequests.remove(entity);
+}
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
@@ -454,9 +491,24 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+{
+	auto entity = createButton(pos, size, on_click, texture_ID);
+
+    registry.playerButtons.emplace(entity);
+
+	return entity;
+}
+
+void removePlayerButton(Entity entity)
+{
+    registry.playerButtons.remove(entity);
+    removeButton(entity);
+}
+
 Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
-    auto entity = createButton(pos, size, on_click, texture_ID);
+    auto entity = createPlayerButton(pos, size, on_click, texture_ID);
 
     registry.abilityButtons.emplace(entity);
 
@@ -465,8 +517,8 @@ Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSE
 
 void removeAbilityButton(Entity entity)
 {
-    removeButton(entity);
     registry.abilityButtons.remove(entity);
+    removePlayerButton(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)
@@ -569,6 +621,53 @@ void removeLadder(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.climbables.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
+Entity createCooldown(vec2 pos, int cool_down_left) {
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = vec2(50, 50);
+	motion.depth = DEPTH::COOLDOWN;
+
+	CoolDown coolDown{ };
+	registry.cooldowns.insert(entity, coolDown);
+
+	switch (cool_down_left)
+	{
+	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 2:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN3,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	return entity;
+}
+
+void removeCooldown(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.cooldowns.remove(entity);
 	registry.renderRequests.remove(entity);
 }
 
