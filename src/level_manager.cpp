@@ -104,7 +104,7 @@ void LevelManager::init_data(int level) {
     this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 
     if (this->current_level_state == LevelState::ENEMY_BLINK) {
-        createTimer(1000);
+        createBlinkTimer(1000);
     }
 }
 
@@ -133,8 +133,12 @@ void LevelManager::load_level(int level)
 
     back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
 
-    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
-    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
+    if (curr_level > 0) {
+        save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);
+    }
+
+    basic_attack_button = createPlayerButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
+    advanced_attack_button = createPlayerButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
 
     ui_layout = createUI(vec2(640, 360), vec2(1280, 720));
     energy_bar = createEnergyBar();
@@ -181,9 +185,14 @@ void LevelManager::abandon_level()
         removeLadder(ladder);
     }
 
+    for (auto& prompts : registry.promptsWithTimer.entities) {
+        removePromptWithTimer(prompts);
+    }
+
     removeButton(back_button);
-    removeButton(basic_attack_button);
-    removeButton(advanced_attack_button);
+    removeButton(save_button);
+    removePlayerButton(basic_attack_button);
+    removePlayerButton(advanced_attack_button);
     removeAbilityButton(heal_button);
 
     removeUI(ui_layout);
@@ -312,6 +321,16 @@ bool LevelManager::step(float elapsed_ms)
     if (curr_level == 0) {
         this->tutorial_controller.step(elapsed_ms);
     }
+
+    for (uint i = 0; i < registry.promptsWithTimer.size(); i++) {
+        Entity entity = registry.promptsWithTimer.entities[i];
+        PromptWithTimer& prompWithTimer = registry.promptsWithTimer.components[i];
+
+        prompWithTimer.timer -= elapsed_ms;
+        if (prompWithTimer.timer < 0) {
+            removePromptWithTimer(entity);
+        }
+    }
   
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
@@ -344,13 +363,13 @@ bool LevelManager::step(float elapsed_ms)
 
     switch (current_level_state) {
     case LevelState::ENEMY_BLINK:
-        if (registry.timers.size() > 0) {
-            Entity& entity = registry.timers.entities[0];
-            Timer& timer = registry.timers.components[0];
+        if (registry.blinkTimers.size() > 0) {
+            Entity& entity = registry.blinkTimers.entities[0];
+            BlinkTimer& timer = registry.blinkTimers.components[0];
             if (timer.timer > 0) {
                 timer.timer -= elapsed_ms;
             } else {
-                registry.timers.remove(entity);
+                removeBlinkTimer(entity);
             }
         } else {
             move_to_state(LevelState::PREPARE);
@@ -660,7 +679,6 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         click_motion.scale = { 1.f, 1.f };
 
         Motion back_button_motion = registry.motions.get(back_button);
-
         if (collides(click_motion, back_button_motion)) {
 
             if (curr_level != (int) LevelState::TERMINATION) {
@@ -671,6 +689,14 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
             }
             is_level_over = true; 
             return;
+        }
+
+        if (curr_level > 0) {
+            Motion save_button_motion = registry.motions.get(save_button);
+            if (collides(click_motion, save_button_motion)) {
+                save_level_data();
+                createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_SAVED);
+            }
         }
     }
 
