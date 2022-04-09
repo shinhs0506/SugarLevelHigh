@@ -46,14 +46,14 @@ Entity createEnergyBar()
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
 
-	Overlay overlay{ pos };
+	Overlay overlay{ pos, pos };
 	registry.overlays.insert(entity, overlay);
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
+		{ TEXTURE_ASSET_ID::BAR,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	registry.colors.emplace(entity, vec3(1.f, 0.f, 0.f));
 
@@ -71,17 +71,15 @@ Entity createOrderIndicator(){
 	motion.prev_position = { pos };
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
-	motion.scale = { 20, 20 };
+	motion.scale = { 50, 50 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI;
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
-
-	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
+		{ TEXTURE_ASSET_ID::TURN_INDICATOR,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	return entity;
 }
@@ -100,7 +98,6 @@ void removeOrderIndicator(){
 	Entity entity = registry.orderIndicators.entities[0];
 	registry.motions.remove(entity);
 	registry.renderRequests.remove(entity);
-	registry.colors.remove(entity);
     registry.orderIndicators.remove(entity);
 }
 
@@ -115,10 +112,14 @@ void resetEnergyBar()
 	motion.scale = { 270, 20 };
 }
 
+
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
 	motion.scale.x = 270 * (energy.cur_energy / energy.max_energy);
+    float dx = (270 - motion.scale.x) / 2;
+    Overlay& overlay = registry.overlays.get(registry.energyBars.entities[0]);
+    overlay.position.x = overlay.original_position.x - dx;
 }
 
 void removeEnergyBar()
@@ -156,9 +157,9 @@ Entity createHealthBar(vec2 pos, vec2 size)
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
-			EFFECT_ASSET_ID::COLOURED,
-			GEOMETRY_BUFFER_ID::SQUARE });
+		{ TEXTURE_ASSET_ID::BAR,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
 
 	registry.colors.emplace(entity, vec3(0.f, 1.f, 0.f));
 
@@ -407,7 +408,7 @@ Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit)
 	motion.prev_position = pos;
 	motion.angle = 0.f;
 	motion.goal_velocity = {0.f, 0.f};
-	motion.scale = {1.f, 1.f};
+	motion.scale = { window_width_px / 3, window_height_px / 3 };
 	motion.depth = DEPTH::CAMERA;
 
 	Camera camera{ offset, lower_limit, higher_limit };
@@ -627,6 +628,53 @@ void removeLadder(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.climbables.remove(entity);
+	registry.renderRequests.remove(entity);
+}
+
+Entity createCooldown(vec2 pos, int cool_down_left) {
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = vec2(50, 50);
+	motion.depth = DEPTH::COOLDOWN;
+
+	CoolDown coolDown{ };
+	registry.cooldowns.insert(entity, coolDown);
+
+	switch (cool_down_left)
+	{
+	case 1:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN1,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 2:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::COOLDOWN3,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	return entity;
+}
+
+void removeCooldown(Entity entity)
+{
+	registry.motions.remove(entity);
+	registry.cooldowns.remove(entity);
 	registry.renderRequests.remove(entity);
 }
 

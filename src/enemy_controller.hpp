@@ -20,11 +20,15 @@ public:
 
 	bool should_end_enemy_turn();
 
+	bool should_camera_snap = true;
+
 private:
 	// A small delay before AI moves to allow for player to see AI abit easier
 	// and so that AI doesnt instantly do its turn causing player to miss it
-	const float DEFAULT_BEGINNING_DELAY = 1000.0f;
+	const float DEFAULT_BEGINNING_DELAY = 1200.0f;
+	const float DEFAULT_CAMERA_DELAY = 200.0f;
 	float beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
+	bool has_camera_snapped = false;
 	
 	float move_counter = 0.f;
 

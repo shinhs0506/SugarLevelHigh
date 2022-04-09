@@ -6,6 +6,7 @@
 #include "tiny_ecs_registry.hpp"
 
 bool collides(const Motion& motion1, const Motion& motion2);
+bool collides_camera(const Motion& motion);
 bool collide_top(const Motion& motion1, const Motion& motion2);
 bool collide_bottom(const Motion& motion1, const Motion& motion2);
 bool collide_right(const Motion& motion1, const Motion& motion2);

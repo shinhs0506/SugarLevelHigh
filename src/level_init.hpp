@@ -70,3 +70,6 @@ void removeStorySlide(Entity entity);
 Entity createUI(vec2 pos, vec2 size);
 void removeUI(Entity entity);
 
+Entity createCooldown(vec2 pos, int cool_down_left);
+void removeCooldown(Entity entity);
+

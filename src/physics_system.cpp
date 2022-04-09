@@ -71,6 +71,26 @@ bool collide_left(const Motion& motion1, const Motion& motion2)
 	return false;
 }
 
+bool collides_camera(const Motion& motion) {
+	Motion& camera_motion = registry.motions.get(registry.cameras.entities[0]);
+
+	const vec2 bb_cam = get_bounding_box(camera_motion) / 2.f;
+	const vec2 bb_char = get_bounding_box(motion) / 2.f;
+	const vec2 pos_cam = camera_motion.position;
+	const vec2 pos_char = motion.position;
+
+	if (// x axis collision check
+		(pos_cam[0] - bb_cam[0] <= pos_char[0] + bb_char[0] && pos_cam[0] + bb_cam[0] >= pos_char[0] - bb_char[0]) &&
+		// y axis collision check
+		(pos_cam[1] - bb_cam[1] <= pos_char[1] + bb_char[1] && pos_cam[1] + bb_cam[1] >= pos_char[1] - bb_char[1]))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
 // use AABB detection
 bool collides(const Motion& motion1, const Motion& motion2)
 {

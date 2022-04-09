@@ -152,6 +152,7 @@ struct Terrain
 // proximity to camera
 enum DEPTH {
 	CAMERA = -1,
+	COOLDOWN = 0,
 	UI = 1,
 	PROMPT = 2,
 	ATTACK = 5,
@@ -222,6 +223,7 @@ struct PlayerButton {
 // Attached to components that are unaffected by camera
 struct Overlay {
 	vec2 position = { 0, 0 };
+	vec2 original_position = { 0, 0 };
 };
 
 // Backgrounds
@@ -285,6 +287,11 @@ struct AI
 {
 	// Only horizontal movement so far
 	vec2 movement_direction = vec2(-1, 0);
+};
+
+struct CoolDown 
+{
+
 };
 
 // Character states for players and enemies
@@ -367,12 +374,17 @@ enum class TEXTURE_ASSET_ID {
 	STORY5 = STORY4 + 1,
 	NEXT_BUTTON = STORY5 + 1,
 	UI_LAYOUT = NEXT_BUTTON + 1,
-    PROMPT_SAVED = UI_LAYOUT + 1,
-    PROMPT_BASIC_ATTACK = PROMPT_SAVED + 1,
-    PROMPT_ADVANCED_ATTACK = PROMPT_BASIC_ATTACK + 1,
-    PROMPT_HEAL_ABILITY = PROMPT_ADVANCED_ATTACK + 1,
-    PROMPT_ABILITY_COOLDOWN = PROMPT_HEAL_ABILITY + 1,
-    PROMPT_NO_ENERGY = PROMPT_ABILITY_COOLDOWN + 1,
+	TURN_INDICATOR = UI_LAYOUT + 1,
+	BAR = TURN_INDICATOR + 1,
+	COOLDOWN1 = BAR + 1,
+	COOLDOWN2 = COOLDOWN1 + 1,
+	COOLDOWN3 = COOLDOWN2 + 1,
+  PROMPT_SAVED = COOLDOWN3 + 1,
+	PROMPT_BASIC_ATTACK = PROMPT_SAVED + 1,
+  PROMPT_ADVANCED_ATTACK = PROMPT_BASIC_ATTACK + 1,
+  PROMPT_HEAL_ABILITY = PROMPT_ADVANCED_ATTACK + 1,
+  PROMPT_ABILITY_COOLDOWN = PROMPT_HEAL_ABILITY + 1,
+  PROMPT_NO_ENERGY = PROMPT_ABILITY_COOLDOWN + 1,
 	TEXTURE_COUNT = PROMPT_NO_ENERGY + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;

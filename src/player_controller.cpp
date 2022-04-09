@@ -34,6 +34,8 @@ PlayerController::~PlayerController()
 void PlayerController::start_turn(Entity player, int curr_level)
 {
 	this->player = player;
+	beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
+	has_camera_snapped = false;
 
 	// For level 3 damage over turn 
 	Health& player_health = registry.healths.get(player);
@@ -50,6 +52,12 @@ void PlayerController::start_turn(Entity player, int curr_level)
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 
+	if (registry.cooldowns.size() > 0) {
+		for (auto& cooldown : registry.cooldowns.entities) {
+			removeCooldown(cooldown);
+		}
+	}
+
 	Entity advanced_attack_clickable;
 	if (curr_level == 0) {
 		advanced_attack_clickable = registry.clickables.entities[2];
@@ -60,31 +68,40 @@ void PlayerController::start_turn(Entity player, int curr_level)
 
 		if (registry.abilityButtons.size() > 0) {
 			if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
-				registry.clickables.get(healing_clickable).on_cooldown = true;
+				registry.clickables.get(healing_clickable).disabled = true;
+				createCooldown(vec2(100, 450), registry.buffArsenals.get(player).heal.current_cooldown);
 			}
 			else {
-				registry.clickables.get(healing_clickable).on_cooldown = false;
+				registry.clickables.get(healing_clickable).disabled = false;
 			}
 		}
 	}
 
 	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
-		registry.clickables.get(advanced_attack_clickable).on_cooldown = true;
+		registry.clickables.get(advanced_attack_clickable).disabled = true;
+		createCooldown(vec2(100, 375), registry.attackArsenals.get(player).advanced_attack.current_cooldown);
 	}
 	else {
-		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
-	}
-
-	Motion& player_motion = registry.motions.get(player);
-	Motion& camera_motion = registry.motions.get(registry.cameras.entities[0]);
-	camera_motion.scale = { window_width_px , window_height_px };
-	if (!collides(camera_motion, player_motion)) {
-		update_camera_pos(player_motion.position);
+		registry.clickables.get(advanced_attack_clickable).disabled = false;
 	}
 }
 
 void PlayerController::step(float elapsed_ms)
 {
+
+	if (!has_camera_snapped && beginning_delay_counter_ms > 0) {
+		beginning_delay_counter_ms -= elapsed_ms;
+		return;
+	}
+	else if (!has_camera_snapped) {
+		Motion& player_motion = registry.motions.get(player);
+		if (should_camera_snap && !collides_camera(player_motion)) {
+			update_camera_pos(player_motion.position);
+		}
+		has_camera_snapped = true;
+	}
+	
+
 	// For Level 3 damage over time hit effect
 	for (uint i = 0; i < registry.hitEffects.size(); i++) {
 		Entity entity = registry.hitEffects.entities[i];
