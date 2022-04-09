@@ -18,10 +18,13 @@ void MenuManager::init(GLFWwindow* window, GameSystem* game_system) {
     this->window = window;
     this->game_system = game_system;
 
-    level_selection_button = createStartButton(vec2(640, 150), vec2(216, 76), NULL);
-    help_button = createHelpButton(vec2(640, 290), vec2(216, 76), NULL);
-    config_button = createConfigButton(vec2(50, 50), vec2(64, 64), NULL, TEXTURE_ASSET_ID::CONFIG_BUTTON);
-    exit_button = createExitButton(vec2(640, 570), vec2(216, 76), NULL);
+    background = createImage(vec2(640, 360), vec2(1280, 720), TEXTURE_ASSET_ID::BACKGROUND_MAIN);
+    title = createImage(vec2(640, 200), vec2(468, 258), TEXTURE_ASSET_ID::TITLE);
+
+    level_selection_button = createStartButton(vec2(640, 420), vec2(216, 76), NULL);
+    help_button = createHelpButton(vec2(640, 520), vec2(216, 76), NULL);
+    config_button = createConfigButton(vec2(70, 70), vec2(64, 64), NULL, TEXTURE_ASSET_ID::CONFIG_BUTTON);
+    exit_button = createExitButton(vec2(640, 620), vec2(216, 76), NULL);
 }
 
 void MenuManager::destroy() {
@@ -29,6 +32,8 @@ void MenuManager::destroy() {
     registry.remove_all_components_of(help_button);
     registry.remove_all_components_of(exit_button);
     registry.remove_all_components_of(config_button);
+    registry.remove_all_components_of(background);
+    registry.remove_all_components_of(title);
 }
 
 void MenuManager::step(float elapsed_ms) {

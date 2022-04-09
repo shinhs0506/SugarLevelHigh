@@ -15,6 +15,7 @@ void ConfigManager::init(GLFWwindow* window, GameSystem* game_system, RenderSyst
     this->game_system = game_system;
     this->renderer = renderer;
 
+    background = createImage(vec2(640, 360), vec2(1280, 720), TEXTURE_ASSET_ID::BACKGROUND_MAIN);
     back_button = createBackButton(vec2(100, 100), vec2(64, 64), NULL);
 
     reso1920x1080_button = createConfigButton(vec2(640, 125), vec2(216, 76), NULL, TEXTURE_ASSET_ID::CONFIG1);
@@ -28,6 +29,7 @@ void ConfigManager::init(GLFWwindow* window, GameSystem* game_system, RenderSyst
 
     is_back_button_clicked = false;
 
+    all_entities.push_back(background);
     all_entities.push_back(back_button);
     all_entities.push_back(reso1920x1080_button);
     all_entities.push_back(reso1600x900_button);

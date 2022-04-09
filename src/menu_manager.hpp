@@ -17,6 +17,10 @@ class MenuManager
         // window
         GLFWwindow* window;
 
+        // Images
+        Entity background;
+        Entity title;
+
         // buttons
         Entity level_selection_button;
         Entity help_button;

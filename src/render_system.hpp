@@ -44,6 +44,8 @@ class RenderSystem {
 		textures_path("config4.png"),
 		textures_path("config5.png"),
 		textures_path("config6.png"),
+		textures_path("background_main.png"),
+		textures_path("title.png"),
 		textures_path("basic_help.png"),
 		textures_path("advanced_attack_preview.png"),
 		textures_path("basic_attack_preview.png"),

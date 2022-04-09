@@ -95,7 +95,7 @@ Entity createLevel3Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled
 }
 
 
-Entity createHelpImage(vec2 pos, vec2 size)
+Entity createImage(vec2 pos, vec2 size, TEXTURE_ASSET_ID texture_ID)
 {
     Entity entity = Entity();
 
@@ -109,7 +109,7 @@ Entity createHelpImage(vec2 pos, vec2 size)
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::HELP_IMAGE,
+		{ texture_ID,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
 
