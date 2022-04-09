@@ -312,11 +312,10 @@ void removePlayer(Entity entity)
     registry.collisions.remove(entity);
 }
 
-Entity createTerrain(vec2 pos, vec2 size, bool breakable)
+Entity createTerrain(vec2 pos, vec2 size, bool breakable, int level)
 {
 	auto entity = Entity();
 
-	// TODO: tmp use yellow square to represent terrain
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
@@ -335,18 +334,44 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable)
 	registry.healths.insert(entity, health);
 
 	if (!breakable) {
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::TERRAIN_UNBREAKABLE,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
+		switch (level)
+		{
+		case 0:
+		case 1:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN1,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		case 2:
+		case 3:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN2,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		default:
+			break;
+		}
 	}
 	else {
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::TERRAIN_BREAKABLE,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
+		switch (level)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN2_BREAKABLE,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		default:
+			break;
+		}
 	}
 
 	

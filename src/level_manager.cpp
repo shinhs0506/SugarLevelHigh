@@ -96,7 +96,7 @@ void LevelManager::init_data(int level) {
     }
 
     for (auto& terrain_data: reload_manager.get_terrain_data()) {
-        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable);
+        Entity terrain = createTerrain(terrain_data.pos, terrain_data.size, terrain_data.breakable, level);
     }
 
     for (auto& ladder_data : reload_manager.get_ladder_data()) {
