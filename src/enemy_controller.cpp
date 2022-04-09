@@ -252,7 +252,10 @@ void EnemyController::step(float elapsed_ms)
 			motion.goal_velocity.y = 0;
 			move_to_state(CharacterState::IDLE);
 		}
-		update_camera_pos(motion.position);
+		if (should_camera_snap) {
+			update_camera_pos(motion.position);
+		}
+		
 		break;
 
 	case CharacterState::END:

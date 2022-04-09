@@ -787,11 +787,18 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	case 3:
 		registry.renderRequests.insert(
 			entity,
-			{ TEXTURE_ASSET_ID::TUTORIAL_COOLDOWN,
+			{ TEXTURE_ASSET_ID::TUTORIAL_HEAL,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
 	case 4:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_DEFEAT,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 5:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_END,
