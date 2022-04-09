@@ -38,11 +38,16 @@ void removeAttackObject(Entity entity);
 Entity createCamera(vec2 pos, vec2 offset, vec2 lower_limit, vec2 higher_limit);
 void removeCamera(Entity entity);
 
-Entity createTimer(float timer);
-void removeTimer(Entity entity);
+Entity createBlinkTimer(float timer);
+void removeBlinkTimer(Entity entity);
+
+Entity createPromptWithTimer(float timer, TEXTURE_ASSET_ID texture_ID);
+void removePromptWithTimer(Entity entity);
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
 void removeButton(Entity entity);
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+void removePlayerButton(Entity entity);
 Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
 void removeAbilityButton(Entity entity);
 

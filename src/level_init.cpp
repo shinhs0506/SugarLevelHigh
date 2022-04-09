@@ -422,19 +422,52 @@ void removeCamera(Entity entity)
 	registry.cameras.remove(entity);
 }
 
-Entity createTimer(float ms) {
+Entity createBlinkTimer(float ms) {
     auto entity = Entity();
 
-    Timer timer { ms };
-    registry.timers.insert(entity, timer);
+    BlinkTimer timer { ms };
+    registry.blinkTimers.insert(entity, timer);
     
     return entity;
 }
 
-void removeTimer(Entity entity) {
-    registry.timers.remove(entity);
+void removeBlinkTimer(Entity entity) {
+    registry.blinkTimers.remove(entity);
 }
 
+Entity createPromptWithTimer(float ms, TEXTURE_ASSET_ID texture_ID) {
+    auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0, 0 };
+	motion.position = { 600, 50 };
+	motion.prev_position = motion.position;
+	motion.scale = {100, 50};
+    motion.depth = DEPTH::PROMPT;
+
+	Overlay overlay{ motion.position };
+	registry.overlays.insert(entity, overlay);
+
+    PromptWithTimer timer { ms };
+    registry.promptsWithTimer.insert(entity, timer);
+
+
+	registry.renderRequests.insert(
+		entity,
+		{ texture_ID,
+			EFFECT_ASSET_ID::TEXTURED, // TODO COOLDOWN effect
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+    return entity;
+}
+
+void removePromptWithTimer(Entity entity) {
+    registry.motions.remove(entity);
+    registry.overlays.remove(entity);
+    registry.promptsWithTimer.remove(entity);
+    registry.renderRequests.remove(entity);
+}
 
 Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
@@ -457,9 +490,24 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+{
+	auto entity = createButton(pos, size, on_click, texture_ID);
+
+    registry.playerButtons.emplace(entity);
+
+	return entity;
+}
+
+void removePlayerButton(Entity entity)
+{
+    registry.playerButtons.remove(entity);
+    removeButton(entity);
+}
+
 Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
 {
-    auto entity = createButton(pos, size, on_click, texture_ID);
+    auto entity = createPlayerButton(pos, size, on_click, texture_ID);
 
     registry.abilityButtons.emplace(entity);
 
@@ -468,8 +516,8 @@ Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSE
 
 void removeAbilityButton(Entity entity)
 {
-    removeButton(entity);
     registry.abilityButtons.remove(entity);
+    removePlayerButton(entity);
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)

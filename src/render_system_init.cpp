@@ -269,6 +269,15 @@ RenderSystem::~RenderSystem()
 	    registry.remove_all_components_of(registry.renderRequests.entities.back());
 }
 
+void RenderSystem::deleteFrameBuffer()
+{
+	// delete allocated resources
+	glDeleteRenderbuffers(1, &off_screen_render_buffer_depth);
+	glDeleteTextures(1, &off_screen_render_buffer_color);
+	
+	gl_has_errors();
+}
+
 // Initialize the screen texture from a standard sprite
 bool RenderSystem::initScreenTexture()
 {
@@ -294,6 +303,31 @@ bool RenderSystem::initScreenTexture()
 	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
 	return true;
+}
+
+void RenderSystem::remakeFrameBuffer(GLFWwindow* window_arg, int new_width, int new_height) {
+
+	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
+
+	int framebuffer_width, framebuffer_height;
+	glfwGetFramebufferSize(const_cast<GLFWwindow*>(window), &framebuffer_width, &framebuffer_height);  // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
+
+	glGenTextures(1, &off_screen_render_buffer_color);
+	glBindTexture(GL_TEXTURE_2D, off_screen_render_buffer_color);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, framebuffer_width, framebuffer_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	gl_has_errors();
+
+	glGenRenderbuffers(1, &off_screen_render_buffer_depth);
+	glBindRenderbuffer(GL_RENDERBUFFER, off_screen_render_buffer_depth);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, off_screen_render_buffer_color, 0);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, framebuffer_width, framebuffer_height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, off_screen_render_buffer_depth);
+	gl_has_errors();
+
+	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
 }
 
 bool gl_compile_shader(GLuint shader)

@@ -128,7 +128,12 @@ struct Camera
 	vec2 higer_limit;
 };
 
-struct Timer
+struct PromptWithTimer
+{
+    float timer;
+};
+
+struct BlinkTimer
 {
     float timer;
 };
@@ -207,6 +212,11 @@ struct Clickable {
 
 // Attached to buttons that use Buff components
 struct AbilityButton {
+
+};
+
+// Attached to all button related to player attack/abilities
+struct PlayerButton {
 
 };
 
@@ -333,7 +343,8 @@ enum class TEXTURE_ASSET_ID {
 	HELP_BUTTON = START_BUTTON + 1,
 	EXIT_BUTTON = HELP_BUTTON + 1,
 	BACK_BUTTON = EXIT_BUTTON + 1,
-	HELP_IMAGE = BACK_BUTTON + 1,
+	SAVE_BUTTON = BACK_BUTTON + 1,
+	HELP_IMAGE = SAVE_BUTTON + 1,
 	ADVANCED_ATTACK_PREVIEW = HELP_IMAGE + 1,
 	BASIC_ATTACK_PREVIEW = ADVANCED_ATTACK_PREVIEW + 1,
 	TUTORIAL_BUTTON = BASIC_ATTACK_PREVIEW + 1,
@@ -366,6 +377,8 @@ enum class TEXTURE_ASSET_ID {
 	COOLDOWN2 = COOLDOWN1 + 1,
 	COOLDOWN3 = COOLDOWN2 + 1,
 	TEXTURE_COUNT = COOLDOWN3 + 1,
+  PROMPT_SAVED = TEXTURE_COUNT + 1,
+	TEXTURE_COUNT = PROMPT_SAVED + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

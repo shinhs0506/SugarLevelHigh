@@ -257,9 +257,9 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			click_motion.scale = { 1.f, 1.f };
 
 			// check to see if click was on a button first
-			for (uint i = 0; i < registry.clickables.size(); i++) {
+			for (uint i = 0; i < registry.playerButtons.size(); i++) {
 
-				Entity entity = registry.clickables.entities[i];
+				Entity entity = registry.playerButtons.entities[i];
 				Motion motion = registry.motions.get(entity);
 
 				if (collides(click_motion, motion)) {

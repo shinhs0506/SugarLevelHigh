@@ -32,6 +32,7 @@ LevelManager::~LevelManager()
 
 void LevelManager::init(GLFWwindow* window)
 {
+    reset_camera_pos();
     this->window = window;
     this->main_camera = get_camera();
 
@@ -57,7 +58,6 @@ void LevelManager::init_data(int level) {
     reload_manager.load(level);
 
     CameraData camera_data = reload_manager.get_camera_data();
-    motion.position = camera_data.pos;
     camera.lower_limit = motion.position + camera_data.lower_limit_delta;
     camera.higer_limit = motion.position + camera_data.upper_limit_delta;
 
@@ -104,7 +104,7 @@ void LevelManager::init_data(int level) {
     this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 
     if (this->current_level_state == LevelState::ENEMY_BLINK) {
-        createTimer(1000);
+        createBlinkTimer(1000);
     }
 }
 
@@ -133,8 +133,12 @@ void LevelManager::load_level(int level)
 
     back_button = createBackButton(vec2(100, 50), vec2(50, 50), NULL);
 
-    basic_attack_button = createButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
-    advanced_attack_button = createButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
+    if (curr_level > 0) {
+        save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);
+    }
+
+    basic_attack_button = createPlayerButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
+    advanced_attack_button = createPlayerButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
 
     ui_layout = createUI(vec2(640, 360), vec2(1280, 720));
     energy_bar = createEnergyBar();
@@ -184,10 +188,15 @@ void LevelManager::abandon_level()
     for (auto& cooldown : registry.cooldowns.entities) {
         removeCooldown(cooldown);
     }
+  
+    for (auto& prompts : registry.promptsWithTimer.entities) {
+        removePromptWithTimer(prompts);
+    }
 
     removeButton(back_button);
-    removeButton(basic_attack_button);
-    removeButton(advanced_attack_button);
+    removeButton(save_button);
+    removePlayerButton(basic_attack_button);
+    removePlayerButton(advanced_attack_button);
     removeAbilityButton(heal_button);
 
     removeUI(ui_layout);
@@ -316,6 +325,16 @@ bool LevelManager::step(float elapsed_ms)
     if (curr_level == 0) {
         this->tutorial_controller.step(elapsed_ms);
     }
+
+    for (uint i = 0; i < registry.promptsWithTimer.size(); i++) {
+        Entity entity = registry.promptsWithTimer.entities[i];
+        PromptWithTimer& prompWithTimer = registry.promptsWithTimer.components[i];
+
+        prompWithTimer.timer -= elapsed_ms;
+        if (prompWithTimer.timer < 0) {
+            removePromptWithTimer(entity);
+        }
+    }
   
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
@@ -348,13 +367,13 @@ bool LevelManager::step(float elapsed_ms)
 
     switch (current_level_state) {
     case LevelState::ENEMY_BLINK:
-        if (registry.timers.size() > 0) {
-            Entity& entity = registry.timers.entities[0];
-            Timer& timer = registry.timers.components[0];
+        if (registry.blinkTimers.size() > 0) {
+            Entity& entity = registry.blinkTimers.entities[0];
+            BlinkTimer& timer = registry.blinkTimers.components[0];
             if (timer.timer > 0) {
                 timer.timer -= elapsed_ms;
             } else {
-                registry.timers.remove(entity);
+                removeBlinkTimer(entity);
             }
         } else {
             move_to_state(LevelState::PREPARE);
@@ -640,22 +659,12 @@ void LevelManager::on_mouse_move(vec2 pos)
 {
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
-
-        double cursor_window_x, cursor_window_y;
-        glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
-        vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
-
-        vec2 camera_pos = registry.motions.get(main_camera).position;
-        vec2 camera_offset = registry.cameras.get(main_camera).offset;
-
-        vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
-
-        player_controller.on_mouse_move(cursor_world_pos);
+        player_controller.on_mouse_move(pos);
         break;
     }
 }
 
-void LevelManager::on_mouse_button(int button, int action, int mod)
+void LevelManager::on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale)
 {
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
@@ -664,7 +673,9 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
     vec2 camera_pos = registry.motions.get(main_camera).position;
     vec2 camera_offset = registry.cameras.get(main_camera).offset;
 
-    vec2 cursor_world_pos = cursor_window_pos + camera_pos - camera_offset;
+    float cursor_x = cursor_window_pos.x * *x_resolution_scale + camera_pos.x - camera_offset.x;
+    float cursor_y = cursor_window_pos.y * *y_resolution_scale + camera_pos.y - camera_offset.y;
+    vec2 cursor_world_pos = vec2(cursor_x, cursor_y);
 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
         Motion click_motion;
@@ -672,7 +683,6 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
         click_motion.scale = { 1.f, 1.f };
 
         Motion back_button_motion = registry.motions.get(back_button);
-
         if (collides(click_motion, back_button_motion)) {
 
             if (curr_level != (int) LevelState::TERMINATION) {
@@ -684,12 +694,20 @@ void LevelManager::on_mouse_button(int button, int action, int mod)
             is_level_over = true; 
             return;
         }
+
+        if (curr_level > 0) {
+            Motion save_button_motion = registry.motions.get(save_button);
+            if (collides(click_motion, save_button_motion)) {
+                save_level_data();
+                createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_SAVED);
+            }
+        }
     }
 
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
         // handle all player logic to a player controller
-        player_controller.on_mouse_button(button, action, mod, cursor_world_pos);
+        player_controller.on_mouse_button(button, action, 0, cursor_world_pos);
         break;
     }
 }
