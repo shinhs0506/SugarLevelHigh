@@ -128,7 +128,12 @@ struct Camera
 	vec2 higer_limit;
 };
 
-struct Timer
+struct PromptWithTimer
+{
+    float timer;
+};
+
+struct BlinkTimer
 {
     float timer;
 };
@@ -147,6 +152,7 @@ struct Terrain
 // proximity to camera
 enum DEPTH {
 	CAMERA = -1,
+	COOLDOWN = 0,
 	UI = 1,
 	PROMPT = 2,
 	ATTACK = 5,
@@ -209,9 +215,15 @@ struct AbilityButton {
 
 };
 
+// Attached to all button related to player attack/abilities
+struct PlayerButton {
+
+};
+
 // Attached to components that are unaffected by camera
 struct Overlay {
 	vec2 position = { 0, 0 };
+	vec2 original_position = { 0, 0 };
 };
 
 // Backgrounds
@@ -277,6 +289,11 @@ struct AI
 	vec2 movement_direction = vec2(-1, 0);
 };
 
+struct CoolDown 
+{
+
+};
+
 // Character states for players and enemies
 // This will be later used for animation system as well
 
@@ -327,7 +344,8 @@ enum class TEXTURE_ASSET_ID {
 	HELP_BUTTON = START_BUTTON + 1,
 	EXIT_BUTTON = HELP_BUTTON + 1,
 	BACK_BUTTON = EXIT_BUTTON + 1,
-	HELP_IMAGE = BACK_BUTTON + 1,
+	SAVE_BUTTON = BACK_BUTTON + 1,
+	HELP_IMAGE = SAVE_BUTTON + 1,
 	ADVANCED_ATTACK_PREVIEW = HELP_IMAGE + 1,
 	BASIC_ATTACK_PREVIEW = ADVANCED_ATTACK_PREVIEW + 1,
 	TUTORIAL_BUTTON = BASIC_ATTACK_PREVIEW + 1,
@@ -356,7 +374,13 @@ enum class TEXTURE_ASSET_ID {
 	STORY5 = STORY4 + 1,
 	NEXT_BUTTON = STORY5 + 1,
 	UI_LAYOUT = NEXT_BUTTON + 1,
-	TEXTURE_COUNT = UI_LAYOUT + 1,
+	TURN_INDICATOR = UI_LAYOUT + 1,
+	BAR = TURN_INDICATOR + 1,
+	COOLDOWN1 = BAR + 1,
+	COOLDOWN2 = COOLDOWN1 + 1,
+	COOLDOWN3 = COOLDOWN2 + 1,
+  	PROMPT_SAVED = COOLDOWN3 + 1,
+	TEXTURE_COUNT = PROMPT_SAVED + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

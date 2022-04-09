@@ -13,6 +13,7 @@
 #include "level_menu_manager.hpp"
 #include "menu_manager.hpp"
 #include "help_manager.hpp"
+#include "config_manager.hpp"
 
 // Container for all our entities and game logic
 class GameSystem
@@ -23,6 +24,7 @@ public:
 	LevelManager level_manager;
     HelpManager help_manager;
     LevelMenuManager level_menu_manager;
+	ConfigManager config_manager;
 
 	// different screen states
 	enum class GameState {
@@ -32,6 +34,7 @@ public:
 		LEVEL_SELECTION, // select which level to start
 		CHARACTER_SELECTION, // select characters to form a team for the level
 		IN_LEVEL, // level content, handled by level manager
+		CONFIG, // configuration for aspect ratios
 	};
 
 	GameSystem();
@@ -55,6 +58,9 @@ public:
     bool is_in_level();
 
     void move_to_state(GameState next_game_state);
+
+	float x_resolution_scale = 1;
+	float y_resolution_scale = 1;
 
 private:
 	// Input callback functions

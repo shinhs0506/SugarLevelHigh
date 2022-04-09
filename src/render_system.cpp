@@ -75,6 +75,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
+
+		if (registry.energyBars.has(entity)) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
 		
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		gl_has_errors();
@@ -118,6 +123,13 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	glUniform1i(ladder_height_uloc, registry.climbables.has(entity) ? round(registry.motions.get(entity).scale.y / 100.f) : 0);
 	gl_has_errors();
 
+	// energy/health uniforms:
+	GLint is_bar_uloc = glGetUniformLocation(program, "is_bar");
+	glUniform1i(is_bar_uloc, registry.energyBars.has(entity) || registry.healthBars.has(entity));
+	GLint bar_uloc = glGetUniformLocation(program, "bar");
+	glUniform1i(bar_uloc, (registry.energyBars.has(entity) || registry.healthBars.has(entity)) ? ceil(registry.motions.get(entity).scale.x / 20.f) : 0);
+	gl_has_errors();
+
 	// hit by an attack uniform
 	GLint hit_effect_uloc = glGetUniformLocation(program, "hit_effect");
 	glUniform1i(hit_effect_uloc, registry.hitEffects.has(entity));
@@ -143,7 +155,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	gl_has_errors();
 
     GLint timer_uloc = glGetUniformLocation(program, "blink");
-    glUniform1f(timer_uloc, registry.timers.size() > 0 ? registry.timers.components[0].timer : 0);
+    glUniform1f(timer_uloc, registry.blinkTimers.size() > 0 ? registry.blinkTimers.components[0].timer : 0);
     gl_has_errors();
 
 	// Getting uniform locations for glUniform* calls
@@ -238,7 +250,6 @@ void RenderSystem::draw()
 	// Getting size of window
 	int w, h;
 	glfwGetFramebufferSize(window, &w, &h); // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
-
 	// First render to the custom framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
 	gl_has_errors();
@@ -296,5 +307,6 @@ mat3 RenderSystem::createProjectionMatrix()
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
+
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }

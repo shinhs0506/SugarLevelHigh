@@ -37,6 +37,7 @@ class RenderSystem {
 		textures_path("button_help.png"),
 		textures_path("button_exit.png"),
 		textures_path("back_button.png"),
+		textures_path("save_button.png"),
 		textures_path("basic_help.png"),
 		textures_path("advanced_attack_preview.png"),
 		textures_path("basic_attack_preview.png"),
@@ -66,6 +67,12 @@ class RenderSystem {
 		textures_path("story5.png"),
 		textures_path("next_button.png"),
 		textures_path("ui_layout.png"),
+		textures_path("turn_indicator.png"), // https://pipoya.itch.io/free-popup-emotes-pack
+		textures_path("bar.png"),
+		textures_path("cooldown1.png"),
+		textures_path("cooldown2.png"),
+		textures_path("cooldown3.png"),
+    textures_path("prompt_saved.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -103,6 +110,9 @@ public:
 
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
+
+	void deleteFrameBuffer();
+	void remakeFrameBuffer(GLFWwindow* window_arg, int new_width, int new_height);
 
 	// Draw all entities
 	void draw();

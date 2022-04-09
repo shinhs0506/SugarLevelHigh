@@ -52,6 +52,12 @@ void PlayerController::start_turn(Entity player, int curr_level)
 	this->current_state = CharacterState::IDLE;
 	this->next_state = CharacterState::IDLE;
 
+	if (registry.cooldowns.size() > 0) {
+		for (auto& cooldown : registry.cooldowns.entities) {
+			removeCooldown(cooldown);
+		}
+	}
+
 	Entity advanced_attack_clickable;
 	if (curr_level == 0) {
 		advanced_attack_clickable = registry.clickables.entities[2];
@@ -62,19 +68,21 @@ void PlayerController::start_turn(Entity player, int curr_level)
 
 		if (registry.abilityButtons.size() > 0) {
 			if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
-				registry.clickables.get(healing_clickable).on_cooldown = true;
+				registry.clickables.get(healing_clickable).disabled = true;
+				createCooldown(vec2(100, 450), registry.buffArsenals.get(player).heal.current_cooldown);
 			}
 			else {
-				registry.clickables.get(healing_clickable).on_cooldown = false;
+				registry.clickables.get(healing_clickable).disabled = false;
 			}
 		}
 	}
 
 	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
-		registry.clickables.get(advanced_attack_clickable).on_cooldown = true;
+		registry.clickables.get(advanced_attack_clickable).disabled = true;
+		createCooldown(vec2(100, 375), registry.attackArsenals.get(player).advanced_attack.current_cooldown);
 	}
 	else {
-		registry.clickables.get(advanced_attack_clickable).on_cooldown = false;
+		registry.clickables.get(advanced_attack_clickable).disabled = false;
 	}
 }
 
@@ -257,9 +265,9 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 			click_motion.scale = { 1.f, 1.f };
 
 			// check to see if click was on a button first
-			for (uint i = 0; i < registry.clickables.size(); i++) {
+			for (uint i = 0; i < registry.playerButtons.size(); i++) {
 
-				Entity entity = registry.clickables.entities[i];
+				Entity entity = registry.playerButtons.entities[i];
 				Motion motion = registry.motions.get(entity);
 
 				if (collides(click_motion, motion)) {
