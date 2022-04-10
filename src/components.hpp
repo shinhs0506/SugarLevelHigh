@@ -153,9 +153,9 @@ struct Terrain
 enum DEPTH {
 	CAMERA = -1,
 	PROMPT = 0,
-	UI_TOP = 1,
-	UI = 2,
-	COOLDOWN = 3,
+	COOLDOWN = 1,
+	UI_TOP = 2,
+	UI = 3,
 	ATTACK = 5,
 	ACTIVE = 10,
 	CHARACTER = 20,
