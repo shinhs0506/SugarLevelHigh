@@ -421,7 +421,8 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
-                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
+                        // TODO: unique prompt per level
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), 11);
                         prompts.push_back(prompt);
                     }
                     this->levels_completed[curr_level] = true;
@@ -432,6 +433,7 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
+                        // TODO: unique prompt per level
                         Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
                         prompts.push_back(prompt);
                     }

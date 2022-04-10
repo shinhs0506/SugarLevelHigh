@@ -474,9 +474,9 @@ Entity createPromptWithTimer(float ms, TEXTURE_ASSET_ID texture_ID) {
 	Motion& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0, 0 };
-	motion.position = { 650, 50 };
+	motion.position = { 640, 360 };
 	motion.prev_position = motion.position;
-	motion.scale = {500, 50};
+	motion.scale = { 1280, 720 };
     motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ motion.position };
@@ -802,10 +802,31 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 10: // start level 1
+	case 10:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::LEVEL_1_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_WON, // temp
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 20:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_2_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 30: 
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_3_START,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;

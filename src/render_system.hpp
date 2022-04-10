@@ -93,6 +93,8 @@ class RenderSystem {
     textures_path("prompt_ability_cooldown.png"),
     textures_path("prompt_no_energy.png"),
 	textures_path("level_1_start.png"),
+	textures_path("level_2_start.png"),
+	textures_path("level_3_start.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
