@@ -502,9 +502,9 @@ void removePromptWithTimer(Entity entity) {
     registry.renderRequests.remove(entity);
 }
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled)
 {
-	auto entity = createGenericButton(pos, size, on_click);
+	auto entity = createGenericButton(pos, size, on_click, disabled);
 
 	registry.renderRequests.insert(
 		entity,
@@ -523,9 +523,9 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
-Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled)
 {
-	auto entity = createButton(pos, size, on_click, texture_ID);
+	auto entity = createButton(pos, size, on_click, texture_ID, disabled);
 
     registry.playerButtons.emplace(entity);
 
@@ -538,9 +538,9 @@ void removePlayerButton(Entity entity)
     removeButton(entity);
 }
 
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled)
 {
-    auto entity = createPlayerButton(pos, size, on_click, texture_ID);
+    auto entity = createPlayerButton(pos, size, on_click, texture_ID, disabled);
 
     registry.abilityButtons.emplace(entity);
 
@@ -692,6 +692,8 @@ Entity createCooldown(vec2 pos, int cool_down_left) {
 
 	CoolDown coolDown{ };
 	registry.cooldowns.insert(entity, coolDown);
+	Overlay overlay{pos};
+	registry.overlays.insert(entity, overlay);
 
 	switch (cool_down_left)
 	{
@@ -723,6 +725,7 @@ void removeCooldown(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.cooldowns.remove(entity);
+	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
 }
 
@@ -778,27 +781,28 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
 	case 2:
+	case 3: 
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_ATTACK_ADVANCED,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 3:
+	case 4:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_HEAL,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 4:
+	case 5:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_DEFEAT,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 5:
+	case 6:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_END,

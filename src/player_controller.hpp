@@ -33,6 +33,10 @@ public:
 	bool has_player_moved_right();
 
 	bool should_camera_snap = true;
+	bool cooldown_logic_enabled = true;
+
+	Entity advanced_attack_button;
+	Entity heal_button;
 
 private:
 	Entity player;

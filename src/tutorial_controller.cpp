@@ -18,6 +18,7 @@ void TutorialController::init(LevelManager* level_manager) {
 }
 
 void TutorialController::step(float elapsed_ms) {
+    // if tutorial failed, reset 
     if (failed) {
         remove_prompts();
         Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -100);
@@ -25,10 +26,11 @@ void TutorialController::step(float elapsed_ms) {
         prompt_active = true;
         return;
     }
-    // if there is already a prompt on the screen, decrement counter
+    // if tutorial finished, do nothing
     if (curr_step >= max_step) {
         return;
     }
+    // if there is already a prompt on the screen and its action is completed, decrement counter
     if (prompt_active && should_advance) {
         prompt_timer -= elapsed_ms;
     }
@@ -40,11 +42,36 @@ void TutorialController::step(float elapsed_ms) {
         curr_step += 1;
         prompt_timer = timeout;
     }
-    // if no prompts on the screen, add the next one 
+    // if no prompts on the screen, add the next one
+    // also manage UI elements as appropriate
     if (!prompt_active) {
         Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), curr_step);
         all_entities.push_back(prompt);
         prompt_active = true;
+        init_step();
+    }
+}
+
+void TutorialController::init_step() {
+    if (curr_step == 1) {
+        registry.clickables.get(basic_attack_button).disabled = false;
+    }
+    if (curr_step == 2) {
+        registry.clickables.get(basic_attack_button).disabled = true;
+        registry.clickables.get(heal_button).disabled = true;
+    }
+    if (curr_step >= 2) {
+        registry.clickables.get(advanced_attack_button).disabled = false;
+    }
+    if (curr_step == 4) {
+        registry.clickables.get(advanced_attack_button).disabled = true;
+        registry.clickables.get(basic_attack_button).disabled = true;
+    }
+    if (curr_step >= 4) {
+        registry.clickables.get(heal_button).disabled = false;
+    }
+    if (curr_step >= 5) {
+        registry.clickables.get(basic_attack_button).disabled = false;
     }
 }
 

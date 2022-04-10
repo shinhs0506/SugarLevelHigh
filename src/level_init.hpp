@@ -44,11 +44,11 @@ void removeBlinkTimer(Entity entity);
 Entity createPromptWithTimer(float timer, TEXTURE_ASSET_ID texture_ID);
 void removePromptWithTimer(Entity entity);
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled = false);
 void removeButton(Entity entity);
-Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled = false);
 void removePlayerButton(Entity entity);
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled = false);
 void removeAbilityButton(Entity entity);
 
 // this does not create a new entity but only attach a hit effect on the existing object
