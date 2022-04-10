@@ -17,10 +17,10 @@ private:
     bool prompt_active = false;
 
     // number of tutorial steps
-    int max_step = 7;
+    int max_step = 6;
 
     // how long to continue showing an instruction after the player follows it
-    int timeout = 1000;
+    int timeout = 500;
     int prompt_timer = timeout;
 
 public:

@@ -160,8 +160,8 @@ void LevelManager::load_level(int level)
     }
     else {
         this->player_controller.cooldown_logic_enabled = true;
-        this->player_controller.should_camera_snap = false;
-        this->enemy_controller.should_camera_snap = false;
+        this->player_controller.should_camera_snap = true;
+        this->enemy_controller.should_camera_snap = true;
     }
 }
 
@@ -431,6 +431,14 @@ bool LevelManager::step(float elapsed_ms)
                         prompts.push_back(prompt);
                     }
                 }
+                if (registry.cooldowns.size() > 0) {
+                    for (auto& cooldown : registry.cooldowns.entities) {
+                        removeCooldown(cooldown);
+                    }
+                }
+                registry.clickables.get(basic_attack_button).disabled = true;
+                registry.clickables.get(advanced_attack_button).disabled = true;
+                registry.clickables.get(heal_button).disabled = true;
                 move_to_state(LevelState::TERMINATION);
                 break;
             }

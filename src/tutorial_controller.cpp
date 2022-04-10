@@ -60,17 +60,17 @@ void TutorialController::init_step() {
         registry.clickables.get(basic_attack_button).disabled = true;
         registry.clickables.get(heal_button).disabled = true;
     }
-    if (curr_step >= 2) {
+    if (curr_step >= 2 && curr_step < max_step) {
         registry.clickables.get(advanced_attack_button).disabled = false;
     }
     if (curr_step == 4) {
         registry.clickables.get(advanced_attack_button).disabled = true;
         registry.clickables.get(basic_attack_button).disabled = true;
     }
-    if (curr_step >= 4) {
+    if (curr_step >= 4 && curr_step < max_step) {
         registry.clickables.get(heal_button).disabled = false;
     }
-    if (curr_step >= 5) {
+    if (curr_step == 5) {
         registry.clickables.get(basic_attack_button).disabled = false;
     }
 }
