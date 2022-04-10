@@ -108,9 +108,12 @@ void LevelManager::init_data(int level) {
     this->current_level_state = (LevelState) reload_manager.get_curr_level_state();
     this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 
-    if (this->current_level_state == LevelState::ENEMY_BLINK) {
-        createBlinkTimer(1000);
+    createBlinkTimer(1000);
+
+    if (level > 0 && current_level_state == LevelState::LEVEL_START) {
+        level_start_prompt = createPrompt(vec2(640, 360), vec2(1280, 720), level * 10);
     }
+    
 }
 
 bool compare(Entity a, Entity b) {
@@ -386,6 +389,8 @@ bool LevelManager::step(float elapsed_ms)
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
 
     switch (current_level_state) {
+    case LevelState::LEVEL_START:
+        break;
     case LevelState::ENEMY_BLINK:
         if (registry.blinkTimers.size() > 0) {
             Entity& entity = registry.blinkTimers.entities[0];
@@ -641,6 +646,13 @@ bool LevelManager::is_over() {
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
     switch (current_level_state) {
+    case LevelState::LEVEL_START:
+        if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
+        {
+            removePrompt(level_start_prompt);
+            move_to_state(LevelState::ENEMY_BLINK);
+        }
+        break;
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
         player_controller.on_key(key, scancode, action, mod);
@@ -754,9 +766,13 @@ LevelManager::LevelState LevelManager::current_state()
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
     switch (next_state) {
+    case LevelState::LEVEL_START:
+        std::cout << "moving to level start state" << std::endl;
+        assert(this->current_level_state == LevelState::LEVEL_START); break;
+
     case LevelState::ENEMY_BLINK:
         std::cout << "moving to enemy blink state" << std::endl;
-        assert(this->current_level_state == LevelState::ENEMY_BLINK); break;
+        assert(this->current_level_state == LevelState::LEVEL_START); break;
 
     case LevelState::PREPARE:
         std::cout << "moving to prepare state" << std::endl;

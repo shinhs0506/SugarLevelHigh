@@ -44,7 +44,7 @@ Entity createEnergyBar()
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 270, 20 };
 	motion.gravity_affected = false;
-	motion.depth = DEPTH::UI;
+	motion.depth = DEPTH::UI_TOP;
 
 	Overlay overlay{ pos, pos };
 	registry.overlays.insert(entity, overlay);
@@ -745,14 +745,7 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 
 	switch (step)
 	{
-	case -1: // level won
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::LEVEL_WON,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
-		break;
-	case -10:// level lost
+	case -10:// level lost for levels 1-3
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::LEVEL_LOST,
@@ -806,6 +799,13 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_END,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 10: // start level 1
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_1_START,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
