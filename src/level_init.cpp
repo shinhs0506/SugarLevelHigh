@@ -898,7 +898,7 @@ Entity createUI(vec2 pos, vec2 size) {
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
-	motion.depth = DEPTH::PROMPT;
+	motion.depth = DEPTH::UI;
 
 	Overlay overlay{ pos };
 	registry.overlays.insert(entity, overlay);

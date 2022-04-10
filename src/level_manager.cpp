@@ -108,12 +108,12 @@ void LevelManager::init_data(int level) {
     this->current_level_state = (LevelState) reload_manager.get_curr_level_state();
     this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 
-    createBlinkTimer(1000);
-
-    if (level > 0 && current_level_state == LevelState::LEVEL_START) {
-        level_start_prompt = createPrompt(vec2(640, 360), vec2(1280, 720), level * 10);
+    if (current_level_state == LevelState::LEVEL_START) {
+        if (level > 0) {
+            level_start_prompt = createPrompt(vec2(640, 360), vec2(1280, 720), level * 10);
+        }
+        createBlinkTimer(1000);
     }
-    
 }
 
 bool compare(Entity a, Entity b) {
