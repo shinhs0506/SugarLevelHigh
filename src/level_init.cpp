@@ -194,7 +194,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, bool heal_over_turn)
 {
 	auto entity = Entity();
 
@@ -216,11 +216,15 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, starting_health, damage_over_turn };
+	Health& health = registry.healths.emplace(entity);
+	health.max_health = 100;
+	health.cur_health = starting_health;
+	health.damage_per_turn = damage_over_turn;
+	health.heal_per_turn = heal_over_turn;
+
 	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
-	registry.healths.insert(entity, health);
 	registry.energies.insert(entity, energy);
 	registry.initiatives.insert(entity, initiative);
 	registry.AIs.emplace(entity);
@@ -346,6 +350,7 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable, int level)
 			break;
 		case 2:
 		case 3:
+		case 4:
 			registry.renderRequests.insert(
 				entity,
 				{ TEXTURE_ASSET_ID::TERRAIN2,
@@ -363,6 +368,7 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable, int level)
 		case 1:
 		case 2:
 		case 3:
+		case 4:
 			registry.renderRequests.insert(
 				entity,
 				{ TEXTURE_ASSET_ID::TERRAIN2_BREAKABLE,

@@ -79,7 +79,7 @@ void LevelManager::init_data(int level) {
         gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
-        Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
+        Entity player = createPlayer(player_data.pos, player_data.size, (level == 0) ? 150 : player_data.health,
                 player_data.energy, ginerbread_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gingerbread_buffs);
 
         update_healthbar_len_color(player);
@@ -90,7 +90,7 @@ void LevelManager::init_data(int level) {
         chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
-                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false);
+                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, (level == 4) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
     }
