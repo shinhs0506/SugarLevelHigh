@@ -58,9 +58,9 @@ void LevelManager::init_data(int level) {
     reload_manager.load(level);
 
     CameraData camera_data = reload_manager.get_camera_data();
+    motion.position = camera_data.pos;
     camera.lower_limit = motion.position + camera_data.lower_limit_delta;
     camera.higer_limit = motion.position + camera_data.upper_limit_delta;
-
     BackgroundData background_data = reload_manager.get_background_data();
     background = createBackground(background_data.size, level);
 
