@@ -68,9 +68,17 @@ void LevelManager::init_data(int level) {
         background1 = createBackground(background_data.size, 11);
         background2 = createBackground(background_data.size, 12);
     }
-    else { // TODO: add more backgrounds for later levels
+    else if (level == 2) {
         background1 = createBackground(background_data.size, 21);
         background2 = createBackground(background_data.size, 22);
+    }
+    else if (level == 3) {
+        background1 = createBackground(background_data.size, 31);
+        background2 = createBackground(background_data.size, 32);
+    }
+    else if (level == 4) {
+        background1 = createBackground(background_data.size, 41);
+        background2 = createBackground(background_data.size, 42);
     }
 
     for (auto& player_data: reload_manager.get_player_data()) {
