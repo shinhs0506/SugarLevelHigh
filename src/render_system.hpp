@@ -112,6 +112,14 @@ class RenderSystem {
 	textures_path("level_1_start.png"),
 	textures_path("level_2_start.png"),
 	textures_path("level_3_start.png"),
+	textures_path("level_4_start.png"),
+	textures_path("button_melee.png"),
+	textures_path("button_advanced.png"),
+	textures_path("button_heal.png"),
+	textures_path("level_1_lost.png"),
+	textures_path("level_2_lost.png"),
+	textures_path("level_3_lost.png"),
+	textures_path("level_4_lost.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
