@@ -79,7 +79,7 @@ private:
 	const float CAM_MOVE_SPEED = 200;
 
 	float next_snow_spawn;
-	Entity level_start_prompt;
+	int max_snow = 50;
 
 	// for turn order logic
 	std::vector<Entity> order_vector;

@@ -147,6 +147,8 @@ public:
 	// shader
 	bool initScreenTexture();
 
+	void drawSnow();
+
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
 

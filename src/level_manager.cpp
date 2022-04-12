@@ -379,32 +379,32 @@ bool LevelManager::step(float elapsed_ms)
     }
 
     // render new snowflake
-    next_snow_spawn -= elapsed_ms;
-    if (next_snow_spawn < 0.f && curr_level == 3) {
+    next_snow_spawn -= elapsed_ms; 
+    if (next_snow_spawn < 0.f && curr_level == 3 && registry.snows.size() < max_snow) {
         // Reset timer
         next_snow_spawn = (300 / 2) + uniform_dist(rng) * (300 / 2);
         // Create bug with random initial size
         float random = uniform_dist(rng);
         float speed = 50.0 + 100.0 * random;
         Entity snow;
-        if (random < (float)1 / 6) {
-            snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(6, 6), TEXTURE_ASSET_ID::SNOW1);
-        }
-        else if (random < (float)2 / 6) {
-            snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(10, 10), TEXTURE_ASSET_ID::SNOW2);
-        }
-        else if (random < (float)3 / 6) {
-            snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(14, 14), TEXTURE_ASSET_ID::SNOW3);
-        }
-        else if (random < (float)4 / 6) {
-            snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(22, 22), TEXTURE_ASSET_ID::SNOW4);
-        }
-        else if (random < (float)5 / 6) {
+        //if (random < (float)1 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(6, 6), TEXTURE_ASSET_ID::SNOW1);
+        //}
+        //else if (random < (float)2 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(10, 10), TEXTURE_ASSET_ID::SNOW2);
+        //}
+        //else if (random < (float)3 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(14, 14), TEXTURE_ASSET_ID::SNOW3);
+        //}
+        //else if (random < (float)4 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(22, 22), TEXTURE_ASSET_ID::SNOW4);
+        //}
+        //else if (random < (float)5 / 6) {
             snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(34, 34), TEXTURE_ASSET_ID::SNOW5);
-        }
-        else {
-            snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(34, 34), TEXTURE_ASSET_ID::SNOW6);
-        }
+        //}
+        //else {
+            //snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(34, 34), TEXTURE_ASSET_ID::SNOW6);
+        //}
     }
   
     // remove dead entities (with health component and current health below 0)
