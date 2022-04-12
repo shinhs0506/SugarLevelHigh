@@ -25,7 +25,6 @@ Entity createGenericButton(vec2 pos, vec2 size, bool (*on_click)(), bool disable
 Entity createBackButton(vec2 pos, vec2 size, bool (*on_click)())
 {
 	Entity entity = createGenericButton(vec2(70, 70), vec2(64, 64), on_click); // try to uniform button position
-	registry.motions.get(entity).depth = DEPTH::UI_TOP;
 
 	registry.renderRequests.insert(
 		entity,
@@ -39,7 +38,6 @@ Entity createBackButton(vec2 pos, vec2 size, bool (*on_click)())
 Entity createSaveButton(vec2 pos, vec2 size, bool (*on_click)())
 {
     Entity entity = createGenericButton(vec2(1210, 70), vec2(64, 64), on_click); // try to uniform button position
-	registry.motions.get(entity).depth = DEPTH::UI_TOP;
 
 	registry.renderRequests.insert(
 		entity,

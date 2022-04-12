@@ -732,6 +732,10 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         Motion back_button_motion = registry.motions.get(back_button);
         if (collides(click_motion, back_button_motion)) {
 
+            if (current_level_state == LevelState::LEVEL_START) {
+                return;
+            }
+
             if (curr_level != (int) LevelState::TERMINATION) {
                 save_level_data();
             }
@@ -745,6 +749,9 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         if (curr_level > 0) {
             Motion save_button_motion = registry.motions.get(save_button);
             if (collides(click_motion, save_button_motion)) {
+                if (current_level_state == LevelState::LEVEL_START) {
+                    return;
+                }
                 save_level_data();
                 createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_SAVED);
             }
