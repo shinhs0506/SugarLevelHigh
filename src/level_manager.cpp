@@ -121,22 +121,8 @@ bool compare(Entity a, Entity b) {
 
 void LevelManager::load_level(int level)
 {
-    this->curr_level = level;
-
-    // level specific logic
-    if (level == 0) {
-        this->tutorial_controller.init(this);
-        this->init_data(level);
-        this->player_controller.should_camera_snap = false;
-        this->enemy_controller.should_camera_snap = false;
-    }
-    else {
-        this->init_data(level);
-        this->player_controller.should_camera_snap = true;
-        this->enemy_controller.should_camera_snap = true;
-        // for now since we do not have heal on tutorial level
-        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
-    }
+    this->curr_level = level; 
+    this->init_data(level);
 
     // common to all levels
 
@@ -146,8 +132,12 @@ void LevelManager::load_level(int level)
         save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);
     }
 
+    heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
     basic_attack_button = createPlayerButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
     advanced_attack_button = createPlayerButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
+
+    this->player_controller.heal_button = heal_button;
+    this->player_controller.advanced_attack_button = advanced_attack_button;
 
     ui_layout = createUI(vec2(640, 360), vec2(1280, 720));
     energy_bar = createEnergyBar();
@@ -155,6 +145,24 @@ void LevelManager::load_level(int level)
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
+    // level specific logic
+    if (level == 0) {
+        this->tutorial_controller.init(this);
+        this->tutorial_controller.heal_button = heal_button;
+        this->tutorial_controller.basic_attack_button = basic_attack_button;
+        this->tutorial_controller.advanced_attack_button = advanced_attack_button;
+        this->player_controller.cooldown_logic_enabled = false;
+        this->player_controller.should_camera_snap = false;
+        this->enemy_controller.should_camera_snap = false;
+        registry.clickables.get(heal_button).disabled = true;
+        registry.clickables.get(basic_attack_button).disabled = true;
+        registry.clickables.get(advanced_attack_button).disabled = true;
+    }
+    else {
+        this->player_controller.cooldown_logic_enabled = true;
+        this->player_controller.should_camera_snap = true;
+        this->enemy_controller.should_camera_snap = true;
+    }
 }
 
 void LevelManager::restart_level()
@@ -333,6 +341,9 @@ bool LevelManager::step(float elapsed_ms)
     // manage tutorial state
     if (curr_level == 0) {
         this->tutorial_controller.step(elapsed_ms);
+        if (this->tutorial_controller.curr_step >= 2) {
+            this->player_controller.cooldown_logic_enabled = true;
+        }
     }
 
     for (uint i = 0; i < registry.promptsWithTimer.size(); i++) {
@@ -420,6 +431,14 @@ bool LevelManager::step(float elapsed_ms)
                         prompts.push_back(prompt);
                     }
                 }
+                if (registry.cooldowns.size() > 0) {
+                    for (auto& cooldown : registry.cooldowns.entities) {
+                        removeCooldown(cooldown);
+                    }
+                }
+                registry.clickables.get(basic_attack_button).disabled = true;
+                registry.clickables.get(advanced_attack_button).disabled = true;
+                registry.clickables.get(heal_button).disabled = true;
                 move_to_state(LevelState::TERMINATION);
                 break;
             }
@@ -465,7 +484,8 @@ bool LevelManager::step(float elapsed_ms)
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
         {
-            if (curr_level == 0 && (tutorial_controller.curr_step == 1 || tutorial_controller.curr_step == 2) && !tutorial_controller.should_advance) {
+            if (curr_level == 0 && (tutorial_controller.curr_step == 2 || tutorial_controller.curr_step == 4) 
+                && !tutorial_controller.should_advance) {
                 tutorial_controller.should_advance = true;
             }
             move_to_state(LevelState::EVALUATION);
@@ -478,10 +498,14 @@ bool LevelManager::step(float elapsed_ms)
         break;
         
     case LevelState::ENEMY_TURN:
-        // step player controller
+        // step enemy controller
         enemy_controller.step(elapsed_ms);
         if (enemy_controller.should_end_enemy_turn())
         {
+            if (curr_level == 0 && (tutorial_controller.curr_step == 1 || tutorial_controller.curr_step == 3)
+                && !tutorial_controller.should_advance) {
+                tutorial_controller.should_advance = true;
+            }
             move_to_state(LevelState::EVALUATION);
         }
 
