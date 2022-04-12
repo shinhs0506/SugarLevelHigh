@@ -796,9 +796,6 @@ Entity createCooldown(vec2 pos, int cool_down_left) {
 	Overlay overlay{pos};
 	registry.overlays.insert(entity, overlay);
 
-	Overlay overlay{ pos };
-	registry.overlays.insert(entity, overlay);
-
 	switch (cool_down_left)
 	{
 	case 1:
