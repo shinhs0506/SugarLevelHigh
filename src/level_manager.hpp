@@ -78,6 +78,8 @@ private:
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 200;
 
+	Entity level_start_prompt;
+
 	float next_snow_spawn;
 	int max_snow = 50;
 
