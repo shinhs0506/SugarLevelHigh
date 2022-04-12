@@ -102,6 +102,12 @@ class RenderSystem {
 		textures_path("prompt_heal_ability.png"),
 		textures_path("prompt_ability_cooldown.png"),
 		textures_path("prompt_no_energy.png"),
+		textures_path("snow1.png"),
+		textures_path("snow2.png"),
+		textures_path("snow3.png"),
+		textures_path("snow4.png"),
+		textures_path("snow5.png"),
+		textures_path("snow6.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;

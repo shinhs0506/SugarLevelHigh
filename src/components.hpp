@@ -30,6 +30,11 @@ struct HealthBar
 
 };
 
+struct Snow
+{
+
+};
+
 // indicates the curr order
 struct OrderIndicator
 {
@@ -409,7 +414,13 @@ enum class TEXTURE_ASSET_ID {
 	PROMPT_HEAL_ABILITY = PROMPT_ADVANCED_ATTACK + 1,
 	PROMPT_ABILITY_COOLDOWN = PROMPT_HEAL_ABILITY + 1,
 	PROMPT_NO_ENERGY = PROMPT_ABILITY_COOLDOWN + 1,
-	TEXTURE_COUNT = PROMPT_NO_ENERGY + 1,
+	SNOW1 = PROMPT_NO_ENERGY + 1,
+	SNOW2 = SNOW1 + 1,
+	SNOW3 = SNOW2 + 1,
+	SNOW4 = SNOW3 + 1,
+	SNOW5 = SNOW4 + 1,
+	SNOW6 = SNOW5 + 1,
+	TEXTURE_COUNT = SNOW6 + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

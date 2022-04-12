@@ -7,6 +7,9 @@
 // a red line for debugging purposes
 Entity createDebugLine(vec2 position, vec2 size);
 
+Entity createSnow(vec2 pos, vec2 velocity, vec2 size, TEXTURE_ASSET_ID texture);
+void removeSnow(Entity snow);
+
 Entity createEnergyBar();
 void resetEnergyBar();
 void updateEnergyBar(Energy energy);

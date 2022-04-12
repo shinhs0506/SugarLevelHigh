@@ -29,6 +29,37 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	return entity;
 }
 
+Entity createSnow(vec2 pos, vec2 velocity, vec2 size, TEXTURE_ASSET_ID texture)
+{
+	auto entity = Entity();
+
+	registry.snows.emplace(entity);
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { pos };
+	motion.prev_position = { pos };
+	motion.angle = 0.f;
+	motion.goal_velocity = { velocity };
+	motion.scale = { size };
+	motion.gravity_affected = false;
+	motion.depth = DEPTH::BACKGROUND;
+
+	registry.renderRequests.insert(
+		entity,
+		{ texture,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+void removeSnow(Entity snow) {
+	registry.motions.remove(snow);
+	registry.renderRequests.remove(snow);
+	registry.snows.remove(snow);
+}
+
 Entity createEnergyBar()
 {
 	auto entity = Entity();
