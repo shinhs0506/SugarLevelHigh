@@ -19,6 +19,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
+		LEVEL_START, // show level info
         ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything

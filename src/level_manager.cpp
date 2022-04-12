@@ -87,7 +87,7 @@ void LevelManager::init_data(int level) {
         gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
-        Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
+        Entity player = createPlayer(player_data.pos, player_data.size, (level == 0) ? 150 : player_data.health,
                 player_data.energy, ginerbread_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gingerbread_buffs);
 
         update_healthbar_len_color(player);
@@ -98,7 +98,7 @@ void LevelManager::init_data(int level) {
         chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
-                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false);
+                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, (level == 4) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
     }
@@ -116,7 +116,10 @@ void LevelManager::init_data(int level) {
     this->current_level_state = (LevelState) reload_manager.get_curr_level_state();
     this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 
-    if (this->current_level_state == LevelState::ENEMY_BLINK) {
+    if (current_level_state == LevelState::LEVEL_START) {
+        if (level > 0) {
+            level_start_prompt = createPrompt(vec2(640, 360), vec2(1280, 720), level * 10);
+        }
         createBlinkTimer(1000);
     }
 }
@@ -129,22 +132,8 @@ bool compare(Entity a, Entity b) {
 
 void LevelManager::load_level(int level)
 {
-    this->curr_level = level;
-
-    // level specific logic
-    if (level == 0) {
-        this->tutorial_controller.init(this);
-        this->init_data(level);
-        this->player_controller.should_camera_snap = false;
-        this->enemy_controller.should_camera_snap = false;
-    }
-    else {
-        this->init_data(level);
-        this->player_controller.should_camera_snap = true;
-        this->enemy_controller.should_camera_snap = true;
-        // for now since we do not have heal on tutorial level
-        heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
-    }
+    this->curr_level = level; 
+    this->init_data(level);
 
     // common to all levels
 
@@ -154,8 +143,12 @@ void LevelManager::load_level(int level)
         save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);
     }
 
+    heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
     basic_attack_button = createPlayerButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
     advanced_attack_button = createPlayerButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
+
+    this->player_controller.heal_button = heal_button;
+    this->player_controller.advanced_attack_button = advanced_attack_button;
 
     ui_layout = createUI(vec2(640, 360), vec2(1280, 720));
     energy_bar = createEnergyBar();
@@ -163,6 +156,24 @@ void LevelManager::load_level(int level)
 
     sort(order_vector.begin(), order_vector.end(), compare);
 
+    // level specific logic
+    if (level == 0) {
+        this->tutorial_controller.init(this);
+        this->tutorial_controller.heal_button = heal_button;
+        this->tutorial_controller.basic_attack_button = basic_attack_button;
+        this->tutorial_controller.advanced_attack_button = advanced_attack_button;
+        this->player_controller.cooldown_logic_enabled = false;
+        this->player_controller.should_camera_snap = false;
+        this->enemy_controller.should_camera_snap = false;
+        registry.clickables.get(heal_button).disabled = true;
+        registry.clickables.get(basic_attack_button).disabled = true;
+        registry.clickables.get(advanced_attack_button).disabled = true;
+    }
+    else {
+        this->player_controller.cooldown_logic_enabled = true;
+        this->player_controller.should_camera_snap = true;
+        this->enemy_controller.should_camera_snap = true;
+    }
 }
 
 void LevelManager::restart_level()
@@ -345,6 +356,9 @@ bool LevelManager::step(float elapsed_ms)
     // manage tutorial state
     if (curr_level == 0) {
         this->tutorial_controller.step(elapsed_ms);
+        if (this->tutorial_controller.curr_step >= 2) {
+            this->player_controller.cooldown_logic_enabled = true;
+        }
     }
 
     for (uint i = 0; i < registry.promptsWithTimer.size(); i++) {
@@ -423,6 +437,8 @@ bool LevelManager::step(float elapsed_ms)
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
 
     switch (current_level_state) {
+    case LevelState::LEVEL_START:
+        break;
     case LevelState::ENEMY_BLINK:
         if (registry.blinkTimers.size() > 0) {
             Entity& entity = registry.blinkTimers.entities[0];
@@ -453,10 +469,15 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
-                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
+                        // TODO: unique prompt per level
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), 11);
                         prompts.push_back(prompt);
                     }
-                    this->levels_completed[curr_level] = true;
+                    
+                    
+                    if (curr_level != 4) {
+                        this->levels_completed[curr_level] = true;
+                    }
                 }
                 else if (only_enemy_left) {
                     if (curr_level == 0) {
@@ -464,10 +485,19 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
+                        // TODO: unique prompt per level
                         Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
                         prompts.push_back(prompt);
                     }
                 }
+                if (registry.cooldowns.size() > 0) {
+                    for (auto& cooldown : registry.cooldowns.entities) {
+                        removeCooldown(cooldown);
+                    }
+                }
+                registry.clickables.get(basic_attack_button).disabled = true;
+                registry.clickables.get(advanced_attack_button).disabled = true;
+                registry.clickables.get(heal_button).disabled = true;
                 move_to_state(LevelState::TERMINATION);
                 break;
             }
@@ -513,7 +543,8 @@ bool LevelManager::step(float elapsed_ms)
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
         {
-            if (curr_level == 0 && (tutorial_controller.curr_step == 1 || tutorial_controller.curr_step == 2) && !tutorial_controller.should_advance) {
+            if (curr_level == 0 && (tutorial_controller.curr_step == 2 || tutorial_controller.curr_step == 4) 
+                && !tutorial_controller.should_advance) {
                 tutorial_controller.should_advance = true;
             }
             move_to_state(LevelState::EVALUATION);
@@ -526,10 +557,14 @@ bool LevelManager::step(float elapsed_ms)
         break;
         
     case LevelState::ENEMY_TURN:
-        // step player controller
+        // step enemy controller
         enemy_controller.step(elapsed_ms);
         if (enemy_controller.should_end_enemy_turn())
         {
+            if (curr_level == 0 && (tutorial_controller.curr_step == 1 || tutorial_controller.curr_step == 3)
+                && !tutorial_controller.should_advance) {
+                tutorial_controller.should_advance = true;
+            }
             move_to_state(LevelState::EVALUATION);
         }
 
@@ -665,6 +700,13 @@ bool LevelManager::is_over() {
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
     switch (current_level_state) {
+    case LevelState::LEVEL_START:
+        if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
+        {
+            removePrompt(level_start_prompt);
+            move_to_state(LevelState::ENEMY_BLINK);
+        }
+        break;
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
         player_controller.on_key(key, scancode, action, mod);
@@ -742,6 +784,10 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         Motion back_button_motion = registry.motions.get(back_button);
         if (collides(click_motion, back_button_motion)) {
 
+            if (current_level_state == LevelState::LEVEL_START) {
+                return;
+            }
+
             if (curr_level != (int) LevelState::TERMINATION) {
                 save_level_data();
             }
@@ -755,6 +801,9 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         if (curr_level > 0) {
             Motion save_button_motion = registry.motions.get(save_button);
             if (collides(click_motion, save_button_motion)) {
+                if (current_level_state == LevelState::LEVEL_START) {
+                    return;
+                }
                 save_level_data();
                 createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_SAVED);
             }
@@ -778,9 +827,13 @@ LevelManager::LevelState LevelManager::current_state()
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
     switch (next_state) {
+    case LevelState::LEVEL_START:
+        std::cout << "moving to level start state" << std::endl;
+        assert(this->current_level_state == LevelState::LEVEL_START); break;
+
     case LevelState::ENEMY_BLINK:
         std::cout << "moving to enemy blink state" << std::endl;
-        assert(this->current_level_state == LevelState::ENEMY_BLINK); break;
+        assert(this->current_level_state == LevelState::LEVEL_START); break;
 
     case LevelState::PREPARE:
         std::cout << "moving to prepare state" << std::endl;

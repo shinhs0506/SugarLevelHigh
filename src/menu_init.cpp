@@ -107,7 +107,6 @@ Entity createLevel4Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled
 	return entity;
 }
 
-
 Entity createImage(vec2 pos, vec2 size, TEXTURE_ASSET_ID texture_ID)
 {
     Entity entity = Entity();

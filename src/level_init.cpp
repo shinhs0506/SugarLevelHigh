@@ -75,7 +75,7 @@ Entity createEnergyBar()
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 270, 20 };
 	motion.gravity_affected = false;
-	motion.depth = DEPTH::UI;
+	motion.depth = DEPTH::UI_TOP;
 
 	Overlay overlay{ pos, pos };
 	registry.overlays.insert(entity, overlay);
@@ -225,7 +225,7 @@ void removeHealthBar(Entity healthBar) {
 
 
 Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_energy, 
-        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn)
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, bool heal_over_turn)
 {
 	auto entity = Entity();
 
@@ -247,11 +247,15 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	registry.enemies.insert(entity, enemy);
 
 	// stats
-	Health health{ 100, starting_health, damage_over_turn };
+	Health& health = registry.healths.emplace(entity);
+	health.max_health = 100;
+	health.cur_health = starting_health;
+	health.damage_per_turn = damage_over_turn;
+	health.heal_per_turn = heal_over_turn;
+
 	Energy energy{ 150, starting_energy, starting_energy};
 	Initiative initiative{ 80 };
 
-	registry.healths.insert(entity, health);
 	registry.energies.insert(entity, energy);
 	registry.initiatives.insert(entity, initiative);
 	registry.AIs.emplace(entity);
@@ -524,9 +528,9 @@ Entity createPromptWithTimer(float ms, TEXTURE_ASSET_ID texture_ID) {
 	Motion& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0, 0 };
-	motion.position = { 650, 50 };
+	motion.position = { 640, 360 };
 	motion.prev_position = motion.position;
-	motion.scale = {500, 50};
+	motion.scale = { 1280, 720 };
     motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ motion.position };
@@ -552,9 +556,9 @@ void removePromptWithTimer(Entity entity) {
     registry.renderRequests.remove(entity);
 }
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled)
 {
-	auto entity = createGenericButton(pos, size, on_click);
+	auto entity = createGenericButton(pos, size, on_click, disabled);
 
 	registry.renderRequests.insert(
 		entity,
@@ -573,9 +577,9 @@ void removeButton(Entity entity)
 	registry.renderRequests.remove(entity);
 }
 
-Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled)
 {
-	auto entity = createButton(pos, size, on_click, texture_ID);
+	auto entity = createButton(pos, size, on_click, texture_ID, disabled);
 
     registry.playerButtons.emplace(entity);
 
@@ -588,9 +592,9 @@ void removePlayerButton(Entity entity)
     removeButton(entity);
 }
 
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID)
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled)
 {
-    auto entity = createPlayerButton(pos, size, on_click, texture_ID);
+    auto entity = createPlayerButton(pos, size, on_click, texture_ID, disabled);
 
     registry.abilityButtons.emplace(entity);
 
@@ -789,8 +793,7 @@ Entity createCooldown(vec2 pos, int cool_down_left) {
 
 	CoolDown coolDown{ };
 	registry.cooldowns.insert(entity, coolDown);
-
-	Overlay overlay{ pos };
+	Overlay overlay{pos};
 	registry.overlays.insert(entity, overlay);
 
 	switch (cool_down_left)
@@ -843,14 +846,7 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 
 	switch (step)
 	{
-	case -1: // level won
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::LEVEL_WON,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
-		break;
-	case -10:// level lost
+	case -10:// level lost for levels 1-3
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::LEVEL_LOST,
@@ -879,23 +875,59 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
 	case 2:
+	case 3: 
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_ATTACK_ADVANCED,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
-	case 3:
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::TUTORIAL_COOLDOWN,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
-		break;
 	case 4:
 		registry.renderRequests.insert(
 			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_HEAL,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 5:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::TUTORIAL_DEFEAT,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 6:
+		registry.renderRequests.insert(
+			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_END,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 10:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_1_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_WON, // temp
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 20:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_2_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 30: 
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_3_START,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
@@ -988,7 +1020,7 @@ Entity createUI(vec2 pos, vec2 size) {
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
-	motion.depth = DEPTH::PROMPT;
+	motion.depth = DEPTH::UI;
 
 	Overlay overlay{ pos };
 	registry.overlays.insert(entity, overlay);
