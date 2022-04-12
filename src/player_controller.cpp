@@ -58,31 +58,22 @@ void PlayerController::start_turn(Entity player, int curr_level)
 		}
 	}
 
-	Entity advanced_attack_clickable;
-	if (curr_level == 0) {
-		advanced_attack_clickable = registry.clickables.entities[2];
-	}
-	else {
-		advanced_attack_clickable = registry.clickables.entities[3];
-		Entity healing_clickable = registry.clickables.entities[0];
-
-		if (registry.abilityButtons.size() > 0) {
-			if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
-				registry.clickables.get(healing_clickable).disabled = true;
-				createCooldown(vec2(100, 450), registry.buffArsenals.get(player).heal.current_cooldown);
-			}
-			else {
-				registry.clickables.get(healing_clickable).disabled = false;
-			}
+	if (registry.abilityButtons.size() > 0) {
+		if (registry.buffArsenals.get(player).heal.current_cooldown != 0) {
+			registry.clickables.get(heal_button).disabled = true;
+			createCooldown(vec2(100, 450), registry.buffArsenals.get(player).heal.current_cooldown);
+		}
+		else if (cooldown_logic_enabled) {
+			registry.clickables.get(heal_button).disabled = false;
 		}
 	}
 
 	if (registry.attackArsenals.get(player).advanced_attack.current_cooldown != 0) {
-		registry.clickables.get(advanced_attack_clickable).disabled = true;
+		registry.clickables.get(advanced_attack_button).disabled = true;
 		createCooldown(vec2(100, 375), registry.attackArsenals.get(player).advanced_attack.current_cooldown);
 	}
-	else {
-		registry.clickables.get(advanced_attack_clickable).disabled = false;
+	else if (cooldown_logic_enabled) {
+		registry.clickables.get(advanced_attack_button).disabled = false;
 	}
 }
 
@@ -273,6 +264,11 @@ void PlayerController::on_mouse_button(int button, int action, int mod, vec2 cur
 
 				Entity entity = registry.playerButtons.entities[i];
 				Motion motion = registry.motions.get(entity);
+
+				// only if the button isn't disabled
+				if (registry.clickables.get(entity).disabled) {
+					continue;
+				}
 
 				if (collides(click_motion, motion)) {
 

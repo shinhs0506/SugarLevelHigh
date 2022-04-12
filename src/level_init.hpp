@@ -24,7 +24,7 @@ void updateOrderIndicator(Entity entity);
 void removeOrderIndicator();
 
 Entity createEnemy(vec2 pos, vec2 size, float curr_health, float curr_energy, 
-        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn);
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, bool heal_over_turn);
 void removeEnemy(Entity entity);
 
 Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,
@@ -47,11 +47,11 @@ void removeBlinkTimer(Entity entity);
 Entity createPromptWithTimer(float timer, TEXTURE_ASSET_ID texture_ID);
 void removePromptWithTimer(Entity entity);
 
-Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+Entity createButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled = false);
 void removeButton(Entity entity);
-Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+Entity createPlayerButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled = false);
 void removePlayerButton(Entity entity);
-Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID);
+Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSET_ID texture_ID, bool disabled = false);
 void removeAbilityButton(Entity entity);
 
 // this does not create a new entity but only attach a hit effect on the existing object
@@ -64,7 +64,7 @@ void removeBackground(Entity entity);
 Entity createLadder(vec2 pos, vec2 size);
 void removeLadder(Entity entity);
 
-Entity createPrompt(vec2 pos, vec2 size, int step);
+Entity createPrompt(vec2 pos, vec2 size, int step = 0);
 void removePrompt(Entity entity);
 
 Entity createStorySlide(vec2 pos, vec2 size, int slide);

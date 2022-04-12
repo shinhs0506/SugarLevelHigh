@@ -19,6 +19,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
+		LEVEL_START, // show level info
         ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
@@ -78,6 +79,7 @@ private:
 	const float CAM_MOVE_SPEED = 200;
 
 	float next_snow_spawn;
+	Entity level_start_prompt;
 
 	// for turn order logic
 	std::vector<Entity> order_vector;

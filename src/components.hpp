@@ -23,6 +23,7 @@ struct Health
 	float cur_health = 100.f;
 	bool damage_per_turn = false;
 	bool dead = false; // set this to true to remove the entity to all registries
+	bool heal_per_turn = false;
 };
 
 struct HealthBar
@@ -157,9 +158,10 @@ struct Terrain
 // proximity to camera
 enum DEPTH {
 	CAMERA = -1,
-	COOLDOWN = 0,
-	UI = 1,
-	PROMPT = 2,
+	UI_TOP = 0,
+	PROMPT = 1,
+	COOLDOWN = 2,
+	UI = 3,
 	ATTACK = 5,
 	ACTIVE = 10,
 	CHARACTER = 20,
@@ -374,8 +376,9 @@ enum class TEXTURE_ASSET_ID {
 	TUTORIAL_MOVE = LEVEL_4_BUTTON + 1,
 	TUTORIAL_ATTACK_BASIC = TUTORIAL_MOVE + 1,
 	TUTORIAL_ATTACK_ADVANCED = TUTORIAL_ATTACK_BASIC + 1,
-	TUTORIAL_COOLDOWN = TUTORIAL_ATTACK_ADVANCED + 1,
-	TUTORIAL_END = TUTORIAL_COOLDOWN + 1,
+	TUTORIAL_HEAL = TUTORIAL_ATTACK_ADVANCED + 1,
+	TUTORIAL_DEFEAT = TUTORIAL_HEAL + 1,
+	TUTORIAL_END = TUTORIAL_DEFEAT + 1,
 	MELEE_ATTACK = TUTORIAL_END + 1,
 	BEAR_ADVANCED_ATTACK = MELEE_ATTACK + 1,
 	CHOCOLATE_ADVANCED_ATTACK = BEAR_ADVANCED_ATTACK + 1,
@@ -420,7 +423,10 @@ enum class TEXTURE_ASSET_ID {
 	SNOW4 = SNOW3 + 1,
 	SNOW5 = SNOW4 + 1,
 	SNOW6 = SNOW5 + 1,
-	TEXTURE_COUNT = SNOW6 + 1,
+	LEVEL_1_START = SNOW6 + 1,
+	LEVEL_2_START = LEVEL_1_START + 1,
+	LEVEL_3_START = LEVEL_2_START + 1,
+	TEXTURE_COUNT = LEVEL_3_START + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

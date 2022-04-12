@@ -62,7 +62,8 @@ class RenderSystem {
 		textures_path("tutorial_move.png"),
 		textures_path("tutorial_attack_basic.png"),
 		textures_path("tutorial_attack_advanced.png"),
-		textures_path("tutorial_cooldown.png"),
+		textures_path("tutorial_heal.png"),
+		textures_path("tutorial_defeat.png"),
 		textures_path("tutorial_complete.png"),
 		textures_path("melee_slash.png"), // Credit for this image goes to Matheus Carvalho
 		textures_path("bear_advanced_attack.png"),
@@ -108,6 +109,9 @@ class RenderSystem {
 		textures_path("snow4.png"),
 		textures_path("snow5.png"),
 		textures_path("snow6.png"),
+	textures_path("level_1_start.png"),
+	textures_path("level_2_start.png"),
+	textures_path("level_3_start.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
