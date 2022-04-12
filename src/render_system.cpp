@@ -374,6 +374,11 @@ void RenderSystem::draw()
 
 	
 	// Draw all textured meshes that have a position and size component
+
+	for (Entity entity : registry.backgrounds.entities) {
+		drawTexturedMesh(entity, projection_2D);
+	}
+	drawSnow();
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		if (!registry.motions.has(entity))
@@ -381,11 +386,14 @@ void RenderSystem::draw()
 		if (registry.snows.has(entity)) {
 			continue;
 		}
+		if (registry.backgrounds.has(entity)) {
+			continue;
+		}
 		// Note, its not very efficient to access elements indirectly via the entity
 		// albeit iterating through all Sprites in sequence. A good point to optimize
 		drawTexturedMesh(entity, projection_2D);
 	}
-	drawSnow();
+	
 	
 	// Truely render to the screen
 	drawToScreen();
