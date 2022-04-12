@@ -13,16 +13,18 @@ private:
 
     GLFWwindow* window;
 
-    Entity back_button;
+    Entity background;
 
     int slide = 0;
 
     // buttons
+    Entity back_button;
     Entity next_button;
     Entity tutorial_button;
     Entity level_1_button;
     Entity level_2_button;
     Entity level_3_button;
+    Entity level_4_button;
 
     bool is_back_button_clicked;
 

@@ -94,6 +94,18 @@ Entity createLevel3Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled
 	return entity;
 }
 
+Entity createLevel4Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled)
+{
+	Entity entity = createGenericButton(pos, size, on_click, disabled);
+
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::LEVEL_4_BUTTON,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
 
 Entity createImage(vec2 pos, vec2 size, TEXTURE_ASSET_ID texture_ID)
 {

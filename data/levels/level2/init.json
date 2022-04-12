@@ -20,76 +20,62 @@
         }
     },
     "players": [
-        {
-            "pos": {
-                "x": -200,
-                "y": 600
-            },
-            "size": {
-                "w": 64,
-                "h": 100
-            },
-            "health": 100,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
+      {
+        "pos": {
+            "x": -200,
+            "y": 600
         },
-        {
-            "pos": {
-                "x": 0,
-                "y": 200
-            },
-            "size": {
-                "w": 64,
-                "h": 100
-            },
-            "health": 100,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
+        "size": {
+            "w": 64,
+            "h": 100
         },
-        {
-            "pos": {
-                "x": 500,
-                "y": 600
-            },
-            "size": {
-                "w": 64,
-                "h": 100
-            },
-            "health": 100,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
+        "health": 100,
+        "energy": 150,
+        "heal_cooldown": 0,
+        "advanced_attack_cooldown": 0
+      },
+      {
+        "pos": {
+            "x": 0,
+            "y": 200
         },
-        {
-            "pos": {
-                "x": 1000,
-                "y": 200
-            },
-            "size": {
-                "w": 64,
-                "h": 100
-            },
-            "health": 100,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
+        "size": {
+            "w": 64,
+            "h": 100
         },
-        {
-            "pos": {
-                "x": 1400,
-                "y": 200
-            },
-            "size": {
-                "w": 64,
-                "h": 100
-            },
-            "health": 100,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
-        }
+        "health": 100,
+        "energy": 150,
+        "heal_cooldown": 0,
+        "advanced_attack_cooldown": 0
+      },
+      {
+        "pos": {
+            "x": 500,
+            "y": 600
+        },
+        "size": {
+            "w": 64,
+            "h": 100
+        },
+        "health": 100,
+        "energy": 150,
+        "heal_cooldown": 0,
+        "advanced_attack_cooldown": 0
+      },
+      {
+        "pos": {
+            "x": 1000,
+            "y": 200
+        },
+        "size": {
+            "w": 64,
+            "h": 100
+        },
+        "health": 100,
+        "energy": 150,
+        "heal_cooldown": 0,
+        "advanced_attack_cooldown": 0
+      }
     ],
     "enemies": [
         {

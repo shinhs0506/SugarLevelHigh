@@ -7,6 +7,9 @@
 // a red line for debugging purposes
 Entity createDebugLine(vec2 position, vec2 size);
 
+Entity createSnow(vec2 pos, vec2 velocity, vec2 size, TEXTURE_ASSET_ID texture);
+void removeSnow(Entity snow);
+
 Entity createEnergyBar();
 void resetEnergyBar();
 void updateEnergyBar(Energy energy);
@@ -21,9 +24,11 @@ void updateOrderIndicator(Entity entity);
 void removeOrderIndicator();
 
 Entity createEnemy(vec2 pos, vec2 size, float curr_health, float curr_energy, 
-        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn);
+        AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, bool heal_over_turn);
+
 Entity createEnemyHealer(vec2 pos, vec2 size, float curr_health, float curr_energy,
-    AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, BuffArsenal buff_arsenal);
+    AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, bool heal_over_turn, BuffArsenal buff_arsenal);
+
 void removeEnemy(Entity entity);
 
 Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,
@@ -63,7 +68,7 @@ void removeBackground(Entity entity);
 Entity createLadder(vec2 pos, vec2 size);
 void removeLadder(Entity entity);
 
-Entity createPrompt(vec2 pos, vec2 size, int step);
+Entity createPrompt(vec2 pos, vec2 size, int step = 0);
 void removePrompt(Entity entity);
 
 Entity createStorySlide(vec2 pos, vec2 size, int slide);

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <random>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -18,6 +19,7 @@ class LevelManager
 
 public:
 	enum class LevelState {
+		LEVEL_START, // show level info
         ENEMY_BLINK,
 		PREPARE, // advance turn order  
 		PLAYER_TURN, // player doesn't press anything
@@ -76,6 +78,9 @@ private:
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 200;
 
+	float next_snow_spawn;
+	int max_snow = 50;
+
 	// for turn order logic
 	std::vector<Entity> order_vector;
 	int curr_order_ind;
@@ -133,4 +138,6 @@ private:
 
 	Mix_Chunk* hurt_sound;
 
+	std::default_random_engine rng;
+	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 };

@@ -36,13 +36,24 @@ void EnemyController::start_turn(Entity enemy)
 	this->enemy = enemy;
 	has_camera_snapped = false;
 
-	Health& player_health = registry.healths.get(enemy);
-	if (player_health.damage_per_turn == true) {
-		player_health.cur_health -= 5;
+	// For level 3 damage over turn 
+	Health& enemy_health = registry.healths.get(enemy);
+	if (enemy_health.damage_per_turn == true) {
+		enemy_health.cur_health -= 10;
 		LevelManager::update_healthbar_len_color(enemy);
 		createHitEffect(enemy, 200);
-		if (player_health.cur_health < 0) {
-			player_health.cur_health = 0;
+		if (enemy_health.cur_health < 0) {
+			enemy_health.cur_health = 0;
+		}
+	}
+
+	// For level 4 enemy heal over turn 
+	if (enemy_health.heal_per_turn == true) {
+		enemy_health.cur_health += 10;
+		LevelManager::update_healthbar_len_color(enemy);
+		Mix_PlayChannel(-1, heal_ability_sound, 0);
+		if (enemy_health.cur_health > 100) {
+			enemy_health.cur_health = 100;
 		}
 	}
 

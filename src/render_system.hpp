@@ -33,6 +33,9 @@ class RenderSystem {
 		textures_path("terrain1.png"),
 		textures_path("terrain2.png"),
 		textures_path("terrain2_breakable.png"),
+		textures_path("terrain3.png"),
+		textures_path("terrain3_breakable.png"),
+		textures_path("terrain4.png"),
 		textures_path("button_start.png"),
 		textures_path("button_help.png"),
 		textures_path("button_exit.png"),
@@ -46,6 +49,7 @@ class RenderSystem {
 		textures_path("config5.png"),
 		textures_path("config6.png"),
 		textures_path("background_main.png"),
+		textures_path("background_blank.png"),
 		textures_path("title.png"),
 		textures_path("basic_help.png"),
 		textures_path("advanced_attack_preview.png"),
@@ -54,6 +58,7 @@ class RenderSystem {
 		textures_path("button_level_1.png"),
 		textures_path("button_level_2.png"),
 		textures_path("button_level_3.png"),
+		textures_path("button_level_4.png"),
 		textures_path("tutorial_move.png"),
 		textures_path("tutorial_attack_basic.png"),
 		textures_path("tutorial_attack_advanced.png"),
@@ -69,6 +74,12 @@ class RenderSystem {
 		textures_path("background2.png"),
 		textures_path("background21.png"),
 		textures_path("background22.png"),
+		textures_path("background3.png"),
+		textures_path("background31.png"),
+		textures_path("background32.png"),
+		textures_path("background4.png"),
+		textures_path("background41.png"),
+		textures_path("background42.png"),
 		textures_path("ladder.png"), // https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art
 		textures_path("health_potion.png"), // Credit for this images goes to "magdum" found at https://opengameart.org/content/basic-potion-set
 		textures_path("level_won.png"),
@@ -86,12 +97,21 @@ class RenderSystem {
 		textures_path("cooldown1.png"),
 		textures_path("cooldown2.png"),
 		textures_path("cooldown3.png"),
-    textures_path("prompt_saved.png"),
-    textures_path("prompt_basic_attack.png"),
-    textures_path("prompt_advanced_attack.png"),
-    textures_path("prompt_heal_ability.png"),
-    textures_path("prompt_ability_cooldown.png"),
-    textures_path("prompt_no_energy.png"),
+		textures_path("prompt_saved.png"),
+		textures_path("prompt_basic_attack.png"),
+		textures_path("prompt_advanced_attack.png"),
+		textures_path("prompt_heal_ability.png"),
+		textures_path("prompt_ability_cooldown.png"),
+		textures_path("prompt_no_energy.png"),
+		textures_path("snow1.png"),
+		textures_path("snow2.png"),
+		textures_path("snow3.png"),
+		textures_path("snow4.png"),
+		textures_path("snow5.png"),
+		textures_path("snow6.png"),
+	textures_path("level_1_start.png"),
+	textures_path("level_2_start.png"),
+	textures_path("level_3_start.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -126,6 +146,8 @@ public:
 	// The draw loop first renders to this texture, then it is used for the wind
 	// shader
 	bool initScreenTexture();
+
+	void drawSnow();
 
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();

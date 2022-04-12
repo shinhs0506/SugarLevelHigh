@@ -68,9 +68,17 @@ void LevelManager::init_data(int level) {
         background1 = createBackground(background_data.size, 11);
         background2 = createBackground(background_data.size, 12);
     }
-    else { // TODO: add more backgrounds for later levels
+    else if (level == 2) {
         background1 = createBackground(background_data.size, 21);
         background2 = createBackground(background_data.size, 22);
+    }
+    else if (level == 3) {
+        background1 = createBackground(background_data.size, 31);
+        background2 = createBackground(background_data.size, 32);
+    }
+    else if (level == 4) {
+        background1 = createBackground(background_data.size, 41);
+        background2 = createBackground(background_data.size, 42);
     }
 
     for (auto& player_data: reload_manager.get_player_data()) {
@@ -79,7 +87,7 @@ void LevelManager::init_data(int level) {
         gingerbread_heal_buff.current_cooldown = player_data.heal_cooldown;
         AttackArsenal ginerbread_arsenal = { gingerbread_basic_attack, gingerbread_advanced_attack};
         BuffArsenal gingerbread_buffs = { gingerbread_heal_buff };
-        Entity player = createPlayer(player_data.pos, player_data.size, player_data.health, 
+        Entity player = createPlayer(player_data.pos, player_data.size, (level == 0) ? 150 : player_data.health,
                 player_data.energy, ginerbread_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gingerbread_buffs);
 
         update_healthbar_len_color(player);
@@ -91,7 +99,7 @@ void LevelManager::init_data(int level) {
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         BuffArsenal gumball_buffs = {};
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
-                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false);
+                enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, (level == 4) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
     }
@@ -101,7 +109,8 @@ void LevelManager::init_data(int level) {
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
         BuffArsenal gumball_buffs = { enemy_heal_buff };
         Entity enemy_healer = createEnemyHealer(enemy_healer_data.pos, enemy_healer_data.size, enemy_healer_data.health,
-            enemy_healer_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gumball_buffs);
+            enemy_healer_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, 
+            (level == 4) ? true : false, gumball_buffs);
         update_healthbar_len_color(enemy_healer);
         order_vector.push_back(enemy_healer);
     }
@@ -119,7 +128,10 @@ void LevelManager::init_data(int level) {
     this->current_level_state = (LevelState) reload_manager.get_curr_level_state();
     this->next_level_state = (LevelState) reload_manager.get_curr_level_state();
 
-    if (this->current_level_state == LevelState::ENEMY_BLINK) {
+    if (current_level_state == LevelState::LEVEL_START) {
+        if (level > 0) {
+            level_start_prompt = createPrompt(vec2(640, 360), vec2(1280, 720), level * 10);
+        }
         createBlinkTimer(1000);
     }
 }
@@ -219,6 +231,10 @@ void LevelManager::abandon_level()
   
     for (auto& prompts : registry.promptsWithTimer.entities) {
         removePromptWithTimer(prompts);
+    }
+
+    for (auto& snow : registry.snows.entities) {
+        removeSnow(snow);
     }
 
     removeButton(back_button);
@@ -366,6 +382,42 @@ bool LevelManager::step(float elapsed_ms)
             removePromptWithTimer(entity);
         }
     }
+
+    // remove snows out of the boundary
+    for (int i = 0; i < registry.snows.components.size(); i++) {
+        if (registry.motions.get(registry.snows.entities[i]).position.y > 1240) {
+            removeSnow(registry.snows.entities[i]);
+        }
+    }
+
+    // render new snowflake
+    next_snow_spawn -= elapsed_ms; 
+    if (next_snow_spawn < 0.f && curr_level == 3 && registry.snows.size() < max_snow) {
+        // Reset timer
+        next_snow_spawn = (300 / 2) + uniform_dist(rng) * (300 / 2);
+        // Create bug with random initial size
+        float random = uniform_dist(rng);
+        float speed = 50.0 + 100.0 * random;
+        Entity snow;
+        //if (random < (float)1 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(6, 6), TEXTURE_ASSET_ID::SNOW1);
+        //}
+        //else if (random < (float)2 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(10, 10), TEXTURE_ASSET_ID::SNOW2);
+        //}
+        //else if (random < (float)3 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(14, 14), TEXTURE_ASSET_ID::SNOW3);
+        //}
+        //else if (random < (float)4 / 6) {
+        //    snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(22, 22), TEXTURE_ASSET_ID::SNOW4);
+        //}
+        //else if (random < (float)5 / 6) {
+            snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(34, 34), TEXTURE_ASSET_ID::SNOW5);
+        //}
+        //else {
+            //snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(34, 34), TEXTURE_ASSET_ID::SNOW6);
+        //}
+    }
   
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
@@ -397,6 +449,8 @@ bool LevelManager::step(float elapsed_ms)
     bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
 
     switch (current_level_state) {
+    case LevelState::LEVEL_START:
+        break;
     case LevelState::ENEMY_BLINK:
         if (registry.blinkTimers.size() > 0) {
             Entity& entity = registry.blinkTimers.entities[0];
@@ -427,10 +481,15 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
-                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
+                        // TODO: unique prompt per level
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), 11);
                         prompts.push_back(prompt);
                     }
-                    this->levels_completed[curr_level] = true;
+                    
+                    
+                    if (curr_level != 4) {
+                        this->levels_completed[curr_level] = true;
+                    }
                 }
                 else if (only_enemy_left) {
                     if (curr_level == 0) {
@@ -438,6 +497,7 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
+                        // TODO: unique prompt per level
                         Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
                         prompts.push_back(prompt);
                     }
@@ -652,6 +712,13 @@ bool LevelManager::is_over() {
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
     switch (current_level_state) {
+    case LevelState::LEVEL_START:
+        if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
+        {
+            removePrompt(level_start_prompt);
+            move_to_state(LevelState::ENEMY_BLINK);
+        }
+        break;
     case LevelState::PLAYER_TURN: 
         // handle all player logic to a player controller
         player_controller.on_key(key, scancode, action, mod);
@@ -729,6 +796,10 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         Motion back_button_motion = registry.motions.get(back_button);
         if (collides(click_motion, back_button_motion)) {
 
+            if (current_level_state == LevelState::LEVEL_START) {
+                return;
+            }
+
             if (curr_level != (int) LevelState::TERMINATION) {
                 save_level_data();
             }
@@ -742,6 +813,9 @@ void LevelManager::on_mouse_button(int button, int action, float* x_resolution_s
         if (curr_level > 0) {
             Motion save_button_motion = registry.motions.get(save_button);
             if (collides(click_motion, save_button_motion)) {
+                if (current_level_state == LevelState::LEVEL_START) {
+                    return;
+                }
                 save_level_data();
                 createPromptWithTimer(1000, TEXTURE_ASSET_ID::PROMPT_SAVED);
             }
@@ -765,9 +839,13 @@ LevelManager::LevelState LevelManager::current_state()
 void LevelManager::move_to_state(LevelState next_state) {
     // some assersions to make sure state machine are working as expected
     switch (next_state) {
+    case LevelState::LEVEL_START:
+        std::cout << "moving to level start state" << std::endl;
+        assert(this->current_level_state == LevelState::LEVEL_START); break;
+
     case LevelState::ENEMY_BLINK:
         std::cout << "moving to enemy blink state" << std::endl;
-        assert(this->current_level_state == LevelState::ENEMY_BLINK); break;
+        assert(this->current_level_state == LevelState::LEVEL_START); break;
 
     case LevelState::PREPARE:
         std::cout << "moving to prepare state" << std::endl;
