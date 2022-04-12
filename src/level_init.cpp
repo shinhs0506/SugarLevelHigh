@@ -44,7 +44,7 @@ Entity createEnergyBar()
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = { 270, 20 };
 	motion.gravity_affected = false;
-	motion.depth = DEPTH::UI;
+	motion.depth = DEPTH::UI_TOP;
 
 	Overlay overlay{ pos, pos };
 	registry.overlays.insert(entity, overlay);
@@ -480,9 +480,9 @@ Entity createPromptWithTimer(float ms, TEXTURE_ASSET_ID texture_ID) {
 	Motion& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0, 0 };
-	motion.position = { 650, 50 };
+	motion.position = { 640, 360 };
 	motion.prev_position = motion.position;
-	motion.scale = {500, 50};
+	motion.scale = { 1280, 720 };
     motion.depth = DEPTH::PROMPT;
 
 	Overlay overlay{ motion.position };
@@ -751,14 +751,7 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 
 	switch (step)
 	{
-	case -1: // level won
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::LEVEL_WON,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
-		break;
-	case -10:// level lost
+	case -10:// level lost for levels 1-3
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::LEVEL_LOST,
@@ -812,6 +805,34 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::TUTORIAL_END,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 10:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_1_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_WON, // temp
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 20:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_2_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 30: 
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_3_START,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
@@ -904,7 +925,7 @@ Entity createUI(vec2 pos, vec2 size) {
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
 	motion.scale = size;
-	motion.depth = DEPTH::PROMPT;
+	motion.depth = DEPTH::UI;
 
 	Overlay overlay{ pos };
 	registry.overlays.insert(entity, overlay);
