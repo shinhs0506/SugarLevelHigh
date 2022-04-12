@@ -790,6 +790,9 @@ Entity createCooldown(vec2 pos, int cool_down_left) {
 	CoolDown coolDown{ };
 	registry.cooldowns.insert(entity, coolDown);
 
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
 	switch (cool_down_left)
 	{
 	case 1:
@@ -820,6 +823,7 @@ void removeCooldown(Entity entity)
 {
 	registry.motions.remove(entity);
 	registry.cooldowns.remove(entity);
+	registry.overlays.remove(entity);
 	registry.renderRequests.remove(entity);
 }
 

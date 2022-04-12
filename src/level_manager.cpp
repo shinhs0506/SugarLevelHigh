@@ -366,7 +366,7 @@ bool LevelManager::step(float elapsed_ms)
 
     // render new snowflake
     next_snow_spawn -= elapsed_ms;
-    if (next_snow_spawn < 0.f) {
+    if (next_snow_spawn < 0.f && curr_level == 3) {
         // Reset timer
         next_snow_spawn = (300 / 2) + uniform_dist(rng) * (300 / 2);
         // Create bug with random initial size
