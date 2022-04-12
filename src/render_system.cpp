@@ -10,7 +10,106 @@ struct {
 	bool operator()(Entity entity1, Entity entity2) const {
 		return registry.motions.get(entity1).depth > registry.motions.get(entity2).depth;
 	}
-} compare_depths;
+} compare_depths; 
+
+
+void RenderSystem::drawSnow()
+{
+	if (registry.snows.size() == 0) {
+		return;
+	}
+	std::vector<Transform> snow_transforms;
+	for (uint i = 0; i < registry.snows.size(); i++) {
+		Entity& entity = registry.snows.entities[i];
+		Motion& motion = registry.motions.get(entity);
+		Transform transform;
+		transform.translate(motion.position);
+		transform.rotate(motion.angle);
+		transform.scale(motion.scale);
+		snow_transforms.push_back(transform);
+	}
+
+	Entity& entity = registry.snows.entities[0];
+	const RenderRequest& render_request = registry.renderRequests.get(entity);
+	const GLuint used_effect_enum = (GLuint)render_request.used_effect;
+	assert(used_effect_enum != (GLuint)EFFECT_ASSET_ID::EFFECT_COUNT);
+	const GLuint program = (GLuint)effects[used_effect_enum];
+	const mat3 projection = createProjectionMatrix();
+
+	// Setting shaders
+	glUseProgram(program);
+	gl_has_errors();
+
+	assert(render_request.used_geometry != GEOMETRY_BUFFER_ID::GEOMETRY_COUNT);
+	const GLuint vbo = vertex_buffers[(GLuint)render_request.used_geometry];
+	const GLuint ibo = index_buffers[(GLuint)render_request.used_geometry];
+
+	// Setting vertex and index buffers
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	gl_has_errors();
+
+	GLint in_position_loc = glGetAttribLocation(program, "in_position");
+	GLint in_texcoord_loc = glGetAttribLocation(program, "in_texcoord");
+	gl_has_errors();
+	assert(in_texcoord_loc >= 0);
+
+	glEnableVertexAttribArray(in_position_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE,
+		sizeof(TexturedVertex), (void*)0);
+	gl_has_errors();
+
+	glEnableVertexAttribArray(in_texcoord_loc);
+	glVertexAttribPointer(
+		in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex),
+		(void*)sizeof(
+			vec3)); // note the stride to skip the preceeding vertex position
+
+	// Enabling and binding texture to slot 0
+	glActiveTexture(GL_TEXTURE0);
+	gl_has_errors();
+
+	assert(registry.renderRequests.has(entity));
+	GLuint texture_id =
+		texture_gl_handles[(GLuint)registry.renderRequests.get(entity).used_texture];
+
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	gl_has_errors();
+
+	// Getting uniform locations for glUniform* calls
+	GLint color_uloc = glGetUniformLocation(program, "fcolor");
+	const vec3 color = registry.colors.has(entity) ? registry.colors.get(entity) : vec3(1);
+	glUniform3fv(color_uloc, 1, (float*)&color);
+	gl_has_errors();
+
+	GLuint is_snow_loc = glGetUniformLocation(program, "is_snow");
+	glUniform1i(is_snow_loc, 1);
+	gl_has_errors();
+
+	// Get number of indices from index buffer, which has elements uint16_t
+	GLint size = 0;
+	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+	gl_has_errors();
+	
+	GLsizei num_indices = size / sizeof(uint16_t);
+
+	GLint currProgram;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &currProgram);
+
+	for (uint i = 0; i < registry.snows.size(); i++) {
+		std::string loc = "transforms[" + std::to_string(i) + "]";
+		GLuint transforms_loc = glGetUniformLocation(currProgram, loc.c_str());
+		assert(transforms_loc >= 0);
+		glUniformMatrix3fv(transforms_loc, 1, GL_FALSE, (float*)&snow_transforms[i].mat);
+	}
+
+	GLuint projection_loc = glGetUniformLocation(currProgram, "projection");
+	glUniformMatrix3fv(projection_loc, 1, GL_FALSE, (float*)&projection);
+
+	gl_has_errors();
+	glDrawElementsInstanced(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr, registry.snows.size());
+	gl_has_errors();
+}
 
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
@@ -99,6 +198,9 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	{
 		assert(false && "Type of render request not supported");
 	}
+
+	GLuint is_snow_loc = glGetUniformLocation(program, "is_snow");
+	glUniform1i(is_snow_loc, 0);
 
 	// character uniform: check whether the entity is a character with a spritesheet
 	GLint is_character_uloc = glGetUniformLocation(program, "is_character");
@@ -270,16 +372,29 @@ void RenderSystem::draw()
 	// Sort the render requests in depth order (painter's algorithm)
 	registry.renderRequests.sort(compare_depths);
 
+	
 	// Draw all textured meshes that have a position and size component
+
+	for (Entity entity : registry.backgrounds.entities) {
+		drawTexturedMesh(entity, projection_2D);
+	}
+	drawSnow();
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		if (!registry.motions.has(entity))
 			continue;
+		if (registry.snows.has(entity)) {
+			continue;
+		}
+		if (registry.backgrounds.has(entity)) {
+			continue;
+		}
 		// Note, its not very efficient to access elements indirectly via the entity
 		// albeit iterating through all Sprites in sequence. A good point to optimize
 		drawTexturedMesh(entity, projection_2D);
 	}
-
+	
+	
 	// Truely render to the screen
 	drawToScreen();
 
