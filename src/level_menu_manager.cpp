@@ -41,16 +41,18 @@ void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
 void LevelMenuManager::generateLevelMenu()
 {
     back_button = createBackButton(vec2(100, 100), vec2(64, 64), NULL);
-    tutorial_button = createTutorialButton(vec2(640, 125), vec2(200, 50), NULL);
-    level_1_button = createLevel1Button(vec2(640, 265), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[0]);
-    level_2_button = createLevel2Button(vec2(640, 405), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[1]);
-    level_3_button = createLevel3Button(vec2(640, 545), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[2]);
+    tutorial_button = createTutorialButton(vec2(640, 75), vec2(200, 50), NULL);
+    level_1_button = createLevel1Button(vec2(640, 215), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[0]);
+    level_2_button = createLevel2Button(vec2(640, 355), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[1]);
+    level_3_button = createLevel3Button(vec2(640, 495), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[2]);
+    level_4_button = createLevel4Button(vec2(640, 635), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[3]);
 
     all_entities.push_back(back_button);
     all_entities.push_back(tutorial_button);
     all_entities.push_back(level_1_button);
     all_entities.push_back(level_2_button);
     all_entities.push_back(level_3_button);
+    all_entities.push_back(level_4_button);
 }
 
 void LevelMenuManager::destroy() {
@@ -151,6 +153,10 @@ void LevelMenuManager::on_mouse_button(int button, int action, float* x_resoluti
             }
             else if (collides(click_motion, registry.motions.get(level_3_button)) && this->game_system->level_manager.levels_completed[2]) {
                 this->selected_level = 3;
+                this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
+            }
+            else if (collides(click_motion, registry.motions.get(level_4_button)) && this->game_system->level_manager.levels_completed[3]) {
+                this->selected_level = 4;
                 this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
             }
         }

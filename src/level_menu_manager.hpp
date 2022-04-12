@@ -23,6 +23,7 @@ private:
     Entity level_1_button;
     Entity level_2_button;
     Entity level_3_button;
+    Entity level_4_button;
 
     bool is_back_button_clicked;
 
