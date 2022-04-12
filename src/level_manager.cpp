@@ -373,7 +373,6 @@ bool LevelManager::step(float elapsed_ms)
         float random = uniform_dist(rng);
         float speed = 50.0 + 100.0 * random;
         Entity snow;
-        printf("new snow\n");
         if (random < (float)1 / 6) {
             snow = createSnow(vec2(2664 * uniform_dist(rng), -508), vec2(0, speed), vec2(6, 6), TEXTURE_ASSET_ID::SNOW1);
         }

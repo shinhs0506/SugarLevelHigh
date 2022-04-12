@@ -9,7 +9,7 @@ out vec2 texcoord;
 
 // Application data
 uniform mat3 transform;
-uniform mat3 transforms[100];
+uniform mat3 transforms[50];
 uniform mat3 projection;
 
 // hit effect

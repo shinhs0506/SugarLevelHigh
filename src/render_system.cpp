@@ -24,14 +24,15 @@ void RenderSystem::drawSnow()
 		Motion& motion = registry.motions.get(entity);
 		Transform transform;
 		transform.translate(motion.position);
-		transform.scale(motion.scale);
 		transform.rotate(motion.angle);
+		transform.scale(motion.scale);
 		snow_transforms.push_back(transform);
 	}
 
 	Entity& entity = registry.snows.entities[0];
 	const RenderRequest& render_request = registry.renderRequests.get(entity);
 	const GLuint used_effect_enum = (GLuint)render_request.used_effect;
+	assert(used_effect_enum != (GLuint)EFFECT_ASSET_ID::EFFECT_COUNT);
 	const GLuint program = (GLuint)effects[used_effect_enum];
 	const mat3 projection = createProjectionMatrix();
 
@@ -39,6 +40,7 @@ void RenderSystem::drawSnow()
 	glUseProgram(program);
 	gl_has_errors();
 
+	assert(render_request.used_geometry != GEOMETRY_BUFFER_ID::GEOMETRY_COUNT);
 	const GLuint vbo = vertex_buffers[(GLuint)render_request.used_geometry];
 	const GLuint ibo = index_buffers[(GLuint)render_request.used_geometry];
 
@@ -370,7 +372,7 @@ void RenderSystem::draw()
 	// Sort the render requests in depth order (painter's algorithm)
 	registry.renderRequests.sort(compare_depths);
 
-	drawSnow();
+	
 	// Draw all textured meshes that have a position and size component
 	for (Entity entity : registry.renderRequests.entities)
 	{
@@ -383,6 +385,7 @@ void RenderSystem::draw()
 		// albeit iterating through all Sprites in sequence. A good point to optimize
 		drawTexturedMesh(entity, projection_2D);
 	}
+	drawSnow();
 	
 	// Truely render to the screen
 	drawToScreen();
