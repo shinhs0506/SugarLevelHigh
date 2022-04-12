@@ -419,7 +419,11 @@ bool LevelManager::step(float elapsed_ms)
                         Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -1);
                         prompts.push_back(prompt);
                     }
-                    this->levels_completed[curr_level] = true;
+                    
+                    
+                    if (curr_level != 4) {
+                        this->levels_completed[curr_level] = true;
+                    }
                 }
                 else if (only_enemy_left) {
                     if (curr_level == 0) {

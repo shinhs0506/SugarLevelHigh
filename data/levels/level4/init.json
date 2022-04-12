@@ -36,20 +36,6 @@
       },
       {
         "pos": {
-            "x": 200,
-            "y": 500
-        },
-        "size": {
-            "w": 64,
-            "h": 100
-        },
-        "health": 100,
-        "energy": 150,
-        "heal_cooldown": 0,
-        "advanced_attack_cooldown": 0
-      },
-      {
-        "pos": {
             "x": 1800,
             "y": 200
         },
