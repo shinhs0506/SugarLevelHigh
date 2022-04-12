@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <random>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -77,6 +78,7 @@ private:
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 200;
 
+	float next_snow_spawn;
 	Entity level_start_prompt;
 
 	// for turn order logic
@@ -136,4 +138,6 @@ private:
 
 	Mix_Chunk* hurt_sound;
 
+	std::default_random_engine rng;
+	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 };

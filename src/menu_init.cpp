@@ -100,7 +100,7 @@ Entity createLevel4Button(vec2 pos, vec2 size, bool (*on_click)(), bool disabled
 
 	registry.renderRequests.insert(
 		entity,
-		{ TEXTURE_ASSET_ID::LEVEL_3_BUTTON,// TODO add level 4
+		{ TEXTURE_ASSET_ID::LEVEL_4_BUTTON,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
 

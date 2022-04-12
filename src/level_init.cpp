@@ -29,6 +29,37 @@ Entity createDebugLine(vec2 position, vec2 scale)
 	return entity;
 }
 
+Entity createSnow(vec2 pos, vec2 velocity, vec2 size, TEXTURE_ASSET_ID texture)
+{
+	auto entity = Entity();
+
+	registry.snows.emplace(entity);
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = { pos };
+	motion.prev_position = { pos };
+	motion.angle = 0.f;
+	motion.goal_velocity = { velocity };
+	motion.scale = { size };
+	motion.gravity_affected = false;
+	motion.depth = DEPTH::BACKGROUND;
+
+	registry.renderRequests.insert(
+		entity,
+		{ texture,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+void removeSnow(Entity snow) {
+	registry.motions.remove(snow);
+	registry.renderRequests.remove(snow);
+	registry.snows.remove(snow);
+}
+
 Entity createEnergyBar()
 {
 	auto entity = Entity();
@@ -349,11 +380,23 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable, int level)
 					GEOMETRY_BUFFER_ID::SPRITE });
 			break;
 		case 2:
-		case 3:
-		case 4:
 			registry.renderRequests.insert(
 				entity,
 				{ TEXTURE_ASSET_ID::TERRAIN2,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		case 3:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN3,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		case 4:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN4,
 					EFFECT_ASSET_ID::TEXTURED,
 					GEOMETRY_BUFFER_ID::SPRITE });
 			break;
@@ -367,11 +410,16 @@ Entity createTerrain(vec2 pos, vec2 size, bool breakable, int level)
 		case 0:
 		case 1:
 		case 2:
-		case 3:
-		case 4:
 			registry.renderRequests.insert(
 				entity,
 				{ TEXTURE_ASSET_ID::TERRAIN2_BREAKABLE,
+					EFFECT_ASSET_ID::TEXTURED,
+					GEOMETRY_BUFFER_ID::SPRITE });
+			break;
+		case 3:
+			registry.renderRequests.insert(
+				entity,
+				{ TEXTURE_ASSET_ID::TERRAIN3_BREAKABLE,
 					EFFECT_ASSET_ID::TEXTURED,
 					GEOMETRY_BUFFER_ID::SPRITE });
 			break;
@@ -598,10 +646,25 @@ Entity createBackground(vec2 size, int level)
 		background.proportion_velocity = 0.5;
 		break;
 	case 2:
-	case 3:
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND2,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
+	case 3:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND3,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.5;
+		break;
+	case 4:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND4,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		background.proportion_velocity = 0.5;
@@ -634,6 +697,38 @@ Entity createBackground(vec2 size, int level)
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::BACKGROUND22,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
+		break;
+	case 31:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND31,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 32:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND32,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.7;
+		break;
+	case 41:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND41,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		background.proportion_velocity = 0.9;
+		break;
+	case 42:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::BACKGROUND42,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		background.proportion_velocity = 0.7;

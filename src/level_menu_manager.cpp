@@ -40,13 +40,15 @@ void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
 
 void LevelMenuManager::generateLevelMenu()
 {
+    background = createImage(vec2(640, 360), vec2(1280, 720), TEXTURE_ASSET_ID::BACKGROUND_BLANK);
     back_button = createBackButton(vec2(100, 100), vec2(64, 64), NULL);
-    tutorial_button = createTutorialButton(vec2(640, 75), vec2(200, 50), NULL);
-    level_1_button = createLevel1Button(vec2(640, 215), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[0]);
-    level_2_button = createLevel2Button(vec2(640, 355), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[1]);
-    level_3_button = createLevel3Button(vec2(640, 495), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[2]);
-    level_4_button = createLevel4Button(vec2(640, 635), vec2(200, 50), NULL, !this->game_system->level_manager.levels_completed[3]);
+    tutorial_button = createTutorialButton(vec2(200, 400), vec2(192, 500), NULL);
+    level_1_button = createLevel1Button(vec2(420, 400), vec2(192, 500), NULL, !this->game_system->level_manager.levels_completed[0]);
+    level_2_button = createLevel2Button(vec2(640, 400), vec2(192, 500), NULL, !this->game_system->level_manager.levels_completed[1]);
+    level_3_button = createLevel3Button(vec2(860, 400), vec2(192, 500), NULL, !this->game_system->level_manager.levels_completed[2]);
+    level_4_button = createLevel4Button(vec2(1080, 400), vec2(192, 500), NULL, !this->game_system->level_manager.levels_completed[2]);
 
+    all_entities.push_back(background);
     all_entities.push_back(back_button);
     all_entities.push_back(tutorial_button);
     all_entities.push_back(level_1_button);
