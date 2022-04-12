@@ -69,9 +69,7 @@ void perform_attack(Entity attacker, vec2 attacker_pos, vec2 offset, vec2 direct
 	advance_ability_cd(attacker);
 }
 
-void perform_buff_ability(Entity player) {
-    BuffArsenal& buffs = registry.buffArsenals.get(player);
-    
+void perform_buff_ability(Entity player, BuffArsenal& buffs) {
     // only 1 type of buff ability for now
     // update health
     Health& health = registry.healths.get(player);     
@@ -151,7 +149,7 @@ void advance_ability_cd(Entity entity) {
         attack_arsenal.advanced_attack.current_cooldown -= 1;
     }
 
-    if (registry.playables.has(entity)) {
+    if (registry.buffArsenals.has(entity)) {
         BuffArsenal& buff_arsenal = registry.buffArsenals.get(entity);
         if (buff_arsenal.heal.current_cooldown > 0) {
             buff_arsenal.heal.current_cooldown -= 1;
@@ -167,4 +165,8 @@ bool advanced_attack_available(AttackArsenal arsenal) {
 
 bool basic_attack_available(AttackArsenal arsenal) {
 	return arsenal.advanced_attack.current_cooldown == 0;
+}
+
+bool heal_ability_available(BuffArsenal arsenal) {
+	return arsenal.heal.current_cooldown == 0;
 }

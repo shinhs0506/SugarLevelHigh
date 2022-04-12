@@ -19,6 +19,7 @@ EnemyController::EnemyController()
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 	melee_attack_sound = Mix_LoadWAV(audio_path("melee_attack.wav").c_str());
 	advanced_attack_sound = Mix_LoadWAV(audio_path("advanced_attack.wav").c_str());
+	heal_ability_sound = Mix_LoadWAV(audio_path("healing_ability.wav").c_str());
 }
 
 EnemyController::~EnemyController()
@@ -113,6 +114,27 @@ void EnemyController::make_decision() {
 			min_dist = dist;
 			target = player;
 			target_motion = player_motion;
+		}
+	}
+
+	// check if the enemy has heal ability
+	if (registry.buffArsenals.has(enemy) && heal_ability_available(registry.buffArsenals.get(enemy))) {
+		BuffArsenal& buff_arsenal = registry.buffArsenals.get(enemy);
+
+		// try to heal allies within range
+		for (int i = 0; i < registry.enemies.size(); i++) {
+			Entity enemy_ally = registry.enemies.entities[i];
+			Motion& enemy_ally_motion = registry.motions.get(enemy_ally);
+			Health& enemy_ally_health = registry.healths.get(enemy_ally);
+
+			float dist = distance(enemy_ally_motion.position, motion.position);
+			if (dist < HEAL_RANGE && enemy_ally_health.cur_health < enemy_ally_health.max_health) {
+				Mix_PlayChannel(-1, heal_ability_sound, 0);
+				perform_buff_ability(enemy_ally, buff_arsenal);
+
+				move_to_state(CharacterState::END);
+				return;
+			}
 		}
 	}
 

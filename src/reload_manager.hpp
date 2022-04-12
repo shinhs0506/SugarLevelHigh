@@ -26,7 +26,7 @@ struct EnemyData {
     vec2 size;
     float health;
     float energy;
-    int cooldown;
+    int heal_cooldown;
     int advanced_attack_cooldown;
 };
 
@@ -51,6 +51,7 @@ class ReloadManager {
         BackgroundData background_data;
         std::vector<PlayerData> player_data_vector;
         std::vector<EnemyData> enemy_data_vector;
+        std::vector<EnemyData> enemy_healer_data_vector;
         std::vector<TerrainData> terrain_data_vector;
         std::vector<LadderData> ladder_data_vector;
         int curr_order_ind;
@@ -67,6 +68,7 @@ class ReloadManager {
         BackgroundData get_background_data();
         std::vector<PlayerData> get_player_data();
         std::vector<EnemyData> get_enemy_data();
+        std::vector<EnemyData> get_enemy_healer_data();
         std::vector<TerrainData> get_terrain_data();
         std::vector<LadderData> get_ladder_data();
         int get_curr_order_ind();
@@ -76,6 +78,7 @@ class ReloadManager {
         void update_background_data(BackgroundData background_data);
         void update_player_data(std::vector<PlayerData> player_data);
         void update_enemy_data(std::vector<EnemyData> enemy_data);
+        void update_enemy_healer_data(std::vector<EnemyData> enemy_healer_data);
         void update_terrain_data(std::vector<TerrainData> terrain_data);
         void update_ladder_data(std::vector<LadderData> ladder_data);
         void update_curr_order_ind(int curr_order_ind);

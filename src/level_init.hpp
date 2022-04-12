@@ -22,6 +22,8 @@ void removeOrderIndicator();
 
 Entity createEnemy(vec2 pos, vec2 size, float curr_health, float curr_energy, 
         AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn);
+Entity createEnemyHealer(vec2 pos, vec2 size, float curr_health, float curr_energy,
+    AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, BuffArsenal buff_arsenal);
 void removeEnemy(Entity entity);
 
 Entity createPlayer(vec2 pos, vec2 size, float curr_health, float curr_energy,

@@ -68,3 +68,11 @@ AttackAbility chocolateball_advanced_attack = {
     0, // Current cooldown
     (int)TEXTURE_ASSET_ID::CHOCOLATE_ADVANCED_ATTACK,
 };
+
+BuffAbility enemy_heal_buff = {
+    0, // speed delta
+    20, // health delta
+    0, // damage delta
+    2, // max cooldown
+    0 // curr cooldown
+};

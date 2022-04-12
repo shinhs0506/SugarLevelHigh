@@ -3,7 +3,7 @@
         "lower_limit": {
             "x": -100,
             "y": -100
-        }, 
+        },
         "upper_limit": {
             "x": 100,
             "y": 100
@@ -47,232 +47,249 @@
             },
             "health": 100,
             "energy": 150,
+            "heal_cooldown": 0,
+            "advanced_attack_cooldown": 0
+        }
+    ],
+    "enemy_healers": [
+        {
+            "pos": {
+                "x": 1100,
+                "y": 600
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 50,
+            "energy": 150,
+            "heal_cooldown": 0,
             "advanced_attack_cooldown": 0
         }
     ],
     "ladders": [],
     "terrains": [
-    {
-      "pos": {
-        "x": 0,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 100,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 200,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 300,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 400,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 500,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 600,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 700,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 800,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 900,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1000,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1100,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1200,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1300,
-        "y": 700
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 0,
-        "y": 600
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 0,
-        "y": 500
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 0,
-        "y": 400
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1300,
-        "y": 600
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1300,
-        "y": 500
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    },
-    {
-      "pos": {
-        "x": 1300,
-        "y": 400
-      },
-      "size": {
-        "w": 99.999,
-        "h": 99.999
-      },
-      "breakable": false
-    }
-  ],
+        {
+            "pos": {
+                "x": 0,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 100,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 200,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 300,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 400,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 500,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 600,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 700,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 800,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 900,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1000,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1100,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1200,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": 700
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 600
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 500
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 0,
+                "y": 400
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": 600
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": 500
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        },
+        {
+            "pos": {
+                "x": 1300,
+                "y": 400
+            },
+            "size": {
+                "w": 99.999,
+                "h": 99.999
+            },
+            "breakable": false
+        }
+    ],
     "curr_order_ind": -1,
     "curr_level_state": 0
 }

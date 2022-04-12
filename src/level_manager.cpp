@@ -89,10 +89,21 @@ void LevelManager::init_data(int level) {
     for (auto& enemy_data: reload_manager.get_enemy_data()) {
         chocolateball_advanced_attack.current_cooldown = enemy_data.advanced_attack_cooldown;
         AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
+        BuffArsenal gumball_buffs = {};
         Entity enemy = createEnemy(enemy_data.pos, enemy_data.size, enemy_data.health, 
                 enemy_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false);
         update_healthbar_len_color(enemy);
         order_vector.push_back(enemy);
+    }
+
+    for (auto& enemy_healer_data : reload_manager.get_enemy_healer_data()) {
+        chocolateball_advanced_attack.current_cooldown = enemy_healer_data.advanced_attack_cooldown;
+        AttackArsenal gumball_arsenal = { chocolateball_basic_attack, chocolateball_advanced_attack };
+        BuffArsenal gumball_buffs = { enemy_heal_buff };
+        Entity enemy_healer = createEnemyHealer(enemy_healer_data.pos, enemy_healer_data.size, enemy_healer_data.health,
+            enemy_healer_data.energy, gumball_arsenal, (level == 2) ? true : false, (level == 3) ? true : false, gumball_buffs);
+        update_healthbar_len_color(enemy_healer);
+        order_vector.push_back(enemy_healer);
     }
 
     for (auto& terrain_data: reload_manager.get_terrain_data()) {

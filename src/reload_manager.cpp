@@ -75,28 +75,49 @@ void ReloadManager::load(int level) {
     }
 
     auto enemies_data = js["enemies"];
-    for (auto& enemy_data: enemies_data) {
+    for (auto& enemy_data : enemies_data) {
         vec2 enemy_pos = vec2(enemy_data["pos"]["x"], enemy_data["pos"]["y"]);
         vec2 enemy_size = vec2(enemy_data["size"]["w"], enemy_data["size"]["h"]);
         float enemy_health = enemy_data["health"];
         float enemy_energy = enemy_data["energy"];
+        int heal_cooldown = enemy_data["heal_cooldown"];
         int advanced_attack_cooldown = enemy_data["advanced_attack_cooldown"];
-        EnemyData ed {
+        EnemyData ed{
             enemy_pos,
             enemy_size,
             enemy_health,
             enemy_energy,
+            heal_cooldown,
             advanced_attack_cooldown
         };
         enemy_data_vector.push_back(ed);
     }
 
+    auto enemy_healers_data = js["enemy_healers"];
+    for (auto& enemy_healer_data : enemy_healers_data) {
+        vec2 enemy_pos = vec2(enemy_healer_data["pos"]["x"], enemy_healer_data["pos"]["y"]);
+        vec2 enemy_size = vec2(enemy_healer_data["size"]["w"], enemy_healer_data["size"]["h"]);
+        float enemy_health = enemy_healer_data["health"];
+        float enemy_energy = enemy_healer_data["energy"];
+        int heal_cooldown = enemy_healer_data["heal_cooldown"];
+        int advanced_attack_cooldown = enemy_healer_data["advanced_attack_cooldown"];
+        EnemyData ed{
+            enemy_pos,
+            enemy_size,
+            enemy_health,
+            enemy_energy,
+            heal_cooldown,
+            advanced_attack_cooldown
+        };
+        enemy_healer_data_vector.push_back(ed);
+    }
+
     auto terrains_data = js["terrains"];
-    for (auto& terrain_data: terrains_data) {
+    for (auto& terrain_data : terrains_data) {
         vec2 terrain_pos = vec2(terrain_data["pos"]["x"], terrain_data["pos"]["y"]);
         vec2 terrain_size = vec2(terrain_data["size"]["w"], terrain_data["size"]["h"]);
         bool terrain_breakable = terrain_data["breakable"];
-        TerrainData td {
+        TerrainData td{
             terrain_pos,
             terrain_size,
             terrain_breakable
@@ -109,7 +130,7 @@ void ReloadManager::load(int level) {
     for (auto& ladder_data : ladders_data) {
         vec2 ladder_pos = vec2(ladder_data["pos"]["x"], ladder_data["pos"]["y"]);
         vec2 ladder_size = vec2(ladder_data["size"]["w"], ladder_data["size"]["h"]);
-        LadderData ld {
+        LadderData ld{
             ladder_pos,
             ladder_size
         };
@@ -134,6 +155,10 @@ std::vector<PlayerData> ReloadManager::get_player_data() {
 
 std::vector<EnemyData> ReloadManager::get_enemy_data() {
     return enemy_data_vector;
+}
+
+std::vector<EnemyData> ReloadManager::get_enemy_healer_data() {
+    return enemy_healer_data_vector;
 }
 
 std::vector<TerrainData> ReloadManager::get_terrain_data() {
@@ -166,6 +191,10 @@ void ReloadManager::update_player_data(std::vector<PlayerData> player_data_vecto
 
 void ReloadManager::update_enemy_data(std::vector<EnemyData> enemy_data_vector) {
     this->enemy_data_vector = enemy_data_vector;
+}
+
+void ReloadManager::update_enemy_healer_data(std::vector <EnemyData> enemy_healer_data_vector) {
+    this->enemy_healer_data_vector = enemy_healer_data_vector;
 }
 
 void ReloadManager::update_terrain_data(std::vector<TerrainData> terrain_data_vector) {
@@ -217,10 +246,26 @@ void ReloadManager::save(int level) {
         temp_json["size"]["h"] = enemy_data.size.y;
         temp_json["health"] = enemy_data.health;
         temp_json["energy"] = enemy_data.energy;
+        temp_json["heal_cooldown"] = enemy_data.heal_cooldown;
         temp_json["advanced_attack_cooldown"] = enemy_data.advanced_attack_cooldown;
         enemy_json.push_back(temp_json);
     }
     curr_level_data_json["enemies"] = enemy_json;
+
+    std::vector<nlohmann::json> enemy_healer_json;
+    for (auto& enemy_healer_data : enemy_healer_data_vector) {
+        nlohmann::json temp_json;
+        temp_json["pos"]["x"] = enemy_healer_data.pos.x;
+        temp_json["pos"]["y"] = enemy_healer_data.pos.y;
+        temp_json["size"]["w"] = enemy_healer_data.size.x;
+        temp_json["size"]["h"] = enemy_healer_data.size.y;
+        temp_json["health"] = enemy_healer_data.health;
+        temp_json["energy"] = enemy_healer_data.energy;
+        temp_json["heal_cooldown"] = enemy_healer_data.heal_cooldown;
+        temp_json["advanced_attack_cooldown"] = enemy_healer_data.advanced_attack_cooldown;
+        enemy_json.push_back(temp_json);
+    }
+    curr_level_data_json["enemy_healers"] = enemy_healer_json;
 
     std::vector<nlohmann::json> terrain_json;
     for (auto& terrain_data: terrain_data_vector) {
@@ -259,6 +304,7 @@ void ReloadManager::save(int level) {
 void ReloadManager::clear() {
     player_data_vector.clear();
     enemy_data_vector.clear();
+    enemy_healer_data_vector.clear();
     terrain_data_vector.clear();
     ladder_data_vector.clear();
 }
