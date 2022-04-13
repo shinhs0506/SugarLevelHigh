@@ -649,8 +649,58 @@ Entity createAbilityButton(vec2 pos, vec2 size, bool (*on_click)(), TEXTURE_ASSE
 
 void removeAbilityButton(Entity entity)
 {
-    registry.abilityButtons.remove(entity);
-    removePlayerButton(entity);
+	registry.abilityButtons.remove(entity);
+	removePlayerButton(entity);
+}
+
+void createAbilityTooltip(vec2 pos, int ability)
+{
+	auto entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = { 300.f, 300.f };
+	motion.depth = DEPTH::UI_TOP;
+
+	registry.abilityTooltip.emplace(entity);
+	Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);
+
+	if (ability == 0) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::MELEE_ATTACK_TOOLTIP,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else if (ability == 1) {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::ADVANCED_ATTACK_TOOLTIP,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+	else {
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::HEALTH_POTION_TOOLTIP,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+	}
+}
+
+void removeAbilityTooltip()
+{
+	if (registry.abilityTooltip.size() > 0) {
+		Entity entity = registry.abilityTooltip.entities[0];
+		registry.motions.remove(entity);
+		registry.abilityTooltip.remove(entity);
+		registry.renderRequests.remove(entity);
+		registry.overlays.remove(entity);
+	}
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)

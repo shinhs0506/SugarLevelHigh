@@ -138,6 +138,8 @@ private:
 
     void update_curr_level_data();
 
+	bool checkButtonCollision(vec2 pos, vec2 buttonPos, vec2 buttonScale);
+
 	Mix_Chunk* hurt_sound;
 
 	std::default_random_engine rng;
