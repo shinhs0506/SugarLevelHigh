@@ -368,8 +368,7 @@ void LevelManager::end_scenerio(){
             tutorial_controller.should_advance = true;
         }
         else {
-            // TODO: unique prompt per level
-            Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), 11);
+            Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), curr_level * 10 + 1);
             prompts.push_back(prompt);
         }
 
