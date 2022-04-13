@@ -10,44 +10,40 @@ Created by Team 3
 
 ## Mandatory Requirements
 
-### Playability
-
-- There are now three full levels and a tutorial for the player to play. The tutorial features on-screen prompts and removes the need to provide players with oral instruction. Apart from the tutorial, each level features different unique mechanics and takes at least several minutes to play through. These are all initialized in the respective folders inside of `data/levels`, with unique level features implemented throughout `level_manager.cpp`. 
-
-
-### Robustness 
-
-** Memory management**
-- Game does not hog memory. 
-
-**User input**
-- Unexpected user inputs are ignored and do not crash the game.
-
-**Runtime**
-- There are no noticeable runtime bottlenecks. All areas of the game run without lag. 
-
 ### Stability
 
-** Fixed bugs**
-- We have fixed a bug related to our physics systems, which was discovered during the last crossplay session. Characters and their respective health bars are now in sync and react the same to gravity, rather than having slightly different positions due to be affected by gravity in different ways as before. This can be found in `PhysicsSystem::step`.
-- Interpolation is now used to determine character movement in level 2. This can be found in `PhysicsSystem::step`.
-- We have fixed a bug which led to unpredictable behaviour when the camera was moved in-level and the player returned to the menu screen. This can be found in `CameraManager::reset_camera_pos`.
-- Attack previews now show the correct projectile direction after the camera has been moved
+- In milestone 3, it was identified that our game would not scale correctly on displays with different screen resolutions. We have resolved this by adding a configuration screen to our game, which allows the user to adjust the scale based on their screen resolution.The entry point is `config_manager.hpp`.
+- We identified and fixed a bug where the camera would not move properly after reloading the game from a save file.
+
+### Playability 
+
+- The game contains a tutorial level and four game levels. On average, each level takes 2 to 5 minutes to beat depending on the player's familiarity with the game strategy. On many playthroughs, it took us more than 10 minutes to complete the game. 
+
+### User Experience
+
+**Tutorial**
+- Our tutorial level explains character movement, all the character abilities and walks the player through how to kill an enemy. In addition to this tutorial level, we also have title screens before each level which hint at the unique mechanics introduced in that level. For example, the ability to move the camera is explained at the beginning of level 1. The breakability of terrain blocks is hinted at in the beginning of level 2. 
+
+**Optimized Interactions**
+- During crossplay, some players reported having a hard time seeing the ability buttons because they did not look like buttons and blended into the background. We have now updated the ability buttons so that they have a distinct button-like appearance.
+- During crossplay, players found the tutorial text too long and had trouble understanding how to follow the instructions. We have how revised the tutorial to be more succinct, and all abilities are disabled except for the one the user is being told to use. 
+- During crossplay, players were frustrated that the camera sometimes did not center on the active character, and that sometimes enemy characters would automatically move off screen and be difficult to "chase down" with the camera. We have now made it so that the camera always follows the active enemy character's movements. In addition, we have increased the camera boundaries so that active characters are always within the middle 1/3 of the screen (previously, they might be at the very edge of the screen), which makes them significantly harder to miss, and the game flow is easier to follow as a result. 
+
+
 
 ## Creative Components
 
-**Parallax scrolling**
-- Parallax scrolling effects have been added to the levels. The three background layers are initialized by calls to `createBackground` in `level_manager.cpp`. The movement of these backgrounds is controlled by `camera_manager.cpp` and `physics_system.cpp`, corresponding to the movement of the camera. They have different `proportion_velocity` values which allow them to move at different speeds, consistently proportional to the camera speed. 
+**Story elements**
+- Before the game, a slideshow presents the circumstances which led to the player being turned into candy and forced to fight for their life in Willa Wonky's Candy Factory. Each level of the game is a fight which takes place in a different room of the factory. The player faces specific challenges relating to the theme of that room. At the end of each level, the player picks up an ingredient also related to the theme. Upon completing all levels of the game, the player is presented with a slideshow showing how all of these ingredients are combined to turn them back in a human. 
 
-**Audio feedback**
-- Background music has been added in `game_system::create_window` function (background music code was already there so basically the .wav file was just changed)
-- 4 Audio feedbacks were added. 
-- "melee_attack.wav" and "advanced_attack.wav" sound effects were added to both the player and the enemy and plays (using the Mix_PlayChannel function) whenever they make the respective attacks. For the player, it can be found in `PlayerController::on_mouse_button` inside the `PERFORM_ABILITY_MANUAL` case and for the enemy it can be found in EnemyController::make_decision function. 
-- "healing_ability.wav" sound effects were added to the healing ability that is exclusive to the player and plays when the player uses the healing ability. This sound effect can be found in `PlayerController::step` inside the `if(current_state == CharacterState::PERFORM_ABILITY_AUTO)` statement.
-- "hurt.wav" sound effects were added and plays whenever any character (player or enemy) gets hurt. This can be found in `LevelManager::handle_collisions`.
+**Numerous sophisticated integrated assets**
+- We have added a wide variety of visually coherent sprites. All of our graphics are now in pixel art style, and the vast majoriity of the art added this milestone was created specifically for this project rather than a free asset. We now have menu buttons, unique backgrounds, terrain blocks, and level start/end messages for each level. We have also added title screen and menu graphics, ability buttons, character UI assets and more storytelling graphics. As mentioned, all of these graphics apart from the character turn indicator were created by our team!
 
-**Basic integrated assets**
-- More assets have been added to `data/textures`, including new textures for all buttons in the game, textures for ladders which tile according to the height of the ladder, visuals for character attacks, on-screen prompts for tutorials and level-endings, new backgrounds, storytelling elements at the start of the game, new spritesheet animations for the enemy characters, and an improved UI for a character's energy bar. 
+**Particle system**
+- We have implemented a particle system which is responsible for rendering moving snowflakes in the background of level 3. This was implemented using `glDrawElementsInstanced` and can be found in `render_system::drawSnow`. 
 
-**Complex physical interactions with environment**
-- Cracked terrain blocks can now be broken by player attacks, which will cause anything resting on top of the terrain block to fall down due to gravity. Blocks are flagged as `breakable` in 'createTerrain' in `level_init.cpp` and in each level's `data/levels` files, and the breakage is handled in `LevelManager::step`, where terrains with "dead" health are removed from the game.
+**Cooperative planning**
+- We have added a new enemy type which is capable of healing other enemies. On their turns, they will try to first see if there's any enemy can be healed within range and heal them. If not, they perform the same AI as normal enemies. See `level_init::createEnemyHealer` and `EnemyController::make_decision`. 
+
+**Game balance**
+- The game is more challenging and interesting to play in this milestone compared to previous milestones. We have decreased the difficulty of the tutorial to reduce frustration, but we have increased the difficult of the actual game levels, including the first level, such that the player needs to develop a strategy to beat each level and cannot simply spam attacks towards the enemies and win. The addition of a 4th level and new enemy mechanics also serve to differentiate the levels to maintain user interest in the game. These updates can be seen in the `data/levels/.../init.json` files for each level. 
