@@ -710,6 +710,7 @@ bool LevelManager::is_over() {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
+    removeAbilityTooltip();
     switch (current_level_state) {
     case LevelState::LEVEL_START:
         if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
@@ -767,11 +768,11 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
 void LevelManager::on_mouse_move(vec2 pos)
 {
-    Entity potion = registry.overlays.entities[1];
+    Entity potion = heal_button;
     Motion& potionPos = registry.motions.get(potion);
-    Entity melee = registry.overlays.entities[2];
+    Entity melee = basic_attack_button;
     Motion& meleePos = registry.motions.get(melee);
-    Entity advanced = registry.overlays.entities[3];
+    Entity advanced = advanced_attack_button;
     Motion& advancedPos = registry.motions.get(advanced);
     
     if (checkButtonCollision(pos, meleePos.position, meleePos.scale)) {
@@ -808,6 +809,7 @@ bool LevelManager::checkButtonCollision(vec2 pos, vec2 buttonPos, vec2 buttonSca
 
 void LevelManager::on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale)
 {
+    removeAbilityTooltip();
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
