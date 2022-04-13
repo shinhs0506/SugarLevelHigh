@@ -126,7 +126,8 @@ void LevelMenuManager::on_mouse_button(int button, int action, int mod) {
                 this->selected_level = 0;
                 this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
             }
-            else if (collides(click_motion, registry.motions.get(level_1_button)) && this->game_system->level_manager.levels_completed[0]) {
+            //else if (collides(click_motion, registry.motions.get(level_1_button)) && this->game_system->level_manager.levels_completed[0]) {
+            else if (collides(click_motion, registry.motions.get(level_1_button))) {
                 this->selected_level = 1;
                 this->game_system->move_to_state(GameSystem::GameState::IN_LEVEL);
             }

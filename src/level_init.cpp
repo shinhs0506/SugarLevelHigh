@@ -513,11 +513,15 @@ void createAbilityTooltip(vec2 pos, int ability)
 
 void removeAbilityTooltip()
 {
-	Entity entity = registry.abilityTooltip.entities[0];
-	registry.motions.remove(entity);
-	registry.abilityTooltip.remove(entity);
-	registry.renderRequests.remove(entity);
-	registry.overlays.remove(entity);
+	
+	if (registry.abilityTooltip.size() > 0) {
+		Entity entity = registry.abilityTooltip.entities[0];
+		registry.motions.remove(entity);
+		registry.abilityTooltip.remove(entity);
+		registry.renderRequests.remove(entity);
+		registry.overlays.remove(entity);
+	}
+	
 }
 
 Entity createHitEffect(Entity entity, float ttl_ms)

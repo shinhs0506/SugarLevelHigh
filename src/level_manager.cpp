@@ -313,26 +313,51 @@ bool LevelManager::step(float elapsed_ms)
         this->tutorial_controller.step(elapsed_ms);
     }
 
-    double cursor_window_x, cursor_window_y;
+    /*double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
-    vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+    vec2 pos = { cursor_window_x, cursor_window_y };*/
 
-    if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 275 && cursor_window_pos.y < 325 && !tooltipAppear) {
-        createAbilityTooltip(vec2(300, 300), 0);
-        tooltipAppear = true;
+    /*if (curr_level == 0) {
+        Entity melee = registry.overlays.entities[1];
+        Motion& meleePos = registry.motions.get(melee);
+        Entity advanced = registry.overlays.entities[2];
+        Motion& advancedPos = registry.motions.get(advanced);
+        if (pos.x > meleePos.position.x - meleePos.scale.x / 2 && pos.x < meleePos.position.x + meleePos.scale.x / 2 && pos.y > meleePos.position.y - meleePos.scale.y / 2 && pos.y < meleePos.position.y + meleePos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(meleePos.position.x + 200, meleePos.position.y), 0);
+        }
+        else if (pos.x > advancedPos.position.x - advancedPos.scale.x / 2 && pos.x < advancedPos.position.x + advancedPos.scale.x / 2 && pos.y > advancedPos.position.y - advancedPos.scale.y / 2 && pos.y < advancedPos.position.y + advancedPos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+        }
+        else {
+            removeAbilityTooltip();
+        }
     }
-    else if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 350 && cursor_window_pos.y < 400 && !tooltipAppear) {
-        createAbilityTooltip(vec2(300, 375), 1);
-        tooltipAppear = true;
-    }
-    else if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 425 && cursor_window_pos.y < 475 && !tooltipAppear && curr_level != 0) {
-        createAbilityTooltip(vec2(300, 450), 2);
-        tooltipAppear = true;
-    }
-    else if ((cursor_window_pos.x < 75 || cursor_window_pos.x > 125 || cursor_window_pos.y < 275 || (cursor_window_pos.y > 325 && cursor_window_pos.y < 350) || (cursor_window_pos.y > 400 && cursor_window_pos.y < 425) || cursor_window_pos.y > 475) && tooltipAppear) {
-        removeAbilityTooltip();
-        tooltipAppear = false;
-    }
+    else if (curr_level != 0) {
+        Entity melee = registry.overlays.entities[2];
+        Motion& meleePos = registry.motions.get(melee);
+        Entity advanced = registry.overlays.entities[3];
+        Motion& advancedPos = registry.motions.get(advanced);
+        Entity potion = registry.overlays.entities[0];
+        Motion& potionPos = registry.motions.get(potion);
+        if (pos.x > meleePos.position.x - meleePos.scale.x / 2 && pos.x < meleePos.position.x + meleePos.scale.x / 2 && pos.y > meleePos.position.y - meleePos.scale.y / 2 && pos.y < meleePos.position.y + meleePos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(meleePos.position.x + 200, meleePos.position.y), 0);
+        }
+        else if (pos.x > advancedPos.position.x - advancedPos.scale.x / 2 && pos.x < advancedPos.position.x + advancedPos.scale.x / 2 && pos.y > advancedPos.position.y - advancedPos.scale.y / 2 && pos.y < advancedPos.position.y + advancedPos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+        }
+        else if (pos.x > potionPos.position.x - potionPos.scale.x / 2 && pos.x < potionPos.position.x + potionPos.scale.x / 2 && pos.y > potionPos.position.y - potionPos.scale.y / 2 && pos.y < potionPos.position.y + potionPos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(potionPos.position.x + 200, potionPos.position.y), 2);
+        }
+        else {
+            removeAbilityTooltip();
+        }
+    }*/
+    
   
     // remove dead entities (with health component and current health below 0)
     for (uint i = 0; i < registry.healths.size(); i++) {
@@ -655,6 +680,92 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
 void LevelManager::on_mouse_move(vec2 pos)
 {
+    /*double cursor_window_x, cursor_window_y;
+    glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
+    vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };
+
+    if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 275 && cursor_window_pos.y < 325 && !tooltipAppear) {
+        createAbilityTooltip(vec2(300, 300), 0);
+        tooltipAppear = true;
+    }
+    else if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 350 && cursor_window_pos.y < 400 && !tooltipAppear) {
+        createAbilityTooltip(vec2(300, 375), 1);
+        tooltipAppear = true;
+    }
+    else if (cursor_window_pos.x > 75 && cursor_window_pos.x < 125 && cursor_window_pos.y > 425 && cursor_window_pos.y < 475 && !tooltipAppear && curr_level != 0) {
+        createAbilityTooltip(vec2(300, 450), 2);
+        tooltipAppear = true;
+    }
+    else if ((cursor_window_pos.x < 75 || cursor_window_pos.x > 125 || cursor_window_pos.y < 275 || (cursor_window_pos.y > 325 && cursor_window_pos.y < 350) || (cursor_window_pos.y > 400 && cursor_window_pos.y < 425) || cursor_window_pos.y > 475) && tooltipAppear) {
+        removeAbilityTooltip();
+        tooltipAppear = false;
+    }*/
+    //Entity melee = registry.clickables.entities[1];
+    //Motion& meleePos = registry.motions.get(melee);
+    //Entity advanced = registry.clickables.entities[2];
+    //Motion& advancedPos = registry.motions.get(advanced);
+    //if (curr_level != 0) {
+    //    Entity potion = registry.clickables.entities[3];
+    //    Motion& potionPos = registry.motions.get(potion);
+    //}
+
+    //if (pos.x > meleePos.position.x - meleePos.scale.x/2 && pos.x < meleePos.position.x + meleePos.scale.x/2 && pos.y > meleePos.position.y - meleePos.scale.y/2 && pos.y < meleePos.position.y + meleePos.scale.y/2) {
+    //    removeAbilityTooltip();
+    //    createAbilityTooltip(vec2(meleePos.position.x + 200, meleePos.position.y), 0);
+    //}
+    //else if (pos.x > advancedPos.position.x - advancedPos.scale.x/2 && pos.x < advancedPos.position.x + advancedPos.scale.x/2 && pos.y > advancedPos.position.y - advancedPos.scale.y/2 && pos.y < advancedPos.position.y + advancedPos.scale.y/2) {
+    //    removeAbilityTooltip();
+    //    createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+    //}
+    ///*else if (curr_level != 0 && pos.x > potionPos.position.x - potionPos.scale.x / 2 && pos.x < advancedPos.position.x + advancedPos.scale.x / 2 && pos.y > advancedPos.position.y - advancedPos.scale.y / 2 && pos.y < advancedPos.position.y + advancedPos.scale.y / 2) {
+    //    removeAbilityTooltip();
+    //    createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+    //}*/
+    //else {
+    //    removeAbilityTooltip();
+    //}
+
+    if (curr_level == 0) {
+        Entity melee = registry.overlays.entities[1];
+        Motion& meleePos = registry.motions.get(melee);
+        Entity advanced = registry.overlays.entities[2];
+        Motion& advancedPos = registry.motions.get(advanced);
+        if (pos.x > meleePos.position.x - meleePos.scale.x / 2 && pos.x < meleePos.position.x + meleePos.scale.x / 2 && pos.y > meleePos.position.y - meleePos.scale.y / 2 && pos.y < meleePos.position.y + meleePos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(meleePos.position.x + 200, meleePos.position.y), 0);
+        }
+        else if (pos.x > advancedPos.position.x - advancedPos.scale.x / 2 && pos.x < advancedPos.position.x + advancedPos.scale.x / 2 && pos.y > advancedPos.position.y - advancedPos.scale.y / 2 && pos.y < advancedPos.position.y + advancedPos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+        }
+        else {
+            removeAbilityTooltip();
+        }
+    }
+    else if (curr_level != 0) {
+        Entity melee = registry.overlays.entities[2];
+        Motion& meleePos = registry.motions.get(melee);
+        Entity advanced = registry.overlays.entities[3];
+        Motion& advancedPos = registry.motions.get(advanced);
+        Entity potion = registry.overlays.entities[0];
+        Motion& potionPos = registry.motions.get(potion);
+        if (pos.x > meleePos.position.x - meleePos.scale.x / 2 && pos.x < meleePos.position.x + meleePos.scale.x / 2 && pos.y > meleePos.position.y - meleePos.scale.y / 2 && pos.y < meleePos.position.y + meleePos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(meleePos.position.x + 200, meleePos.position.y), 0);
+        }
+        else if (pos.x > advancedPos.position.x - advancedPos.scale.x / 2 && pos.x < advancedPos.position.x + advancedPos.scale.x / 2 && pos.y > advancedPos.position.y - advancedPos.scale.y / 2 && pos.y < advancedPos.position.y + advancedPos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+        }
+        else if (pos.x > potionPos.position.x - potionPos.scale.x / 2 && pos.x < potionPos.position.x + potionPos.scale.x / 2 && pos.y > potionPos.position.y - potionPos.scale.y / 2 && pos.y < potionPos.position.y + potionPos.scale.y / 2) {
+            removeAbilityTooltip();
+            createAbilityTooltip(vec2(potionPos.position.x + 200, potionPos.position.y), 2);
+        }
+        else {
+            removeAbilityTooltip();
+        }
+    }
+
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
 
