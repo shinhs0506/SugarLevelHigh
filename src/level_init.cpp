@@ -666,8 +666,8 @@ void createAbilityTooltip(vec2 pos, int ability)
 	motion.depth = DEPTH::UI_TOP;
 
 	registry.abilityTooltip.emplace(entity);
-	Overlay overlay{ pos };
-	registry.overlays.insert(entity, overlay);
+	/*Overlay overlay{ pos };
+	registry.overlays.insert(entity, overlay);*/
 
 	if (ability == 0) {
 		registry.renderRequests.insert(
