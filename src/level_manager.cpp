@@ -155,9 +155,9 @@ void LevelManager::load_level(int level)
         save_button = createSaveButton(vec2(1200, 50), vec2(50, 50), NULL);
     }
 
-    heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::HEALTH_ABILITY);
-    basic_attack_button = createPlayerButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::MELEE_ATTACK);
-    advanced_attack_button = createPlayerButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BEAR_ADVANCED_ATTACK);
+    heal_button = createAbilityButton(vec2(100, 450), vec2(50, 50), mock_heal_callback, TEXTURE_ASSET_ID::BUTTON_HEAL);
+    basic_attack_button = createPlayerButton(vec2(100, 300), vec2(50, 50), mock_basic_attack_callback, TEXTURE_ASSET_ID::BUTTON_MELEE);
+    advanced_attack_button = createPlayerButton(vec2(100, 375), vec2(50, 50), mock_advanced_attack_callback, TEXTURE_ASSET_ID::BUTTON_ADVANCED);
 
     this->player_controller.heal_button = heal_button;
     this->player_controller.advanced_attack_button = advanced_attack_button;
@@ -497,8 +497,7 @@ bool LevelManager::step(float elapsed_ms)
                         tutorial_controller.should_advance = true;
                     }
                     else {
-                        // TODO: unique prompt per level
-                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), -10);
+                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), curr_level * 10 + 2);
                         prompts.push_back(prompt);
                     }
                 }
