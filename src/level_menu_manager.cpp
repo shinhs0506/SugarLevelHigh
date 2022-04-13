@@ -156,7 +156,7 @@ void LevelMenuManager::on_mouse_button(int button, int action, float* x_resoluti
                 end_slide++;
                 if (end_slide > 16) {
                     removeStorySlides();
-                    generateLevelMenu();
+                    is_back_button_clicked = true;
                 }
                 else {
                     story_slides.push_back(createStorySlide(vec2(640, 360), vec2(1280, 720), end_slide));
