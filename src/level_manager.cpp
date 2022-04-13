@@ -348,6 +348,45 @@ void LevelManager::update_curr_level_data(){
     reload_manager.update_curr_order_ind(curr_order_ind);
 }
 
+void LevelManager::end_scenerio(){
+    bool only_player_left = registry.playables.size() == registry.initiatives.size();
+    bool only_enemy_left = registry.initiatives.size() == registry.enemies.size();
+    if (only_player_left) {
+        if (curr_level == 0) {
+            tutorial_controller.should_advance = true;
+        }
+        else {
+            // TODO: unique prompt per level
+            Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), 11);
+            prompts.push_back(prompt);
+        }
+
+
+        if (curr_level != 4) {
+            this->levels_completed[curr_level] = true;
+        }
+    }
+    else if (only_enemy_left) {
+        if (curr_level == 0) {
+            tutorial_controller.failed = true;
+            tutorial_controller.should_advance = true;
+        }
+        else {
+            Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), curr_level * 10 + 2);
+            prompts.push_back(prompt);
+        }
+    }
+    if (registry.cooldowns.size() > 0) {
+        for (auto& cooldown : registry.cooldowns.entities) {
+            removeCooldown(cooldown);
+        }
+    }
+    registry.clickables.get(basic_attack_button).disabled = true;
+    registry.clickables.get(advanced_attack_button).disabled = true;
+    registry.clickables.get(heal_button).disabled = true;
+    move_to_state(LevelState::TERMINATION);
+}
+
 bool LevelManager::step(float elapsed_ms)
 {
     // advance state
@@ -463,41 +502,7 @@ bool LevelManager::step(float elapsed_ms)
             }
             // check whether level completed/failed
             if (only_player_left || only_enemy_left) {
-                // allow progression to next level via menu if current level completed
-                if (only_player_left) {
-                    if (curr_level == 0) {
-                        tutorial_controller.should_advance = true;
-                    }
-                    else {
-                        // TODO: unique prompt per level
-                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), 11);
-                        prompts.push_back(prompt);
-                    }
-                    
-                    
-                    if (curr_level != 4) {
-                        this->levels_completed[curr_level] = true;
-                    }
-                }
-                else if (only_enemy_left) {
-                    if (curr_level == 0) {
-                        tutorial_controller.failed = true;
-                        tutorial_controller.should_advance = true;
-                    }
-                    else {
-                        Entity prompt = createPrompt(vec2(640, 360), vec2(1280, 720), curr_level * 10 + 2);
-                        prompts.push_back(prompt);
-                    }
-                }
-                if (registry.cooldowns.size() > 0) {
-                    for (auto& cooldown : registry.cooldowns.entities) {
-                        removeCooldown(cooldown);
-                    }
-                }
-                registry.clickables.get(basic_attack_button).disabled = true;
-                registry.clickables.get(advanced_attack_button).disabled = true;
-                registry.clickables.get(heal_button).disabled = true;
-                move_to_state(LevelState::TERMINATION);
+                end_scenerio();
                 break;
             }
 
@@ -539,6 +544,13 @@ bool LevelManager::step(float elapsed_ms)
 
     case LevelState::PLAYER_TURN:
         // step player controller
+        
+        // check whether level completed/failed
+        if (only_player_left || only_enemy_left) {
+            end_scenerio();
+            break;
+        }
+
         player_controller.step(elapsed_ms);
         if (player_controller.should_end_player_turn())
         {
@@ -557,6 +569,7 @@ bool LevelManager::step(float elapsed_ms)
         
     case LevelState::ENEMY_TURN:
         // step enemy controller
+
         enemy_controller.step(elapsed_ms);
         if (enemy_controller.should_end_enemy_turn())
         {
@@ -607,6 +620,25 @@ bool LevelManager::step(float elapsed_ms)
     case LevelState::TERMINATION:
         reload_manager.destroy_saved_level_data_file(curr_level);
         break;
+    }
+
+
+
+    for (int i = 0; i < registry.playables.size(); i++) {
+        Entity player_entity = registry.playables.entities[i];
+        Motion player_motion = registry.motions.get(player_entity);
+        if (player_motion.position.y > 1100) {
+            Health& player_health = registry.healths.get(player_entity);
+            player_health.dead = true;
+        }
+    }
+    for (int i = 0; i < registry.enemies.size(); i++) {
+        Entity enemy_entity = registry.enemies.entities[i];
+        Motion enemy_motion = registry.motions.get(enemy_entity);
+        if (enemy_motion.position.y > 1100) {
+            Health& enemy_health = registry.healths.get(enemy_entity);
+            enemy_health.dead = true;
+        }
     }
 
     return true;
@@ -852,7 +884,7 @@ void LevelManager::move_to_state(LevelState next_state) {
 
     case LevelState::TERMINATION:
         std::cout << "game is over!, press 'ESC' to exit" << std::endl;
-        assert(this->current_level_state == LevelState::PREPARE); break;
+        assert(this->current_level_state == LevelState::PREPARE || this->current_level_state == LevelState::PLAYER_TURN); break;
 
     default:
         assert(false && "Entered invalid state"); break;
