@@ -76,6 +76,8 @@ public:
 private:
 	int curr_level;
 
+	void end_scenerio();
+
 	Entity main_camera;
 	const float CAM_MOVE_SPEED = 200;
 
