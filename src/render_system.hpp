@@ -93,6 +93,13 @@ class RenderSystem {
 		textures_path("story3.png"),
 		textures_path("story4.png"),
 		textures_path("story5.png"),
+		textures_path("story11.png"),
+		textures_path("story12.png"),
+		textures_path("story13.png"),
+		textures_path("story14.png"),
+		textures_path("story15.png"),
+		textures_path("story16.png"),
+		textures_path("story17.png"),
 		textures_path("next_button.png"),
 		textures_path("ui_layout.png"),
 		textures_path("turn_indicator.png"), // https://pipoya.itch.io/free-popup-emotes-pack

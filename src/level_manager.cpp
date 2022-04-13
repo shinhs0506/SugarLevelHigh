@@ -375,7 +375,11 @@ void LevelManager::end_scenerio(){
 
 
         if (curr_level != 4) {
+            // complete = true; // TODO: uncomment this if you want to see the ending slides by beating tutorial for testing
             this->levels_completed[curr_level] = true;
+        }
+        else {
+            complete = true;
         }
     }
     else if (only_enemy_left) {

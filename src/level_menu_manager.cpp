@@ -24,15 +24,29 @@ void LevelMenuManager::init(GLFWwindow* window, GameSystem* game_system) {
 
     is_back_button_clicked = false;
 
-    if (slide > 4) { // always enter the level selection menu after all the story slides are watched
-        generateLevelMenu();
+    if (this->game_system->level_manager.complete) {
+        if (end_slide > 16) {
+            generateLevelMenu();
+        }
+        else {
+            Entity story_slide = createStorySlide(vec2(640, 360), vec2(1280, 720), this->end_slide);
+            next_button = createNextButton(vec2(1180, 620), vec2(50, 50), NULL);
+
+            story_slides.push_back(next_button);
+            story_slides.push_back(story_slide);
+        }
     }
     else {
-        Entity story_slide = createStorySlide(vec2(640, 360), vec2(1280, 720), this->slide);
-        next_button = createNextButton(vec2(1180, 620), vec2(50, 50), NULL);
+        if (intro_slide > 4) { // always enter the level selection menu after all the story slides are watched
+            generateLevelMenu();
+        }
+        else {
+            Entity story_slide = createStorySlide(vec2(640, 360), vec2(1280, 720), this->intro_slide);
+            next_button = createNextButton(vec2(1180, 620), vec2(50, 50), NULL);
 
-        story_slides.push_back(next_button);
-        story_slides.push_back(story_slide);
+            story_slides.push_back(next_button);
+            story_slides.push_back(story_slide);
+        }
     }
 
     return;
@@ -125,15 +139,27 @@ void LevelMenuManager::on_mouse_button(int button, int action, float* x_resoluti
         click_motion.position = cursor_world_pos;
         click_motion.scale = { 1.f, 1.f };
 
-        if (slide <= 4) {
+        if (intro_slide <= 4) {
             if (collides(click_motion, registry.motions.get(next_button))) {
-                slide++;
-                if (slide > 4) {
+                intro_slide++;
+                if (intro_slide > 4) {
                     removeStorySlides();
                     generateLevelMenu();
                 }
                 else {
-                    story_slides.push_back(createStorySlide(vec2(640, 360), vec2(1280, 720), slide));
+                    story_slides.push_back(createStorySlide(vec2(640, 360), vec2(1280, 720), intro_slide));
+                }
+            }
+        }
+        else if (end_slide <= 16 && this->game_system->level_manager.complete) {
+            if (collides(click_motion, registry.motions.get(next_button))) {
+                end_slide++;
+                if (end_slide > 16) {
+                    removeStorySlides();
+                    is_back_button_clicked = true;
+                }
+                else {
+                    story_slides.push_back(createStorySlide(vec2(640, 360), vec2(1280, 720), end_slide));
                 }
             }
         }
