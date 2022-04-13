@@ -52,8 +52,8 @@ void EnemyController::start_turn(Entity enemy)
 		enemy_health.cur_health += 10;
 		LevelManager::update_healthbar_len_color(enemy);
 		Mix_PlayChannel(-1, heal_ability_sound, 0);
-		if (enemy_health.cur_health > 100) {
-			enemy_health.cur_health = 100;
+		if (enemy_health.cur_health > enemy_health.max_health) {
+			enemy_health.cur_health = enemy_health.max_health;
 		}
 	}
 
