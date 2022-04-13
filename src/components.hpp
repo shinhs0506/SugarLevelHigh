@@ -158,8 +158,8 @@ struct Terrain
 // proximity to camera
 enum DEPTH {
 	CAMERA = -1,
-	UI_TOP = 0,
-	PROMPT = 1,
+	PROMPT = 0,
+	UI_TOP = 1,
 	COOLDOWN = 2,
 	UI = 3,
 	ATTACK = 5,
@@ -441,7 +441,11 @@ enum class TEXTURE_ASSET_ID {
 	LEVEL_2_LOST = LEVEL_1_LOST + 1,
 	LEVEL_3_LOST = LEVEL_2_LOST + 1,
 	LEVEL_4_LOST = LEVEL_3_LOST + 1,
-	TEXTURE_COUNT = LEVEL_4_LOST + 1,
+	LEVEL_1_WON = LEVEL_4_LOST + 1,
+	LEVEL_2_WON = LEVEL_1_WON + 1,
+	LEVEL_3_WON = LEVEL_2_WON + 1,
+	LEVEL_4_WON = LEVEL_3_WON + 1,
+	TEXTURE_COUNT = LEVEL_4_WON + 1,
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

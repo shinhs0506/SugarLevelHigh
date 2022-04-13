@@ -892,13 +892,6 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 
 	switch (step)
 	{
-	case -10:// level lost for levels 1-3
-		registry.renderRequests.insert(
-			entity,
-			{ TEXTURE_ASSET_ID::LEVEL_LOST,
-				EFFECT_ASSET_ID::TEXTURED,
-				GEOMETRY_BUFFER_ID::SPRITE });
-		break;
 	case -100:// tutorial failed
 		registry.renderRequests.insert(
 			entity,
@@ -959,7 +952,7 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 	case 11:
 		registry.renderRequests.insert(
 			entity,
-			{ TEXTURE_ASSET_ID::LEVEL_WON, // temp use for all levels
+			{ TEXTURE_ASSET_ID::LEVEL_1_WON,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
@@ -977,6 +970,13 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
+	case 21:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_2_WON,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
 	case 22:
 		registry.renderRequests.insert(
 			entity,
@@ -991,6 +991,13 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
+	case 31:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_3_WON,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
 	case 32:
 		registry.renderRequests.insert(
 			entity,
@@ -1002,6 +1009,13 @@ Entity createPrompt(vec2 pos, vec2 size, int step) {
 		registry.renderRequests.insert(
 			entity,
 			{ TEXTURE_ASSET_ID::LEVEL_4_START,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 41:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::LEVEL_4_WON,
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;

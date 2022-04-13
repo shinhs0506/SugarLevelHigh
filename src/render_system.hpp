@@ -127,6 +127,10 @@ class RenderSystem {
 	textures_path("level_2_lost.png"),
 	textures_path("level_3_lost.png"),
 	textures_path("level_4_lost.png"),
+	textures_path("level_1_end.png"),
+	textures_path("level_2_end.png"),
+	textures_path("level_3_end.png"),
+	textures_path("level_4_end.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
