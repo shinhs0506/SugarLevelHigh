@@ -29,6 +29,9 @@ private:
 	const float DEFAULT_CAMERA_DELAY = 200.0f;
 	float beginning_delay_counter_ms = DEFAULT_BEGINNING_DELAY;
 	bool has_camera_snapped = false;
+
+	// Heal abilities
+	const float HEAL_RANGE = 500;
 	
 	float move_counter = 0.f;
 

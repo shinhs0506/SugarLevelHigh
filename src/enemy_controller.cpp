@@ -52,8 +52,8 @@ void EnemyController::start_turn(Entity enemy)
 		enemy_health.cur_health += 10;
 		LevelManager::update_healthbar_len_color(enemy);
 		Mix_PlayChannel(-1, heal_ability_sound, 0);
-		if (enemy_health.cur_health > 100) {
-			enemy_health.cur_health = 100;
+		if (enemy_health.cur_health > enemy_health.max_health) {
+			enemy_health.cur_health = enemy_health.max_health;
 		}
 	}
 
@@ -128,6 +128,27 @@ void EnemyController::make_decision() {
 		}
 	}
 
+	// check if the enemy has heal ability
+	if (registry.buffArsenals.has(enemy) && heal_ability_available(registry.buffArsenals.get(enemy))) {
+		BuffArsenal& buff_arsenal = registry.buffArsenals.get(enemy);
+
+		// try to heal allies within range
+		for (int i = 0; i < registry.enemies.size(); i++) {
+			Entity enemy_ally = registry.enemies.entities[i];
+			Motion& enemy_ally_motion = registry.motions.get(enemy_ally);
+			Health& enemy_ally_health = registry.healths.get(enemy_ally);
+
+			float dist = distance(enemy_ally_motion.position, motion.position);
+			if (dist < HEAL_RANGE && enemy_ally_health.cur_health < enemy_ally_health.max_health) {
+				Mix_PlayChannel(-1, heal_ability_sound, 0);
+				perform_buff_ability(enemy_ally, buff_arsenal);
+
+				move_to_state(CharacterState::END);
+				return;
+			}
+		}
+	}
+
 	// select a best attack
 	AttackArsenal& arsenal = registry.attackArsenals.get(enemy);
 	AttackAbility& chosen_attack = advanced_attack_available(arsenal) ? 
@@ -168,7 +189,10 @@ void EnemyController::make_decision() {
 	}
 	// try to climb ladder when possible and the target is not at the same level
 	// target above enemy
-	else if (motion.position.y - target_motion.position.y > 0 &&
+
+	// make enemies always take the ladder, becase the map is designed in this idea
+	// else if (motion.position.y - target_motion.position.y > 0 &&
+	else if (
 		(motion.location == BELOW_CLIMBABLE || motion.location == ON_CLIMBABLE)) {
 		move(motion, DIRECTION_UP, 10); // some arbitrary distance
 	}

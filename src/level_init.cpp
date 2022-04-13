@@ -261,12 +261,56 @@ Entity createEnemy(vec2 pos, vec2 size, float starting_health, float starting_en
 	registry.AIs.emplace(entity);
 	
 	registry.attackArsenals.insert(entity, attack_arsenal);
-
 	registry.renderRequests.insert(
 		entity,
 		{ TEXTURE_ASSET_ID::ENEMY,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE });
+
+	return entity;
+}
+
+Entity createEnemyHealer(vec2 pos, vec2 size, float starting_health, float starting_energy,
+	AttackArsenal attack_arsenal, bool slippery, bool damage_over_turn, bool heal_over_turn, BuffArsenal buff_arsenal)
+{
+	auto entity = Entity();
+
+	// TODO: tmp use red egg to represent enemy
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.prev_position = pos;
+	motion.angle = 0.f;
+	motion.goal_velocity = { 0.f, 0.f };
+	motion.scale = size;
+	motion.gravity_affected = true;
+	motion.depth = DEPTH::CHARACTER;
+	motion.location = LOCATION::NORMAL;
+	motion.slippery = slippery;
+
+	Entity healthBar = createHealthBar(pos, size);
+	Enemy enemy{ healthBar };
+	registry.enemies.insert(entity, enemy);
+
+	// stats
+	Health health{ 50, starting_health, damage_over_turn, false, heal_over_turn};
+	Energy energy{ 100, starting_energy, starting_energy };
+	Initiative initiative{ 90 };
+
+	registry.healths.insert(entity, health);
+	registry.energies.insert(entity, energy);
+	registry.initiatives.insert(entity, initiative);
+	registry.AIs.emplace(entity);
+
+	registry.attackArsenals.insert(entity, attack_arsenal);
+	registry.buffArsenals.insert(entity, buff_arsenal);
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::ENEMY,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE });
+
+	registry.colors.emplace(entity, vec3(0.2f, 0.4f, 0.2f));
 
 	return entity;
 }
@@ -285,7 +329,9 @@ void removeEnemy(Entity entity)
 	registry.attackArsenals.remove(entity);
 	registry.AIs.remove(entity);
     registry.attackArsenals.remove(entity);
+	registry.buffArsenals.remove(entity);
     registry.collisions.remove(entity);
+	registry.colors.remove(entity);
 }
 
 Entity createPlayer(vec2 pos, vec2 size, float starting_health, float starting_energy,

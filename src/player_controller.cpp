@@ -120,7 +120,7 @@ void PlayerController::step(float elapsed_ms)
 	}
 
     if (current_state == CharacterState::PERFORM_ABILITY_AUTO) {
-        perform_buff_ability(player);
+        perform_buff_ability(player, registry.buffArsenals.get(player));
 		// Play healing sound
 		Mix_PlayChannel(-1, heal_ability_sound, 0);
         move_to_state(CharacterState::END);
