@@ -742,6 +742,7 @@ bool LevelManager::is_over() {
 
 void LevelManager::on_key(int key, int scancode, int action, int mod)
 {
+    removeAbilityTooltip();
     switch (current_level_state) {
     case LevelState::LEVEL_START:
         if (action == GLFW_RELEASE && key == GLFW_KEY_ENTER)
@@ -799,6 +800,29 @@ void LevelManager::on_key(int key, int scancode, int action, int mod)
 
 void LevelManager::on_mouse_move(vec2 pos)
 {
+    Entity potion = heal_button;
+    Motion& potionPos = registry.motions.get(potion);
+    Entity melee = basic_attack_button;
+    Motion& meleePos = registry.motions.get(melee);
+    Entity advanced = advanced_attack_button;
+    Motion& advancedPos = registry.motions.get(advanced);
+    
+    if (checkButtonCollision(pos, meleePos.position, meleePos.scale)) {
+        removeAbilityTooltip();
+        createAbilityTooltip(vec2(meleePos.position.x + 200, meleePos.position.y), 0);
+    }
+    else if (checkButtonCollision(pos, advancedPos.position, advancedPos.scale)) {
+        removeAbilityTooltip();
+        createAbilityTooltip(vec2(advancedPos.position.x + 200, advancedPos.position.y), 1);
+    }
+    else if (checkButtonCollision(pos, potionPos.position, potionPos.scale)) {
+        removeAbilityTooltip();
+        createAbilityTooltip(vec2(potionPos.position.x + 200, potionPos.position.y), 2);
+    }
+    else {
+        removeAbilityTooltip();
+    }
+
     switch (current_level_state) {
     case LevelState::PLAYER_TURN:
         player_controller.on_mouse_move(pos);
@@ -806,8 +830,18 @@ void LevelManager::on_mouse_move(vec2 pos)
     }
 }
 
+bool LevelManager::checkButtonCollision(vec2 pos, vec2 buttonPos, vec2 buttonScale)
+{
+    if (pos.x > buttonPos.x - buttonScale.x / 2 && pos.x < buttonPos.x + buttonScale.x / 2 
+        && pos.y > buttonPos.y - buttonScale.y / 2 && pos.y < buttonPos.y + buttonScale.y / 2) {
+        return true;
+    }
+    return false;
+}
+
 void LevelManager::on_mouse_button(int button, int action, float* x_resolution_scale, float* y_resolution_scale)
 {
+    removeAbilityTooltip();
     double cursor_window_x, cursor_window_y;
     glfwGetCursorPos(window, &cursor_window_x, &cursor_window_y);
     vec2 cursor_window_pos = { cursor_window_x, cursor_window_y };

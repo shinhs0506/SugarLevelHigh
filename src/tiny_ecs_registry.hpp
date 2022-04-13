@@ -39,6 +39,7 @@ public:
 	ComponentContainer<PromptWithTimer> promptsWithTimer;
 	ComponentContainer<Clickable> clickables;
 	ComponentContainer<AbilityButton> abilityButtons;
+	ComponentContainer<AbilityTooltip> abilityTooltip;
 	ComponentContainer<PlayerButton> playerButtons;
 	ComponentContainer<Overlay> overlays;
 	ComponentContainer<HitEffect> hitEffects;
@@ -81,6 +82,7 @@ public:
 		registry_list.push_back(&promptsWithTimer);
 		registry_list.push_back(&clickables);
 		registry_list.push_back(&abilityButtons);
+		registry_list.push_back(&abilityTooltip);
 		registry_list.push_back(&playerButtons);
 		registry_list.push_back(&overlays);
 		registry_list.push_back(&hitEffects);
