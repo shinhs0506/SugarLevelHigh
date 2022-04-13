@@ -52,20 +52,7 @@
         }
     ],
     "enemy_healers": [
-        {
-            "pos": {
-                "x": 1100,
-                "y": 600
-            },
-            "size": {
-                "w": 80,
-                "h": 100
-            },
-            "health": 20,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
-        }
+
     ],
     "ladders": [],
     "terrains": [

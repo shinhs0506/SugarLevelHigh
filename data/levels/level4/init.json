@@ -66,6 +66,20 @@
     "enemies": [
         {
             "pos": {
+                "x": 800,
+                "y": 200
+            },
+            "size": {
+                "w": 80,
+                "h": 100
+            },
+            "health": 50,
+            "energy": 150,
+            "heal_cooldown": 0,
+            "advanced_attack_cooldown": 0
+        },
+        {
+            "pos": {
                 "x": -500,
                 "y": 200
             },
@@ -91,7 +105,9 @@
             "energy": 150,
             "heal_cooldown": 0,
             "advanced_attack_cooldown": 0
-        },
+        }
+    ],
+    "enemy_healers": [
         {
             "pos": {
                 "x": 1300,
@@ -102,22 +118,6 @@
                 "h": 100
             },
             "health": 100,
-            "energy": 150,
-            "heal_cooldown": 0,
-            "advanced_attack_cooldown": 0
-        }
-    ],
-    "enemy_healers": [
-        {
-            "pos": {
-                "x": 800,
-                "y": 200
-            },
-            "size": {
-                "w": 80,
-                "h": 100
-            },
-            "health": 50,
             "energy": 150,
             "heal_cooldown": 0,
             "advanced_attack_cooldown": 0

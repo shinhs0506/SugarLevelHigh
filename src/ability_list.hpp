@@ -73,6 +73,6 @@ BuffAbility enemy_heal_buff = {
     0, // speed delta
     20, // health delta
     0, // damage delta
-    2, // max cooldown
+    1, // max cooldown
     0 // curr cooldown
 };
