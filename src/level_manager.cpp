@@ -488,7 +488,11 @@ bool LevelManager::step(float elapsed_ms)
                     
                     
                     if (curr_level != 4) {
+                        // complete = true; // TODO: uncommment so you can see ending slides after beating tutorial for testing
                         this->levels_completed[curr_level] = true;
+                    }
+                    else {
+                        complete = true;
                     }
                 }
                 else if (only_enemy_left) {

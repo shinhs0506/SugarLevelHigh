@@ -15,7 +15,8 @@ private:
 
     Entity background;
 
-    int slide = 0;
+    int intro_slide = 0;
+    int end_slide = 10;
 
     // buttons
     Entity back_button;

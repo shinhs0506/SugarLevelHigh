@@ -1077,6 +1077,55 @@ Entity createStorySlide(vec2 pos, vec2 size, int slide) {
 				EFFECT_ASSET_ID::TEXTURED,
 				GEOMETRY_BUFFER_ID::SPRITE });
 		break;
+	case 10:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY11,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 11:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY12,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 12:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY13,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 13:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY14,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 14:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY15,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 15:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY16,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
+	case 16:
+		registry.renderRequests.insert(
+			entity,
+			{ TEXTURE_ASSET_ID::STORY17,
+				EFFECT_ASSET_ID::TEXTURED,
+				GEOMETRY_BUFFER_ID::SPRITE });
+		break;
 	default:
 		break;
 	}
