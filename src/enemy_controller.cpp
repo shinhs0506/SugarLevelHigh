@@ -189,7 +189,10 @@ void EnemyController::make_decision() {
 	}
 	// try to climb ladder when possible and the target is not at the same level
 	// target above enemy
-	else if (motion.position.y - target_motion.position.y > 0 &&
+
+	// make enemies always take the ladder, becase the map is designed in this idea
+	// else if (motion.position.y - target_motion.position.y > 0 &&
+	else if (
 		(motion.location == BELOW_CLIMBABLE || motion.location == ON_CLIMBABLE)) {
 		move(motion, DIRECTION_UP, 10); // some arbitrary distance
 	}
