@@ -61,7 +61,7 @@
                 "w": 80,
                 "h": 100
             },
-            "health": 50,
+            "health": 20,
             "energy": 150,
             "heal_cooldown": 0,
             "advanced_attack_cooldown": 0
