@@ -65,7 +65,7 @@ Entity createEnergyBar()
 	auto entity = Entity();
 
 	registry.energyBars.emplace(entity);
-	vec2 pos = vec2(640, 625); // subject to change when adjusting UI positions
+	vec2 pos = vec2(694, 672); // subject to change when adjusting UI positions
 
 	// Setting initial motion values
 	Motion& motion = registry.motions.emplace(entity);
@@ -73,7 +73,7 @@ Entity createEnergyBar()
 	motion.prev_position = { pos };
 	motion.angle = 0.f;
 	motion.goal_velocity = { 0.f, 0.f };
-	motion.scale = { 270, 20 };
+	motion.scale = { 400, 20 };
 	motion.gravity_affected = false;
 	motion.depth = DEPTH::UI_TOP;
 
@@ -136,19 +136,19 @@ void resetEnergyBar()
 {
 	// As all characters share one energy bar, there should always be only 1 entity inside energyBars
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
-	vec2 pos = vec2(640, 625); // subject to change when adjusting UI positions
+	vec2 pos = vec2(694, 672); // subject to change when adjusting UI positions
 	motion.position = { pos };
 	motion.prev_position = { pos };
 	motion.goal_velocity = { 0.f, 0.f };
-	motion.scale = { 270, 20 };
+	motion.scale = { 400, 20 };
 }
 
 
 void updateEnergyBar(Energy energy)
 {
 	Motion& motion = registry.motions.get(registry.energyBars.entities[0]);
-	motion.scale.x = 270 * (energy.cur_energy / energy.max_energy);
-    float dx = (270 - motion.scale.x) / 2;
+	motion.scale.x = 400 * (energy.cur_energy / energy.max_energy);
+    float dx = (400 - motion.scale.x) / 2;
     Overlay& overlay = registry.overlays.get(registry.energyBars.entities[0]);
     overlay.position.x = overlay.original_position.x - dx;
 }

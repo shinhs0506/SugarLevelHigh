@@ -30,6 +30,7 @@ class RenderSystem {
 		// textures_path("player.png"),
 		textures_path("playable_gummy_bear.png"),
 		textures_path("enemy.png"),
+		textures_path("enemy_ice_cream.png"),
 		textures_path("terrain1.png"),
 		textures_path("terrain2.png"),
 		textures_path("terrain2_breakable.png"),
@@ -100,7 +101,8 @@ class RenderSystem {
 		textures_path("story15.png"),
 		textures_path("story16.png"),
 		textures_path("story17.png"),
-		textures_path("next_button.png"),
+		textures_path("story18.png"),
+		textures_path("button_next.png"),
 		textures_path("ui_layout.png"),
 		textures_path("turn_indicator.png"), // https://pipoya.itch.io/free-popup-emotes-pack
 		textures_path("bar.png"),
